@@ -2,6 +2,7 @@ apply plugin: 'java'
 apply plugin: 'war'
 apply plugin: 'eclipse-wtp'
 apply plugin: "org.akhikhl.gretty"
+apply plugin: "org.flywaydb.flyway"
 
 // JDK 7
 sourceCompatibility = 1.7
@@ -20,6 +21,8 @@ buildscript {
     }
     dependencies {
         classpath "org.akhikhl.gretty:gretty:1.1.9"
+        classpath 'mysql:mysql-connector-java:5.1.34'
+        classpath "gradle.plugin.com.boxfuse.client:gradle-plugin-publishing:5.0.5"
     }
 }
 
@@ -40,6 +43,13 @@ dependencies {
 gretty{
 	contextPath = "lists"
 	httpPort = 8080
+}
+
+flyway {
+    user = 'root'
+    password = 'password'
+    url = 'jdbc:mysql://127.0.0.1:3306'
+    schemas = ['pairs']
 }
 
 //For Eclipse IDE only
