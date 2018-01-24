@@ -17,4 +17,9 @@
         <put-attribute name="body" value="/WEB-INF/views/jsp/index.jsp" />
     </definition>
 
+    <definition name="thing" extends="base.definition">
+        <put-attribute name="title" value="Thing" />
+        <put-attribute name="body" value="/WEB-INF/views/jsp/thing.jsp" />
+    </definition>
+
 </tiles-definitions>

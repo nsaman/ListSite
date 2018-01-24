@@ -6,7 +6,7 @@ createUserID char(25),
 changeUserID char(25),
 PRIMARY KEY (thingID)
 );
-insert into thing (title) value ('Base Thing');
+insert into thing (title, createUserID, changeUserID) value ('Base Thing', 'system', 'system');
 
 CREATE TABLE descriptor
 (
