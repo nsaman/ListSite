@@ -1,12 +1,12 @@
-CREATE TABLE entity
+CREATE TABLE thing
 (
-entityID int NOT NULL AUTO_INCREMENT,
+thingID int NOT NULL AUTO_INCREMENT,
 title char(100) not null,
 createUserID char(25),
 changeUserID char(25),
-PRIMARY KEY (entityID)
+PRIMARY KEY (thingID)
 );
-insert into entity (title) value ('Base Entity');
+insert into thing (title) value ('Base Thing');
 
 CREATE TABLE descriptor
 (
@@ -15,27 +15,27 @@ title CHAR,
 valueType CHAR,
 valueData CHAR,
 nullable Boolean DEFAULT true,
-describesEntityID INT,
+describesThingID INT,
 createUserID char(25),
 changeUserID char(25),
 PRIMARY KEY (descriptorID),
-FOREIGN KEY (describesEntityID)
-REFERENCES entity(entityID)
+FOREIGN KEY (describesThingID)
+REFERENCES thing(thingID)
 ON DELETE CASCADE
 );
 
 CREATE TABLE childOf
 (
-parentEntityID int,
-childEntityID int,
+parentThingID int,
+childThingID int,
 createUserID char(25),
 changeUserID char(25),
-PRIMARY KEY (parentEntityID, childEntityID),
-FOREIGN KEY (parentEntityID)
-REFERENCES entity(entityID)
+PRIMARY KEY (parentThingID, childThingID),
+FOREIGN KEY (parentThingID)
+REFERENCES thing(thingID)
 ON DELETE CASCADE,
-FOREIGN KEY (childEntityID)
-REFERENCES entity(entityID)
+FOREIGN KEY (childThingID)
+REFERENCES thing(thingID)
 ON DELETE CASCADE
 );
 
@@ -51,16 +51,16 @@ PRIMARY KEY (comparatorID)
 create table compares
 (
 comparatorID int,
-entityID int,
+thingID int,
 score float DEFAULT 1500,
 createUserID char(25),
 changeUserID char(25),
-PRIMARY KEY (comparatorID, entityID),
+PRIMARY KEY (comparatorID, thingID),
 FOREIGN KEY (comparatorID)
 REFERENCES comparator(comparatorID)
 ON DELETE CASCADE,
-FOREIGN KEY (entityID)
-REFERENCES entity(entityID)
+FOREIGN KEY (thingID)
+REFERENCES thing(thingID)
 ON DELETE CASCADE
 );
 
@@ -92,19 +92,19 @@ ON DELETE CASCADE
 
 create table vote
 (
-winnerEntityID int,
-loserEntityID int,
+winnerThingID int,
+loserThingID int,
 comparatorID int,
 userID char(25),
-PRIMARY KEY (comparatorID, winnerEntityID, loserEntityID, userID),
+PRIMARY KEY (comparatorID, winnerThingID, loserThingID, userID),
 FOREIGN KEY (comparatorID)
 REFERENCES comparator(comparatorID)
 ON DELETE CASCADE,
-FOREIGN KEY (winnerEntityID)
-REFERENCES entity(entityID)
+FOREIGN KEY (winnerThingID)
+REFERENCES thing(thingID)
 ON DELETE CASCADE,
-FOREIGN KEY (loserEntityID)
-REFERENCES entity(entityID)
+FOREIGN KEY (loserThingID)
+REFERENCES thing(thingID)
 ON DELETE CASCADE,
 FOREIGN KEY (userID)
 REFERENCES user(userID)
@@ -120,16 +120,16 @@ changeUserID char(25),
 PRIMARY KEY (customSetID)
 );
 
-create table customSetEntity
+create table customSetThing
 (
 customSetID int,
-entityID int,
-PRIMARY KEY (customSetID, entityID),
+thingID int,
+PRIMARY KEY (customSetID, thingID),
 FOREIGN KEY (customSetID)
 REFERENCES customSet(customSetID)
 ON DELETE CASCADE,
-FOREIGN KEY (entityID)
-REFERENCES entity(entityID)
+FOREIGN KEY (thingID)
+REFERENCES thing(thingID)
 ON DELETE CASCADE
 );
 

@@ -1,2 +1,2 @@
-Alter table Descriptor add referenceEntityID int;
-ALTER TABLE Descriptor ADD CONSTRAINT FK_ReferenceEntity FOREIGN KEY (referenceEntityID) REFERENCES entity(entityID);
+Alter table Descriptor add referenceThingID int;
+ALTER TABLE Descriptor ADD CONSTRAINT FK_ReferenceThing FOREIGN KEY (referenceThingID) REFERENCES thing(thingID);
