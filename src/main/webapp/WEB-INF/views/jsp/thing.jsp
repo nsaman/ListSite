@@ -13,6 +13,8 @@
 <p>${thing.title}</p>
 <p>${thing.createUserID}</p>
 <p>${thing.changeUserID}</p>
+<p>${thing.isAbstract}</p>
+<p><a href="/thing/${thing.parentThing.thingID}">${thing.parentThing.title}</a></p>
 </div>
 
 <spring:url value="/resources/core/css/bootstrap.min.js" var="bootstrapJs" />

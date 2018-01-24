@@ -1,10 +1,7 @@
 package com.lists.web.thing;
 
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 /**
  * Created by nick on 1/23/2018.
@@ -17,10 +14,12 @@ public class Thing {
     private Integer thingID;
 
     private String title;
-
     private String createUserID;
-
     private String changeUserID;
+    private Boolean isAbstract;
+    @ManyToOne
+    @JoinColumn(name="parentThingID",foreignKey=@ForeignKey(name="FK_ParentThing"))
+    private Thing parentThing;
 
     public Integer getThingID() {
         return thingID;
@@ -52,5 +51,21 @@ public class Thing {
 
     public void setChangeUserID(String changeUserID) {
         this.changeUserID = changeUserID;
+    }
+
+    public Boolean getIsAbstract() {
+        return isAbstract;
+    }
+
+    public void setIsAbstract(Boolean anAbstract) {
+        isAbstract = anAbstract;
+    }
+
+    public Thing getParentThing() {
+        return parentThing;
+    }
+
+    public void setParentThing(Thing parentThing) {
+        this.parentThing = parentThing;
     }
 }
