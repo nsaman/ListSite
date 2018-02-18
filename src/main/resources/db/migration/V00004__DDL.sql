@@ -19,6 +19,7 @@ CREATE TABLE descriptorLongText
 descriptorID int NOT NULL,
 descriptorLongText LONGTEXT,
 PRIMARY KEY (descriptorID),
+CONSTRAINT FK_descriptorLongText_1
 FOREIGN KEY (descriptorID)
 REFERENCES descriptor(descriptorID)
 ON DELETE CASCADE
@@ -30,7 +31,7 @@ ALTER TABLE descriptor ADD COLUMN intValue int;
 ALTER TABLE descriptor ADD COLUMN doubleValue double;
 ALTER TABLE descriptor ADD COLUMN dateValue date;
 ALTER TABLE descriptor ADD COLUMN longitudeValue double;
-ALTER TABLE descriptor ADD COLUMN latitudeValu double;
+ALTER TABLE descriptor ADD COLUMN latitudeValue double;
 ALTER TABLE descriptor ADD COLUMN resourceValue char(100);
 
-ALTER TABLE descriptor ADD FOREIGN KEY (descriptorTypeID) REFERENCES descriptorType(descriptorTypeID);
+ALTER TABLE descriptor ADD CONSTRAINT FK_descriptor_3 FOREIGN KEY (descriptorTypeID) REFERENCES descriptorType(descriptorTypeID);

@@ -19,6 +19,7 @@ describesThingID INT,
 createUserID char(25),
 changeUserID char(25),
 PRIMARY KEY (descriptorID),
+CONSTRAINT FK_descriptor_1
 FOREIGN KEY (describesThingID)
 REFERENCES thing(thingID)
 ON DELETE CASCADE
@@ -31,9 +32,11 @@ childThingID int,
 createUserID char(25),
 changeUserID char(25),
 PRIMARY KEY (parentThingID, childThingID),
+CONSTRAINT FK_childOf_1
 FOREIGN KEY (parentThingID)
 REFERENCES thing(thingID)
 ON DELETE CASCADE,
+CONSTRAINT FK_childOf_2
 FOREIGN KEY (childThingID)
 REFERENCES thing(thingID)
 ON DELETE CASCADE
@@ -56,9 +59,11 @@ score float DEFAULT 1500,
 createUserID char(25),
 changeUserID char(25),
 PRIMARY KEY (comparatorID, thingID),
+CONSTRAINT FK_compares_1
 FOREIGN KEY (comparatorID)
 REFERENCES comparator(comparatorID)
 ON DELETE CASCADE,
+CONSTRAINT FK_compares_2
 FOREIGN KEY (thingID)
 REFERENCES thing(thingID)
 ON DELETE CASCADE
@@ -82,9 +87,11 @@ create table userGroupUser
 userGroupID int,
 userID char(25),
 PRIMARY KEY (userGroupID, userID),
+CONSTRAINT FK_userGroupUser_1
 FOREIGN KEY (userGroupID)
 REFERENCES userGroup(userGroupID)
 ON DELETE CASCADE,
+CONSTRAINT FK_userGroupUser_2
 FOREIGN KEY (userID)
 REFERENCES user(userID)
 ON DELETE CASCADE
@@ -97,15 +104,19 @@ loserThingID int,
 comparatorID int,
 userID char(25),
 PRIMARY KEY (comparatorID, winnerThingID, loserThingID, userID),
+CONSTRAINT FK_vote_1
 FOREIGN KEY (comparatorID)
 REFERENCES comparator(comparatorID)
 ON DELETE CASCADE,
+CONSTRAINT FK_vote_2
 FOREIGN KEY (winnerThingID)
 REFERENCES thing(thingID)
 ON DELETE CASCADE,
+CONSTRAINT FK_vote_3
 FOREIGN KEY (loserThingID)
 REFERENCES thing(thingID)
 ON DELETE CASCADE,
+CONSTRAINT FK_vote_4
 FOREIGN KEY (userID)
 REFERENCES user(userID)
 ON DELETE CASCADE
@@ -125,9 +136,11 @@ create table customSetThing
 customSetID int,
 thingID int,
 PRIMARY KEY (customSetID, thingID),
+CONSTRAINT FK_customSetThing_1
 FOREIGN KEY (customSetID)
 REFERENCES customSet(customSetID)
 ON DELETE CASCADE,
+CONSTRAINT FK_customSetThing_2
 FOREIGN KEY (thingID)
 REFERENCES thing(thingID)
 ON DELETE CASCADE
@@ -141,9 +154,11 @@ allowView Boolean DEFAULT false,
 allowVote Boolean DEFAULT false,
 allowOwner Boolean DEFAULT false,
 PRIMARY KEY (customSetID, userGroupID),
+CONSTRAINT FK_customSetUserGroupPermissions_1
 FOREIGN KEY (customSetID)
 REFERENCES customSet(customSetID)
 ON DELETE CASCADE,
+CONSTRAINT FK_customSetUserGroupPermissions_2
 FOREIGN KEY (userGroupID)
 REFERENCES userGroup(userGroupID)
 ON DELETE CASCADE
@@ -154,9 +169,11 @@ create table customSetComparator
 customSetID int,
 comparatorID int,
 PRIMARY KEY (customSetID, comparatorID),
+CONSTRAINT FK_customSetComparator_1
 FOREIGN KEY (customSetID)
 REFERENCES customSet(customSetID)
 ON DELETE CASCADE,
+CONSTRAINT FK_customSetComparator_2
 FOREIGN KEY (comparatorID)
 REFERENCES comparator(comparatorID)
 ON DELETE CASCADE
