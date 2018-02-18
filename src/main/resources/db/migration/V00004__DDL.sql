@@ -8,7 +8,7 @@ CREATE TABLE descriptorType
 descriptorTypeID int NOT NULL AUTO_INCREMENT,
 title CHAR(100),
 valueType CHAR(20),
-nullable Boolean DEFAULT true,
+isNullable Boolean DEFAULT true,
 createUserID char(25),
 changeUserID char(25),
 PRIMARY KEY (descriptorTypeID)

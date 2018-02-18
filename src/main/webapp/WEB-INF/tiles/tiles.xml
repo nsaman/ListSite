@@ -22,4 +22,9 @@
         <put-attribute name="body" value="/WEB-INF/views/jsp/thing.jsp" />
     </definition>
 
+    <definition name="descriptortype" extends="base.definition">
+        <put-attribute name="title" value="descriptorType" />
+        <put-attribute name="body" value="/WEB-INF/views/jsp/descriptortype.jsp" />
+    </definition>
+
 </tiles-definitions>
