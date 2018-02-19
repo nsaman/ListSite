@@ -18,7 +18,7 @@ public class Thing {
     private String changeUserID;
     private Boolean isAbstract;
     @ManyToOne
-    @JoinColumn(name="parentThingID",foreignKey=@ForeignKey(name="FK_ParentThing"))
+    @JoinColumn(name="parentThingID",foreignKey=@ForeignKey(name="FK_thing_1"))
     private Thing parentThing;
 
     public Integer getThingID() {

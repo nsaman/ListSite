@@ -15,12 +15,12 @@ title CHAR,
 valueType CHAR,
 valueData CHAR,
 nullable Boolean DEFAULT true,
-describesThingID INT,
+describedThingID INT not null,
 createUserID char(25),
 changeUserID char(25),
 PRIMARY KEY (descriptorID),
 CONSTRAINT FK_descriptor_1
-FOREIGN KEY (describesThingID)
+FOREIGN KEY (describedThingID)
 REFERENCES thing(thingID)
 ON DELETE CASCADE
 );
