@@ -30,7 +30,7 @@ public class DescriptorController {
         return "descriptor";
     }
 
-    /*@RequestMapping(params = {"title","valueType","isNullable"}, method = RequestMethod.POST)
+    @RequestMapping(params = {"describedThingID","valueType", ,"isNullable"}, method = RequestMethod.POST)
     public String createDescriptorType(@RequestParam("title") String title, @RequestParam("valueType") String valueType, @RequestParam("isNullable") Boolean isNullable, Model model) {
 
         DescriptorType descType = new DescriptorType();
@@ -41,5 +41,5 @@ public class DescriptorController {
         descTypeRepository.save(descType);
 
         return "redirect:/descriptortype/" + descType.getDescriptorTypeID();
-    }*/
+    }
 }
