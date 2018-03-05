@@ -1,7 +1,5 @@
 package com.lists.web.descriptorType;
 
-import com.lists.web.thing.IThingRepository;
-import com.lists.web.thing.Thing;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -35,6 +33,10 @@ public class DescriptorTypeController {
 
     @RequestMapping(params = {"title","valueType","isNullable"}, method = RequestMethod.POST)
     public String createDescriptorType(@RequestParam("title") String title, @RequestParam("valueType") String valueType, @RequestParam("isNullable") Boolean isNullable, Model model) {
+
+        if(DescriptorTypes.byString(valueType) == null)
+            return "400";
+
 
         DescriptorType descType = new DescriptorType();
         descType.setTitle(title);

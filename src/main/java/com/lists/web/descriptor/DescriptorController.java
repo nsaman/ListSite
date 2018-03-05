@@ -1,7 +1,10 @@
 package com.lists.web.descriptor;
 
 import com.lists.web.descriptorType.DescriptorType;
+import com.lists.web.descriptorType.DescriptorTypes;
 import com.lists.web.descriptorType.IDescriptorTypeRepository;
+import com.lists.web.thing.IThingRepository;
+import com.lists.web.thing.Thing;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -19,6 +22,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class DescriptorController {
     @Autowired
     private IDescriptorRepository descriptorRepository;
+    @Autowired
+    private IDescriptorTypeRepository descriptorTypeRepository;
+    @Autowired
+    private IThingRepository thingRepository;
 
     @RequestMapping(value = "/{descriptorID}", method = RequestMethod.GET)
     public String getDescriptor(@PathVariable(value="descriptorID") int descriptorID, Model model) {
@@ -30,16 +37,25 @@ public class DescriptorController {
         return "descriptor";
     }
 
-    @RequestMapping(params = {"describedThingID","valueType", ,"isNullable"}, method = RequestMethod.POST)
-    public String createDescriptorType(@RequestParam("title") String title, @RequestParam("valueType") String valueType, @RequestParam("isNullable") Boolean isNullable, Model model) {
+    @RequestMapping(params = {"describedThingID", "descriptorTypeID", "value"}, method = RequestMethod.POST)
+    public String createDescriptorType(@RequestParam("describedThingID") Integer describedThingID, @RequestParam("descriptorTypeID") Integer descriptorTypeID, @RequestParam("value") String value, Model model) {
 
-        DescriptorType descType = new DescriptorType();
-        descType.setTitle(title);
-        descType.setValueType(valueType);
-        descType.setIsNullable(isNullable);
+        DescriptorType dt = descriptorTypeRepository.findOne(descriptorTypeID);
+        Thing thing = thingRepository.findOne(describedThingID);
 
-        descTypeRepository.save(descType);
+        DescriptorTypes descriptorTypes = DescriptorTypes.DATE;
+        Descriptor descriptor;
 
-        return "redirect:/descriptortype/" + descType.getDescriptorTypeID();
+        try {
+            descriptor = descriptorTypes.castStringByType(DescriptorTypes.byString(dt.getValueType()),value);
+        } catch (Exception e) {
+            return "400";
+        }
+        descriptor.setDescribedThing(thing);
+        descriptor.setDescriptorType(dt);
+
+        descriptorRepository.save(descriptor);
+
+        return "redirect:/descriptor/" + descriptor.getDescriptorID();
     }
 }

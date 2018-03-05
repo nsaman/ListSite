@@ -1,6 +1,5 @@
 package com.lists.web.descriptor;
 
-import com.lists.web.descriptorType.DescriptorType;
 import org.springframework.data.repository.CrudRepository;
 
 /**
