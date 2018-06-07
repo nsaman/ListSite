@@ -12,6 +12,21 @@
         <put-attribute name="footer" value="/WEB-INF/tiles/jsp/footer.jsp" />
     </definition>
 
+    <definition name="comparator" extends="base.definition">
+        <put-attribute name="title" value="Comparator" />
+        <put-attribute name="body" value="/WEB-INF/views/jsp/comparator.jsp" />
+    </definition>
+
+    <definition name="descriptor" extends="base.definition">
+        <put-attribute name="title" value="Descriptor!" />
+        <put-attribute name="body" value="/WEB-INF/views/jsp/descriptor.jsp" />
+    </definition>
+
+    <definition name="descriptortype" extends="base.definition">
+        <put-attribute name="title" value="descriptorType" />
+        <put-attribute name="body" value="/WEB-INF/views/jsp/descriptortype.jsp" />
+    </definition>
+
     <definition name="index" extends="base.definition">
         <put-attribute name="title" value="Home" />
         <put-attribute name="body" value="/WEB-INF/views/jsp/index.jsp" />
@@ -20,16 +35,6 @@
     <definition name="thing" extends="base.definition">
         <put-attribute name="title" value="Thing" />
         <put-attribute name="body" value="/WEB-INF/views/jsp/thing.jsp" />
-    </definition>
-
-    <definition name="descriptortype" extends="base.definition">
-        <put-attribute name="title" value="descriptorType" />
-        <put-attribute name="body" value="/WEB-INF/views/jsp/descriptortype.jsp" />
-    </definition>
-
-    <definition name="descriptor" extends="base.definition">
-        <put-attribute name="title" value="Descriptor!" />
-        <put-attribute name="body" value="/WEB-INF/views/jsp/descriptor.jsp" />
     </definition>
 
 </tiles-definitions>
