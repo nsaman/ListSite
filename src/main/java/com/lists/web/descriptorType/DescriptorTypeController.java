@@ -15,7 +15,7 @@ import java.util.List;
  */
 
 @Controller
-@RequestMapping(path="/descriptortype")
+@RequestMapping(path="/descriptorType")
 public class DescriptorTypeController {
     @Autowired
     private IDescriptorTypeRepository descTypeRepository;

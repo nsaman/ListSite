@@ -16,7 +16,7 @@ public class Descriptor {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer descriptorID;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="describedThingID",foreignKey=@ForeignKey(name="FK_descriptor_1"))
     private Thing describedThing;
 

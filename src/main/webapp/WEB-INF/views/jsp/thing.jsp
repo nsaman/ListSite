@@ -15,6 +15,11 @@
 <p>${thing.changeUserID}</p>
 <p>${thing.isAbstract}</p>
 <p><a href="/thing/${thing.parentThing.thingID}">${thing.parentThing.title}</a></p>
+<p> </p>
+<c:forEach items="${thing.descriptors}" var="descriptor">
+    <a href="/descriptorType/${descriptor.descriptorType.descriptorTypeID}">${descriptor.descriptorType.title}</a>: <a href="/descriptor/${descriptor.descriptorID}">${descriptor.stringValue}</a><br>
+</c:forEach>
+
 </div>
 
 <spring:url value="/resources/core/css/bootstrap.min.js" var="bootstrapJs" />
