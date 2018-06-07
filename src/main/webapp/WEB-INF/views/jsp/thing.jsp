@@ -15,9 +15,12 @@
 <p>${thing.changeUserID}</p>
 <p>${thing.isAbstract}</p>
 <p><a href="/thing/${thing.parentThing.thingID}">${thing.parentThing.title}</a></p>
-<p> </p>
 <c:forEach items="${thing.descriptors}" var="descriptor">
     <a href="/descriptorType/${descriptor.descriptorType.descriptorTypeID}">${descriptor.descriptorType.title}</a>: <a href="/descriptor/${descriptor.descriptorID}">${descriptor.stringValue}</a><br>
+</c:forEach>
+Children:
+<c:forEach items="${children}" var="child">
+    <a href="/thing/${child.thingID}">${child.title}</a>
 </c:forEach>
 
 </div>
