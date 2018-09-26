@@ -38,7 +38,7 @@ public class DescriptorController {
     }
 
     @RequestMapping(params = {"describedThingID", "descriptorTypeID", "value"}, method = RequestMethod.POST)
-    public String createDescriptorType(@RequestParam("describedThingID") Integer describedThingID, @RequestParam("descriptorTypeID") Integer descriptorTypeID, @RequestParam("value") String value, Model model) {
+    public String createDescriptor(@RequestParam("describedThingID") Integer describedThingID, @RequestParam("descriptorTypeID") Integer descriptorTypeID, @RequestParam("value") String value, Model model) {
 
         DescriptorType dt = descriptorTypeRepository.findOne(descriptorTypeID);
         Thing thing = thingRepository.findOne(describedThingID);

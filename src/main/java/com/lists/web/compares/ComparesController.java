@@ -32,7 +32,7 @@ public class ComparesController {
     private IThingRepository thingRepository;
 
     @RequestMapping(value = "/{comparesID}", method = RequestMethod.GET)
-    public String getDescriptor(@PathVariable(value="comparesID") int comparesID, Model model) {
+    public String getCompares(@PathVariable(value="comparesID") int comparesID, Model model) {
 
         Compares compares = comparesRepository.findOne(comparesID);
 
@@ -42,7 +42,7 @@ public class ComparesController {
     }
 
     @RequestMapping(params = {"comparatorID", "thingID"}, method = RequestMethod.POST)
-    public String createDescriptorType(@RequestParam("comparatorID") Integer comparatorID, @RequestParam("thingID") Integer thingID) {
+    public String createCompares(@RequestParam("comparatorID") Integer comparatorID, @RequestParam("thingID") Integer thingID) {
 
         Comparator comparator = comparatorRepository.findOne(comparatorID);
         Thing thing = thingRepository.findOne(thingID);
