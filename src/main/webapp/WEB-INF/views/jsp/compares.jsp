@@ -13,8 +13,8 @@
 <p><a href="/thing/${compares.thing.thingID}">${compares.thing.title}</a></p>
 <p><a href="/comparator/${compares.comparator.comparatorID}">${compares.comparator.title}</a></p>
 <p>${compares.score}</p>
-<p>${compares.createUserID}</p>
-<p>${compares.changeUserID}</p>
+<p><a href="/user/${compares.createUserID}">${compares.createUserID}</a></p>
+<p><a href="/user/${compares.changeUserID}">${compares.changeUserID}</a></p>
 </div>
 
 <spring:url value="/resources/core/css/bootstrap.min.js" var="bootstrapJs" />

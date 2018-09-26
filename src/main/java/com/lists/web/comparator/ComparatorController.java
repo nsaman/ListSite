@@ -20,7 +20,7 @@ public class ComparatorController {
     private IComparatorRepository comparatorRepository;
 
     @RequestMapping(value = "/{comparatorID}", method = RequestMethod.GET)
-    public String getComparator(@PathVariable(value="comparatorID") int comparatorID, Model model) {
+    public String getDescriptor(@PathVariable(value="comparatorID") int comparatorID, Model model) {
 
         Comparator comparator = comparatorRepository.findOne(comparatorID);
 
@@ -30,7 +30,7 @@ public class ComparatorController {
     }
 
     @RequestMapping(params = {"title"}, method = RequestMethod.POST)
-    public String createComparator(@RequestParam("title") String title, Model model) {
+    public String createThing(@RequestParam("title") String title, Model model) {
 
         Comparator comparator = new Comparator();
         comparator.setTitle(title);

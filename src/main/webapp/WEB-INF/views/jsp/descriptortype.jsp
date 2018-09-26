@@ -13,8 +13,8 @@
 <p>${descriptorType.title}</p>
 <p>${descriptorType.valueType}</p>
 <p>${descriptorType.isNullable}</p>
-<p>${descriptorType.createUserID}</p>
-<p>${descriptorType.changeUserID}</p>
+<p><a href="/user/${descriptorType.createUserID}">${descriptorType.createUserID}</a></p>
+<p><a href="/user/${descriptorType.changeUserID}">${descriptorType.changeUserID}</a></p>
 </div>
 
 <spring:url value="/resources/core/css/bootstrap.min.js" var="bootstrapJs" />

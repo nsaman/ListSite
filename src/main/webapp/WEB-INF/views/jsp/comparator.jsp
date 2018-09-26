@@ -11,8 +11,8 @@
 <div class="container">
 <p>${comparator.comparatorID}</p>
 <p>${comparator.title}</p>
-<p>${comparator.createUserID}</p>
-<p>${comparator.changeUserID}</p>
+<p><a href="/user/${comparator.createUserID}">${comparator.createUserID}</a></p>
+<p><a href="/user/${comparator.changeUserID}">${comparator.changeUserID}</a></p>
 </div>
 
 <spring:url value="/resources/core/css/bootstrap.min.js" var="bootstrapJs" />

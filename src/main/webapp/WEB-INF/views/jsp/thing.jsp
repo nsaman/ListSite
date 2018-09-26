@@ -11,8 +11,8 @@
 <div class="container">
 <p>${thing.thingID}</p>
 <p>${thing.title}</p>
-<p>${thing.createUserID}</p>
-<p>${thing.changeUserID}</p>
+<p><a href="/user/${thing.createUserID}">${thing.createUserID}</a></p>
+<p><a href="/user/${thing.changeUserID}">${thing.changeUserID}</a></p>
 <p>${thing.isAbstract}</p>
 <p><a href="/thing/${thing.parentThing.thingID}">${thing.parentThing.title}</a></p>
 <c:forEach items="${thing.descriptors}" var="descriptor">

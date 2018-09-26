@@ -12,8 +12,8 @@
 <p>${descriptor.descriptorID}</p>
 <p><a href="/thing/${descriptor.describedThing.thingID}">${descriptor.describedThing.title}</a></p>
 <p><a href="/descriptortype/${descriptor.descriptorType.descriptorTypeID}">${descriptor.descriptorType.title}</a></p>
-<p>${descriptor.createUserID}</p>
-<p>${descriptor.changeUserID}</p>
+<p><a href="/user/${descriptor.createUserID}">${descriptor.createUserID}</a></p>
+<p><a href="/user/${descriptor.changeUserID}">${descriptor.changeUserID}</a></p>
 <p><a href="/thing/${descriptor.referenceThing.thingID}">${descriptor.referenceThing.title}</a></p>
 <p>${descriptor.stringValue}</p>
 <p>${descriptor.intValue}</p>
