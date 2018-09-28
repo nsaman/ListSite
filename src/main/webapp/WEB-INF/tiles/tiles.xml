@@ -47,4 +47,9 @@
         <put-attribute name="body" value="/WEB-INF/views/jsp/user.jsp" />
     </definition>
 
+    <definition name="vote" extends="base.definition">
+        <put-attribute name="title" value="Vote" />
+        <put-attribute name="body" value="/WEB-INF/views/jsp/vote.jsp" />
+    </definition>
+
 </tiles-definitions>
