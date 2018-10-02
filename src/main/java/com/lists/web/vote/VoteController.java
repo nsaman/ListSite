@@ -4,8 +4,8 @@ import com.lists.web.comparator.Comparator;
 import com.lists.web.comparator.IComparatorRepository;
 import com.lists.web.thing.IThingRepository;
 import com.lists.web.thing.Thing;
-import com.lists.web.user.IUserRepository;
-import com.lists.web.user.User;
+import com.lists.web.user.IUserStubRepository;
+import com.lists.web.user.UserStub;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -28,7 +28,7 @@ public class VoteController {
     @Autowired
     private IThingRepository thingRepository;
     @Autowired
-    private IUserRepository userRepository;
+    private IUserStubRepository userStubRepository;
 
     @RequestMapping(value = "/{voteID}", method = RequestMethod.GET)
     public String getVote(@PathVariable(value="voteID") int voteID, Model model) {
@@ -47,7 +47,7 @@ public class VoteController {
         Comparator comparator = comparatorRepository.findOne(comparatorID);
         Thing winnerThing = thingRepository.findOne(winnerThingID);
         Thing loserThing = thingRepository.findOne(loserThingID);
-        User user = userRepository.findOne(userID);
+        UserStub user = userStubRepository.findOne(userID);
 
         Vote vote = new Vote();
 

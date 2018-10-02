@@ -2,7 +2,8 @@ package com.lists.web.vote;
 
 import com.lists.web.comparator.Comparator;
 import com.lists.web.thing.Thing;
-import com.lists.web.user.User;
+import com.lists.web.user.UserStub;
+import org.springframework.security.core.userdetails.User;
 
 import javax.persistence.*;
 
@@ -31,7 +32,7 @@ public class Vote {
 
     @ManyToOne
     @JoinColumn(name="userID",foreignKey=@ForeignKey(name="FK_vote_4"))
-    private User user;
+    private UserStub user;
 
     public Integer getVoteID() {
         return voteID;
@@ -65,11 +66,11 @@ public class Vote {
         this.loserThing = loserThing;
     }
 
-    public User getUser() {
+    public UserStub getUser() {
         return user;
     }
 
-    public void setUser(User user) {
+    public void setUser(UserStub user) {
         this.user = user;
     }
 }

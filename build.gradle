@@ -37,6 +37,7 @@ dependencies {
 	compile('org.springframework.boot:spring-boot-starter-web',
 			'org.apache.tomcat.embed:tomcat-embed-jasper',
 			'org.springframework.boot:spring-boot-starter-data-jpa',
+			'org.springframework.boot:spring-boot-starter-security',
 			'mysql:mysql-connector-java',
 			'javax.servlet:jstl',
             'org.apache.tiles:tiles-jsp:3.0.4')
