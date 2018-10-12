@@ -1,7 +1,9 @@
 package com.lists.web.descriptor;
 
+import com.lists.web.AuditedEntity;
 import com.lists.web.descriptorType.DescriptorType;
 import com.lists.web.thing.Thing;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -11,7 +13,7 @@ import java.util.Date;
  */
 
 @Entity
-public class Descriptor {
+public class Descriptor extends AuditedEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer descriptorID;
@@ -21,19 +23,17 @@ public class Descriptor {
     private Thing describedThing;
 
     @ManyToOne
-    @JoinColumn(name="referenceThingID",foreignKey=@ForeignKey(name="FK_descriptor_2"))
-    private Thing referenceThing;
-
-    @ManyToOne
     @JoinColumn(name="descriptorTypeID",foreignKey=@ForeignKey(name="FK_descriptor_3"))
     private DescriptorType descriptorType;
 
-    private String createUserID;
-    private String changeUserID;
+    @ManyToOne
+    @JoinColumn(name="referenceThingID",foreignKey=@ForeignKey(name="FK_descriptor_2"))
+    private Thing referenceThing;
     private String stringValue;
     private Integer intValue;
     private Double doubleValue;
     @Temporal(TemporalType.TIMESTAMP)
+    @DateTimeFormat(pattern="yyyy-MM-dd")
     private Date dateValue;
     private Double longitudeValue;
     private Double latitudeValue;
@@ -69,22 +69,6 @@ public class Descriptor {
 
     public void setDescriptorType(DescriptorType descriptorType) {
         this.descriptorType = descriptorType;
-    }
-
-    public String getCreateUserID() {
-        return createUserID;
-    }
-
-    public void setCreateUserID(String createUserID) {
-        this.createUserID = createUserID;
-    }
-
-    public String getChangeUserID() {
-        return changeUserID;
-    }
-
-    public void setChangeUserID(String changeUserID) {
-        this.changeUserID = changeUserID;
     }
 
     public String getStringValue() {

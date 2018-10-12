@@ -1,9 +1,9 @@
 package com.lists.web.vote;
 
+import com.lists.web.AuditedEntity;
 import com.lists.web.comparator.Comparator;
 import com.lists.web.thing.Thing;
 import com.lists.web.user.UserStub;
-import org.springframework.security.core.userdetails.User;
 
 import javax.persistence.*;
 
@@ -13,7 +13,7 @@ import javax.persistence.*;
 
 @Entity
 @Table(uniqueConstraints={@UniqueConstraint(columnNames={"comparatorID", "winnerThingID", "loserThingID", "userID"})})
-public class Vote {
+public class Vote extends AuditedEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer voteID;

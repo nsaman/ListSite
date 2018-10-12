@@ -13,10 +13,10 @@
 <p><a href="/comparator/${vote.comparator.comparatorID}">${vote.comparator.title}</a></p>
 <p><a href="/thing/${vote.winnerThing.thingID}">${vote.winnerThing.title}</a></p>
 <p><a href="/thing/${vote.loserThing.thingID}">${vote.loserThing.title}</a></p>
-<p><a href="/user/${vote.user.userID}">${vote.user.userID}</a></p>
+<p><a href="/user/${vote.user.username}">${vote.user.username}</a></p>
 </div>
 
-<spring:url value="/resources/core/css/bootstrap.min.js" var="bootstrapJs" />
+<spring:url value="/resources/core/js/bootstrap.min.js" var="bootstrapJs" />
 
 <script src="${bootstrapJs}"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>

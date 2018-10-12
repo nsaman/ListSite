@@ -1,12 +1,14 @@
 package com.lists.web.thing;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.ModelAndView;
 
 import java.util.List;
 
@@ -19,6 +21,17 @@ import java.util.List;
 public class ThingController {
     @Autowired
     private IThingRepository thingRepository;
+
+    @ModelAttribute("thingList")
+    public Iterable<Thing> thingList() {
+        return thingRepository.findAll();
+    }
+
+    @PreAuthorize("hasRole('ROLE_VIEWER')")
+    @RequestMapping(value = "/new", method = RequestMethod.GET)
+    public ModelAndView getCreateThing() {
+        return new ModelAndView("createThing", "thing", new Thing());
+    }
 
     @RequestMapping(value = "/{thingID}", method = RequestMethod.GET)
     public String getThing(@PathVariable(value="thingID") int thingID, Model model) {
@@ -34,17 +47,9 @@ public class ThingController {
         return "thing";
     }
 
-    @RequestMapping(params = {"title","isAbstract","parentThingID"}, method = RequestMethod.POST)
-    public String createThing(@RequestParam("title") String title, @RequestParam("isAbstract") Boolean isAbstract, @RequestParam("parentThingID") int parentThingID, Model model) {
-
-        Thing thing = new Thing();
-        thing.setTitle(title);
-        thing.setIsAbstract(isAbstract);
-
-        Thing parent = thingRepository.findOne(parentThingID);
-
-        thing.setParentThing(parent);
-
+    @PreAuthorize("hasRole('ROLE_VIEWER')")
+    @RequestMapping(method = RequestMethod.POST)
+    public String createThing(@ModelAttribute("thing") Thing thing) {
         thingRepository.save(thing);
 
         return "redirect:/thing/" + thing.getThingID();

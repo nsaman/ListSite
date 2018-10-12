@@ -15,7 +15,7 @@
 <p><a href="/user/${comparator.changeUserID}">${comparator.changeUserID}</a></p>
 </div>
 
-<spring:url value="/resources/core/css/bootstrap.min.js" var="bootstrapJs" />
+<spring:url value="/resources/core/js/bootstrap.min.js" var="bootstrapJs" />
 
 <script src="${bootstrapJs}"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>

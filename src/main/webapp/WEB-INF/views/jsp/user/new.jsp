@@ -14,10 +14,10 @@
 <div class="container">
 
         <form:form method="POST"
-          action="/comparator" modelAttribute="comparator">
+          action="/user" modelAttribute="userStub">
   <div class="form-group">
-                    <form:label path="title">Title</form:label>
-                    <form:input path="title" type="text" class="form-control" placeholder="Comparator title"/>
+                    <form:label path="username">Username</form:label>
+                    <form:input path="username" type="text" class="form-control" placeholder="Username title"/>
   </div>
                     <input type="submit" class="btn btn-primary" value="Submit"/>
             </table>

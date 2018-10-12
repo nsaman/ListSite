@@ -1,14 +1,14 @@
 package com.lists.web.descriptorType;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-
-import java.util.List;
+import org.springframework.web.servlet.ModelAndView;
 
 /**
  * Created by nick on 1/23/2018.
@@ -20,6 +20,17 @@ public class DescriptorTypeController {
     @Autowired
     private IDescriptorTypeRepository descTypeRepository;
 
+    @ModelAttribute("descriptorTypes")
+    public DescriptorTypes[] descriptorTypes() {
+        return DescriptorTypes.values();
+    }
+
+    @PreAuthorize("hasRole('ROLE_VIEWER')")
+    @RequestMapping(value = "/new", method = RequestMethod.GET)
+    public ModelAndView getCreateDescriptorType() {
+        return new ModelAndView("createDescriptorType", "descriptorType", new DescriptorType());
+    }
+
     @RequestMapping(value = "/{descriptorTypeID}", method = RequestMethod.GET)
     public String getDescriptorType(@PathVariable(value="descriptorTypeID") int descriptorTypeID, Model model) {
 
@@ -27,24 +38,14 @@ public class DescriptorTypeController {
 
         model.addAttribute("descriptorType", descType);
 
-
         return "descriptortype";
     }
 
-    @RequestMapping(params = {"title","valueType","isNullable"}, method = RequestMethod.POST)
-    public String createDescriptorType(@RequestParam("title") String title, @RequestParam("valueType") String valueType, @RequestParam("isNullable") Boolean isNullable, Model model) {
+    @PreAuthorize("hasRole('ROLE_VIEWER')")
+    @RequestMapping(method = RequestMethod.POST)
+    public String createDescriptorType(@ModelAttribute("descriptorType") DescriptorType descriptorType) {
+        descTypeRepository.save(descriptorType);
 
-        if(DescriptorTypes.byString(valueType) == null)
-            return "400";
-
-
-        DescriptorType descType = new DescriptorType();
-        descType.setTitle(title);
-        descType.setValueType(valueType);
-        descType.setIsNullable(isNullable);
-
-        descTypeRepository.save(descType);
-
-        return "redirect:/descriptortype/" + descType.getDescriptorTypeID();
+        return "redirect:/descriptorType/" + descriptorType.getDescriptorTypeID();
     }
 }

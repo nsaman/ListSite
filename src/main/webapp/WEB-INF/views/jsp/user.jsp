@@ -9,12 +9,8 @@
 </head>
 
 <div class="container">
-<p>${compares.comparesID}</p>
-<p><a href="/thing/${compares.thing.thingID}">${compares.thing.title}</a></p>
-<p><a href="/comparator/${compares.comparator.comparatorID}">${compares.comparator.title}</a></p>
-<p>${compares.score}</p>
-<p><a href="/user/${compares.createUserID}">${compares.createUserID}</a></p>
-<p><a href="/user/${compares.changeUserID}">${compares.changeUserID}</a></p>
+<p>${user.username}</p>
+<p>${user.enabled}</p>
 </div>
 
 <spring:url value="/resources/core/js/bootstrap.min.js" var="bootstrapJs" />

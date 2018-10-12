@@ -1,5 +1,7 @@
 package com.lists.web.descriptorType;
 
+import com.lists.web.AuditedEntity;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -10,7 +12,7 @@ import javax.persistence.Id;
  */
 
 @Entity
-public class DescriptorType {
+public class DescriptorType extends AuditedEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer descriptorTypeID;
@@ -18,8 +20,6 @@ public class DescriptorType {
     private String Title;
     private String valueType;
     private Boolean isNullable;
-    private String createUserID;
-    private String changeUserID;
 
     public Integer getDescriptorTypeID() {
         return descriptorTypeID;
@@ -51,21 +51,5 @@ public class DescriptorType {
 
     public void setIsNullable(Boolean nullable) {
         isNullable = nullable;
-    }
-
-    public String getCreateUserID() {
-        return createUserID;
-    }
-
-    public void setCreateUserID(String createUserID) {
-        this.createUserID = createUserID;
-    }
-
-    public String getChangeUserID() {
-        return changeUserID;
-    }
-
-    public void setChangeUserID(String changeUserID) {
-        this.changeUserID = changeUserID;
     }
 }

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE tiles-definitions PUBLIC
         "-//Apache Software Foundation//DTD Tiles Configuration 2.0//EN"
-        "http://tiles.apache.org/dtds/tiles-config_2_0.dtd">
+        "http://tiles.apache.org/dtds/tiles-config_3_0.dtd">
 <tiles-definitions>
     <definition name="base.definition"
                 template="/WEB-INF/tiles/jsp/layout.jsp">
@@ -15,6 +15,11 @@
     <definition name="compares" extends="base.definition">
         <put-attribute name="title" value="Compares" />
         <put-attribute name="body" value="/WEB-INF/views/jsp/compares.jsp" />
+    </definition>
+
+    <definition name="createCompares" extends="base.definition">
+        <put-attribute name="title" value="Create Compares" />
+        <put-attribute name="body" value="/WEB-INF/views/jsp/compares/new.jsp" />
     </definition>
 
     <definition name="comparator" extends="base.definition">
@@ -32,9 +37,19 @@
         <put-attribute name="body" value="/WEB-INF/views/jsp/descriptor.jsp" />
     </definition>
 
+    <definition name="createDescriptor" extends="base.definition">
+        <put-attribute name="title" value="Create Descriptor" />
+        <put-attribute name="body" value="/WEB-INF/views/jsp/descriptor/new.jsp" />
+    </definition>
+
     <definition name="descriptortype" extends="base.definition">
         <put-attribute name="title" value="descriptorType" />
         <put-attribute name="body" value="/WEB-INF/views/jsp/descriptortype.jsp" />
+    </definition>
+
+    <definition name="createDescriptorType" extends="base.definition">
+        <put-attribute name="title" value="Create Descriptor Type" />
+        <put-attribute name="body" value="/WEB-INF/views/jsp/descriptorType/new.jsp" />
     </definition>
 
     <definition name="index" extends="base.definition">
@@ -47,14 +62,29 @@
         <put-attribute name="body" value="/WEB-INF/views/jsp/thing.jsp" />
     </definition>
 
+    <definition name="createThing" extends="base.definition">
+        <put-attribute name="title" value="Create Thing" />
+        <put-attribute name="body" value="/WEB-INF/views/jsp/thing/new.jsp" />
+    </definition>
+
     <definition name="user" extends="base.definition">
         <put-attribute name="title" value="User" />
         <put-attribute name="body" value="/WEB-INF/views/jsp/user.jsp" />
     </definition>
 
+    <definition name="createUser" extends="base.definition">
+        <put-attribute name="title" value="Create User" />
+        <put-attribute name="body" value="/WEB-INF/views/jsp/user/new.jsp" />
+    </definition>
+
     <definition name="vote" extends="base.definition">
         <put-attribute name="title" value="Vote" />
         <put-attribute name="body" value="/WEB-INF/views/jsp/vote.jsp" />
+    </definition>
+
+    <definition name="createVote" extends="base.definition">
+        <put-attribute name="title" value="Create Vote" />
+        <put-attribute name="body" value="/WEB-INF/views/jsp/vote/new.jsp" />
     </definition>
 
 </tiles-definitions>

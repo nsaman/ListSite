@@ -13,7 +13,24 @@ import java.util.Date;
  * Created by nick on 3/4/2018.
  */
 public enum DescriptorTypes {
-    THING_REFERENCE, STRING, INTEGER, DOUBLE, DATE, LOCATION, RESOURCE, LONGTEXT;
+    THING_REFERENCE("thingReference"),
+    STRING("string"),
+    INTEGER("integer"),
+    DOUBLE("double"),
+    DATE("date"),
+    LOCATION("location"),
+    RESOURCE("resource"),
+    LONGTEXT("longText");
+
+    private final String typeName;
+
+    DescriptorTypes(String typeName) {
+        this.typeName = typeName;
+    }
+
+    public String getTypeName() {
+        return typeName;
+    }
 
     @Autowired
     private IThingRepository thingRepository;

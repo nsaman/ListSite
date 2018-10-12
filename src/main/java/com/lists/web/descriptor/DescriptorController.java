@@ -1,17 +1,18 @@
 package com.lists.web.descriptor;
 
 import com.lists.web.descriptorType.DescriptorType;
-import com.lists.web.descriptorType.DescriptorTypes;
 import com.lists.web.descriptorType.IDescriptorTypeRepository;
 import com.lists.web.thing.IThingRepository;
 import com.lists.web.thing.Thing;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.ModelAndView;
 
 /**
  * Created by nick on 1/23/2018.
@@ -27,6 +28,22 @@ public class DescriptorController {
     @Autowired
     private IThingRepository thingRepository;
 
+    @ModelAttribute("descriptorTypeList")
+    public Iterable<DescriptorType> descriptorTypeList() {
+        return descriptorTypeRepository.findAll();
+    }
+
+    @ModelAttribute("thingList")
+    public Iterable<Thing> thingList() {
+        return thingRepository.findAll();
+    }
+
+    @PreAuthorize("hasRole('ROLE_VIEWER')")
+    @RequestMapping(value = "/new", method = RequestMethod.GET)
+    public ModelAndView getCreateDescriptor() {
+        return new ModelAndView("createDescriptor", "descriptor", new Descriptor());
+    }
+
     @RequestMapping(value = "/{descriptorID}", method = RequestMethod.GET)
     public String getDescriptor(@PathVariable(value="descriptorID") int descriptorID, Model model) {
 
@@ -37,23 +54,9 @@ public class DescriptorController {
         return "descriptor";
     }
 
-    @RequestMapping(params = {"describedThingID", "descriptorTypeID", "value"}, method = RequestMethod.POST)
-    public String createDescriptor(@RequestParam("describedThingID") Integer describedThingID, @RequestParam("descriptorTypeID") Integer descriptorTypeID, @RequestParam("value") String value, Model model) {
-
-        DescriptorType dt = descriptorTypeRepository.findOne(descriptorTypeID);
-        Thing thing = thingRepository.findOne(describedThingID);
-
-        DescriptorTypes descriptorTypes = DescriptorTypes.DATE;
-        Descriptor descriptor;
-
-        try {
-            descriptor = descriptorTypes.castStringByType(DescriptorTypes.byString(dt.getValueType()),value);
-        } catch (Exception e) {
-            return "400";
-        }
-        descriptor.setDescribedThing(thing);
-        descriptor.setDescriptorType(dt);
-
+    @PreAuthorize("hasRole('ROLE_VIEWER')")
+    @RequestMapping(method = RequestMethod.POST)
+    public String createDescriptor(@ModelAttribute("descriptor") Descriptor descriptor) {
         descriptorRepository.save(descriptor);
 
         return "redirect:/descriptor/" + descriptor.getDescriptorID();

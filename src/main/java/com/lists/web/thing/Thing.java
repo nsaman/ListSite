@@ -1,6 +1,7 @@
 package com.lists.web.thing;
 
 
+import com.lists.web.AuditedEntity;
 import com.lists.web.descriptor.Descriptor;
 
 import javax.persistence.*;
@@ -12,14 +13,12 @@ import java.util.List;
  */
 
 @Entity
-public class Thing {
+public class Thing extends AuditedEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer thingID;
 
     private String title;
-    private String createUserID;
-    private String changeUserID;
     private Boolean isAbstract;
     @ManyToOne
     @JoinColumn(name="parentThingID",foreignKey=@ForeignKey(name="FK_thing_1"))
@@ -59,22 +58,6 @@ public class Thing {
 
     public void setTitle(String title) {
         this.title = title;
-    }
-
-    public String getCreateUserID() {
-        return createUserID;
-    }
-
-    public void setCreateUserID(String createUserID) {
-        this.createUserID = createUserID;
-    }
-
-    public String getChangeUserID() {
-        return changeUserID;
-    }
-
-    public void setChangeUserID(String changeUserID) {
-        this.changeUserID = changeUserID;
     }
 
     public Boolean getIsAbstract() {

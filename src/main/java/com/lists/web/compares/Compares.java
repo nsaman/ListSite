@@ -1,11 +1,10 @@
 package com.lists.web.compares;
 
+import com.lists.web.AuditedEntity;
 import com.lists.web.comparator.Comparator;
-import com.lists.web.descriptorType.DescriptorType;
 import com.lists.web.thing.Thing;
 
 import javax.persistence.*;
-import java.util.Date;
 
 /**
  * Created by nick on 9/25/2018.
@@ -13,7 +12,7 @@ import java.util.Date;
 
 @Entity
 @Table(uniqueConstraints={@UniqueConstraint(columnNames={"comparatorID", "thingID"})})
-public class Compares {
+public class Compares extends AuditedEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer comparesID;
@@ -27,8 +26,6 @@ public class Compares {
     private Thing thing;
 
     private float score;
-    private String createUserID;
-    private String changeUserID;
 
     public Integer getComparesID() {
         return comparesID;
@@ -60,21 +57,5 @@ public class Compares {
 
     public void setScore(float score) {
         this.score = score;
-    }
-
-    public String getCreateUserID() {
-        return createUserID;
-    }
-
-    public void setCreateUserID(String createUserID) {
-        this.createUserID = createUserID;
-    }
-
-    public String getChangeUserID() {
-        return changeUserID;
-    }
-
-    public void setChangeUserID(String changeUserID) {
-        this.changeUserID = changeUserID;
     }
 }
