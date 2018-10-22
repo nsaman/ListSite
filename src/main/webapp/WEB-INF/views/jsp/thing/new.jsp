@@ -17,7 +17,7 @@
           action="/thing" modelAttribute="thing">
             <div class="form-group">
                     <form:label path="title">Title</form:label>
-                    <form:input path="title" type="text" class="form-control" placeholder="Comparator title"/>
+                    <form:input path="title" type="text" class="form-control" placeholder="Thing title"/>
             </div>
             <div class="form-group">
                     <form:checkbox path="isAbstract" class="form-check-input" id="isAbstractCheckBox"/>

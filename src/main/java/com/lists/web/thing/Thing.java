@@ -2,6 +2,7 @@ package com.lists.web.thing;
 
 
 import com.lists.web.AuditedEntity;
+import com.lists.web.compares.Compares;
 import com.lists.web.descriptor.Descriptor;
 
 import javax.persistence.*;
@@ -28,6 +29,10 @@ public class Thing extends AuditedEntity {
     @JoinColumn(name = "describedThingID")
     private List<Descriptor> descriptors = new ArrayList<>();
 
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "thingID")
+    private List<Compares> compares = new ArrayList<>();
+
     public Integer getThingID() {
         return thingID;
     }
@@ -46,6 +51,14 @@ public class Thing extends AuditedEntity {
 
     public void setDescriptors(List<Descriptor> descriptors) {
         this.descriptors = descriptors;
+    }
+
+    public List<Compares> getCompares() {
+        return compares;
+    }
+
+    public void setCompares(List<Compares> compares) {
+        this.compares = compares;
     }
 
     public void setThingID(Integer thingID) {
