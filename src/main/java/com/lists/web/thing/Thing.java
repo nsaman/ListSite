@@ -4,10 +4,14 @@ package com.lists.web.thing;
 import com.lists.web.AuditedEntity;
 import com.lists.web.compares.Compares;
 import com.lists.web.descriptor.Descriptor;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by nick on 1/23/2018.
@@ -26,12 +30,14 @@ public class Thing extends AuditedEntity {
     private Thing parentThing;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @Fetch(value = FetchMode.SUBSELECT)
     @JoinColumn(name = "describedThingID")
-    private List<Descriptor> descriptors = new ArrayList<>();
+    private Set<Descriptor> descriptors = new HashSet<>();
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @Fetch(value = FetchMode.SUBSELECT)
     @JoinColumn(name = "thingID")
-    private List<Compares> compares = new ArrayList<>();
+    private Set<Compares> compares = new HashSet<>();
 
     public Integer getThingID() {
         return thingID;
@@ -45,19 +51,19 @@ public class Thing extends AuditedEntity {
         isAbstract = anAbstract;
     }
 
-    public List<Descriptor> getDescriptors() {
+    public Set<Descriptor> getDescriptors() {
         return descriptors;
     }
 
-    public void setDescriptors(List<Descriptor> descriptors) {
+    public void setDescriptors(Set<Descriptor> descriptors) {
         this.descriptors = descriptors;
     }
 
-    public List<Compares> getCompares() {
+    public Set<Compares> getCompares() {
         return compares;
     }
 
-    public void setCompares(List<Compares> compares) {
+    public void setCompares(Set<Compares> compares) {
         this.compares = compares;
     }
 

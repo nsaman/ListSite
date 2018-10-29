@@ -19,6 +19,9 @@
         <!--c:forEach var="thingHeader" items="${thingsTableView.thingHeaders}"-->
         <th>Title</th>
         <!--/c:forEach-->
+        <c:forEach var="descriptorHeader" items="${thingsTableView.descriptorHeaders}">
+            <th><a href="/descriptorType/${descriptorHeader.descriptorTypeID}">${descriptorHeader.title}</a></th>
+        </c:forEach>
     </tr>
   </thead>
   <tbody>
@@ -31,6 +34,9 @@
             <!--c:forEach var="thingHeader" items="${thingsTableView.thingHeaders}"-->
             <td><a href="/thing/${thingsRow.key.thingID}">${thingsRow.key.title}</a></td>
             <!--/c:forEach-->
+            <c:forEach var="descriptorHeader" items="${thingsTableView.descriptorHeaders}">
+                <td><a href="/descriptor/${thingsRow.value.descriptorMap[descriptorHeader].descriptorID}">${thingsRow.value.descriptorMap[descriptorHeader].stringValue}</a></td>
+            </c:forEach>
         </tr>
     </c:forEach>
 
