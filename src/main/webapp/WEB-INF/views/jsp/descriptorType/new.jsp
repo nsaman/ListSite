@@ -24,6 +24,10 @@
                     <form:label path="isNullable" class="form-check-label" for="isNullableCheckBox">isNullable</form:label>
             </div>
             <div class="form-group">
+                    <form:checkbox path="isUnique" class="form-check-input" id="isUniqueCheckBox"/>
+                    <form:label path="isUnique" class="form-check-label" for="isUniqueCheckBox">isUnique</form:label>
+            </div>
+            <div class="form-group">
                 <label class="col-md-4 control-label" for="valueTypeDropdown">Value Type</label>
                 <div class="col-md-4">
                   <form:select path="valueType" class="form-control" id="valueTypeDropdown">

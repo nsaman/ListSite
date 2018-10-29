@@ -13,6 +13,7 @@
 <p>${descriptorType.title}</p>
 <p>${descriptorType.valueType}</p>
 <p>${descriptorType.isNullable}</p>
+<p>${descriptorType.isUnique}</p>
 <p><a href="/user/${descriptorType.createUserID}">${descriptorType.createUserID}</a></p>
 <p><a href="/user/${descriptorType.changeUserID}">${descriptorType.changeUserID}</a></p>
 </div>

@@ -20,6 +20,7 @@ public class DescriptorType extends AuditedEntity {
     private String Title;
     private String valueType;
     private Boolean isNullable;
+    private Boolean isUnique;
 
     public Integer getDescriptorTypeID() {
         return descriptorTypeID;
@@ -51,5 +52,13 @@ public class DescriptorType extends AuditedEntity {
 
     public void setIsNullable(Boolean nullable) {
         isNullable = nullable;
+    }
+
+    public Boolean getIsUnique() {
+        return isUnique;
+    }
+
+    public void setIsUnique(Boolean unique) {
+        isUnique = unique;
     }
 }
