@@ -14,7 +14,7 @@
 <div class="container">
 
         <form:form method="POST"
-          action="/descriptor" modelAttribute="descriptor">
+          action="/descriptor/referenceThing" modelAttribute="descriptor">
             <div class="form-group">
                 <label class="col-md-4 control-label" for="describedThingDropdown">Described Thing</label>
                 <div class="col-md-4">
@@ -39,34 +39,6 @@
                      <form:options items="${thingList}" itemValue="thingID" itemLabel="title"/>
                   </form:select>
                 </div>
-            </div>
-            <div class="form-group">
-                    <form:label path="stringValue">string Value</form:label>
-                    <form:input path="stringValue" type="text" class="form-control" placeholder="stringValue"/>
-            </div>
-            <div class="form-group">
-                    <form:label path="intValue">int Value</form:label>
-                    <form:input path="intValue" type="text" class="form-control" placeholder="1234"/>
-            </div>
-            <div class="form-group">
-                    <form:label path="doubleValue">double Value</form:label>
-                    <form:input path="doubleValue" type="text" class="form-control" placeholder="1234.0"/>
-            </div>
-            <div class="form-group">
-                    <form:label path="dateValue">date Value</form:label>
-                    <form:input path="dateValue" type="date" class="form-control"/>
-            </div>
-            <div class="form-group">
-                    <form:label path="longitudeValue">longitude Value</form:label>
-                    <form:input path="longitudeValue" type="text" class="form-control" placeholder="44.9778"/>
-            </div>
-            <div class="form-group">
-                    <form:label path="latitudeValue">latitude Value</form:label>
-                    <form:input path="latitudeValue" type="text" class="form-control" placeholder="44.9780"/>
-            </div>
-            <div class="form-group">
-                    <form:label path="resourceValue">resource Value</form:label>
-                    <form:input path="resourceValue" type="text" class="form-control" placeholder="resource.url"/>
             </div>
             <input type="submit" class="btn btn-primary" value="Submit"/>
         </form:form>

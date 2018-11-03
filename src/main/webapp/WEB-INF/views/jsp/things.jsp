@@ -35,7 +35,11 @@
             <td><a href="/thing/${thingsRow.key.thingID}">${thingsRow.key.title}</a></td>
             <!--/c:forEach-->
             <c:forEach var="descriptorHeader" items="${thingsTableView.descriptorHeaders}">
-                <td><a href="/descriptor/${thingsRow.value.descriptorMap[descriptorHeader].descriptorID}">${thingsRow.value.descriptorMap[descriptorHeader].stringValue}</a></td>
+                <td>
+                <c:forEach var="descriptorList" items="${thingsRow.value.descriptorMap[descriptorHeader]}">
+                    <a href="/descriptor/${descriptorList.type.typeName}/${descriptorList.descriptorID}">${descriptorList.readableString}</a><br>
+                </c:forEach>
+                </td>
             </c:forEach>
         </tr>
     </c:forEach>

@@ -34,6 +34,7 @@ public class UserController {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @PreAuthorize("hasRole('ROLE_VIEWER')")
     @RequestMapping(value = "/new", method = RequestMethod.GET)
     public ModelAndView getCreateUser() {
         return new ModelAndView("createUser", "userStub", new UserStub());

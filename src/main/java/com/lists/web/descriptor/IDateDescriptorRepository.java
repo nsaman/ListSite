@@ -5,6 +5,6 @@ import org.springframework.data.repository.CrudRepository;
 /**
  * Created by nick on 2/18/2018.
  */
-public interface IDescriptorRepository extends CrudRepository<Descriptor, Integer> {
+public interface IDateDescriptorRepository extends CrudRepository<DateDescriptor, Integer> {
 
 }

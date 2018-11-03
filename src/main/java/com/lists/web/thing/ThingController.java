@@ -37,16 +37,13 @@ public class ThingController {
 
     @GetMapping
     public String getThingsByParentAndComparator(@RequestParam(value="thingID") Thing parentThing,
-                                                 @RequestParam(value="comparatorID", defaultValue="1") Comparator comparator,
+                                                 @RequestParam(value="comparatorID", defaultValue="1") Set<Comparator> comparators,
                                                  @RequestParam(value="descriptorTypeSearchedIDs", defaultValue="") Set<DescriptorType> descriptorTypeSearchedIDs,
                                                  @RequestParam(value="descriptorTypeRetrievedIDs", defaultValue="") Set<DescriptorType> descriptorTypeRetrievedIDs, Model model) {
 
-        Iterable<Thing> thingList = thingRepository.findThingAndComparesAndDescriptorsByParentAndComparatorAndDescriptorTypesDesc(parentThing.getThingID(),
-                comparator.getComparatorID(),
-                descriptorTypeSearchedIDs.stream().filter(descriptorType -> descriptorType != null).map(DescriptorType::getDescriptorTypeID).collect(Collectors.toList()),
-                descriptorTypeRetrievedIDs.stream().filter(descriptorType -> descriptorType != null).map(DescriptorType::getDescriptorTypeID).collect(Collectors.toList()));
+        Iterable<Thing> thingList = thingRepository.findAll(IThingRepository.hasComparators(comparators));
 
-        ThingsTableView thingsTableView = thingsToThingsTableView(thingList);
+        ThingsTableView thingsTableView = thingsToThingsTableView(thingList, comparators, descriptorTypeRetrievedIDs);
 
         model.addAttribute("thingsTableView", thingsTableView);
         model.addAttribute("parentThingDescriptors", parentThing.getDescriptors());
@@ -76,11 +73,7 @@ public class ThingController {
         return "redirect:/thing/" + thing.getThingID();
     }
 
-    private ThingsTableView thingsToThingsTableView(Iterable<Thing> thingList, Set<DescriptorType> descriptorTypeRetrievedIDs) {
-        return thingsToThingsTableView(thingList);
-    }
-
-    private ThingsTableView thingsToThingsTableView(Iterable<Thing> thingList) {
+    private ThingsTableView thingsToThingsTableView(Iterable<Thing> thingList, Collection<Comparator> showComparators, Collection<DescriptorType> showDescriptorTypes) {
 
         ThingsTableView thingTableView = new ThingsTableView();
 
@@ -95,17 +88,27 @@ public class ThingController {
 
             Map<Comparator,Compares> comparesMap = new HashMap<>();
             for (Compares compares : thing.getCompares()) {
-                if(!thingTableCompararesHeaders.contains(compares.getComparator()))
-                    thingTableCompararesHeaders.add(compares.getComparator());
-                comparesMap.put(compares.getComparator(),compares);
+                if (showComparators.contains(compares.getComparator())) {
+                    if(!thingTableCompararesHeaders.contains(compares.getComparator()))
+                        thingTableCompararesHeaders.add(compares.getComparator());
+                    comparesMap.put(compares.getComparator(),compares);
+                }
             }
             thingsRowView.setComparesMap(comparesMap);
 
-            Map<DescriptorType,Descriptor> descriptorMap = new HashMap<>();
+            Map<DescriptorType,Collection<Descriptor>> descriptorMap = new HashMap<>();
             for (Descriptor descriptor : thing.getDescriptors()) {
-                if(!thingTableDescriptorHeaders.contains(descriptor.getDescriptorType()))
-                    thingTableDescriptorHeaders.add(descriptor.getDescriptorType());
-                descriptorMap.put(descriptor.getDescriptorType(),descriptor);
+                if (showDescriptorTypes.contains(descriptor.getDescriptorType())) {
+                    if (!thingTableDescriptorHeaders.contains(descriptor.getDescriptorType()))
+                        thingTableDescriptorHeaders.add(descriptor.getDescriptorType());
+                    if (descriptorMap.containsKey(descriptor.getDescriptorType())) {
+                        descriptorMap.get(descriptor.getDescriptorType()).add(descriptor);
+                    } else {
+                        Set<Descriptor> newDescriptors = new HashSet<>();
+                        newDescriptors.add(descriptor);
+                        descriptorMap.put(descriptor.getDescriptorType(), newDescriptors);
+                    }
+                }
             }
             thingsRowView.setDescriptorMap(descriptorMap);
 

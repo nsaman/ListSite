@@ -14,14 +14,7 @@
 <p><a href="/descriptortype/${descriptor.descriptorType.descriptorTypeID}">${descriptor.descriptorType.title}</a></p>
 <p><a href="/user/${descriptor.createUserID}">${descriptor.createUserID}</a></p>
 <p><a href="/user/${descriptor.changeUserID}">${descriptor.changeUserID}</a></p>
-<p><a href="/thing/${descriptor.referenceThing.thingID}">${descriptor.referenceThing.title}</a></p>
-<p>${descriptor.stringValue}</p>
-<p>${descriptor.intValue}</p>
-<p>${descriptor.doubleValue}</p>
-<p>${descriptor.dateValue}</p>
-<p>${descriptor.longitudeValue}</p>
-<p>${descriptor.latitudeValue}</p>
-<p>${descriptor.resourceValue}</p>
+<p>${descriptor.value}</p>
 </div>
 
 <spring:url value="/resources/core/js/bootstrap.min.js" var="bootstrapJs" />

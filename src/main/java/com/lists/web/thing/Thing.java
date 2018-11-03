@@ -3,14 +3,12 @@ package com.lists.web.thing;
 
 import com.lists.web.AuditedEntity;
 import com.lists.web.compares.Compares;
-import com.lists.web.descriptor.Descriptor;
+import com.lists.web.descriptor.*;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -31,40 +29,59 @@ public class Thing extends AuditedEntity {
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @Fetch(value = FetchMode.SUBSELECT)
-    @JoinColumn(name = "describedThingID")
-    private Set<Descriptor> descriptors = new HashSet<>();
-
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @Fetch(value = FetchMode.SUBSELECT)
     @JoinColumn(name = "thingID")
     private Set<Compares> compares = new HashSet<>();
 
+    public Set<Descriptor> getDescriptors() {
+        Set<Descriptor> returnDescriptors = new HashSet<>();
+        returnDescriptors.addAll(dateDescriptors);
+        returnDescriptors.addAll(doubleDescriptors);
+        returnDescriptors.addAll(integerDescriptors);
+        returnDescriptors.addAll(locationDescriptors);
+        returnDescriptors.addAll(referenceThingDescriptors);
+        returnDescriptors.addAll(resourceDescriptors);
+        returnDescriptors.addAll(stringDescriptors);
+
+        return returnDescriptors;
+    }
+
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @Fetch(value = FetchMode.SUBSELECT)
+    @JoinColumn(name = "describedThingID")
+    private Set<DateDescriptor> dateDescriptors = new HashSet<>();
+
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @Fetch(value = FetchMode.SUBSELECT)
+    @JoinColumn(name = "describedThingID")
+    private Set<DoubleDescriptor> doubleDescriptors = new HashSet<>();
+
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @Fetch(value = FetchMode.SUBSELECT)
+    @JoinColumn(name = "describedThingID")
+    private Set<IntegerDescriptor> integerDescriptors = new HashSet<>();
+
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @Fetch(value = FetchMode.SUBSELECT)
+    @JoinColumn(name = "describedThingID")
+    private Set<LocationDescriptor> locationDescriptors = new HashSet<>();
+
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @Fetch(value = FetchMode.SUBSELECT)
+    @JoinColumn(name = "describedThingID")
+    private Set<ReferenceThingDescriptor> referenceThingDescriptors = new HashSet<>();
+
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @Fetch(value = FetchMode.SUBSELECT)
+    @JoinColumn(name = "describedThingID")
+    private Set<ResourceDescriptor> resourceDescriptors = new HashSet<>();
+
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @Fetch(value = FetchMode.SUBSELECT)
+    @JoinColumn(name = "describedThingID")
+    private Set<StringDescriptor> stringDescriptors = new HashSet<>();
+
     public Integer getThingID() {
         return thingID;
-    }
-
-    public Boolean getAbstract() {
-        return isAbstract;
-    }
-
-    public void setAbstract(Boolean anAbstract) {
-        isAbstract = anAbstract;
-    }
-
-    public Set<Descriptor> getDescriptors() {
-        return descriptors;
-    }
-
-    public void setDescriptors(Set<Descriptor> descriptors) {
-        this.descriptors = descriptors;
-    }
-
-    public Set<Compares> getCompares() {
-        return compares;
-    }
-
-    public void setCompares(Set<Compares> compares) {
-        this.compares = compares;
     }
 
     public void setThingID(Integer thingID) {
@@ -93,5 +110,69 @@ public class Thing extends AuditedEntity {
 
     public void setParentThing(Thing parentThing) {
         this.parentThing = parentThing;
+    }
+
+    public Set<Compares> getCompares() {
+        return compares;
+    }
+
+    public void setCompares(Set<Compares> compares) {
+        this.compares = compares;
+    }
+
+    public Set<DateDescriptor> getDateDescriptors() {
+        return dateDescriptors;
+    }
+
+    public void setDateDescriptors(Set<DateDescriptor> dateDescriptors) {
+        this.dateDescriptors = dateDescriptors;
+    }
+
+    public Set<DoubleDescriptor> getDoubleDescriptors() {
+        return doubleDescriptors;
+    }
+
+    public void setDoubleDescriptors(Set<DoubleDescriptor> doubleDescriptors) {
+        this.doubleDescriptors = doubleDescriptors;
+    }
+
+    public Set<IntegerDescriptor> getIntegerDescriptors() {
+        return integerDescriptors;
+    }
+
+    public void setIntegerDescriptors(Set<IntegerDescriptor> integerDescriptors) {
+        this.integerDescriptors = integerDescriptors;
+    }
+
+    public Set<LocationDescriptor> getLocationDescriptors() {
+        return locationDescriptors;
+    }
+
+    public void setLocationDescriptors(Set<LocationDescriptor> locationDescriptors) {
+        this.locationDescriptors = locationDescriptors;
+    }
+
+    public Set<ReferenceThingDescriptor> getReferenceThingDescriptors() {
+        return referenceThingDescriptors;
+    }
+
+    public void setReferenceThingDescriptors(Set<ReferenceThingDescriptor> referenceThingDescriptors) {
+        this.referenceThingDescriptors = referenceThingDescriptors;
+    }
+
+    public Set<ResourceDescriptor> getResourceDescriptors() {
+        return resourceDescriptors;
+    }
+
+    public void setResourceDescriptors(Set<ResourceDescriptor> resourceDescriptors) {
+        this.resourceDescriptors = resourceDescriptors;
+    }
+
+    public Set<StringDescriptor> getStringDescriptors() {
+        return stringDescriptors;
+    }
+
+    public void setStringDescriptors(Set<StringDescriptor> stringDescriptors) {
+        this.stringDescriptors = stringDescriptors;
     }
 }

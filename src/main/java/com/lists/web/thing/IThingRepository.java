@@ -1,6 +1,9 @@
 package com.lists.web.thing;
 
 import com.lists.web.comparator.Comparator;
+import com.lists.web.descriptor.Descriptor;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
@@ -11,14 +14,11 @@ import java.util.List;
 /**
  * Created by nick on 1/23/2018.
  */
-public interface IThingRepository extends CrudRepository<Thing, Integer> {
+public interface IThingRepository extends CrudRepository<Thing, Integer>, JpaSpecificationExecutor<Thing> {
 
     List<Thing> findByParentThing(Thing parentThing);
 
-    @Query("Select t from Thing t join fetch t.compares c where t.parentThing.thingID = :parentThingID and c.comparator.comparatorID = :comparatorID")
-    List<Thing> findThingAndComparesByParentAndComparatorDesc(@Param("parentThingID") Integer parentThingID, @Param("comparatorID") Integer comparatorID);
-
-    @Query("Select t from Thing t join fetch t.compares c left join fetch t.descriptors d where t.parentThing.thingID = :parentThingID and c.comparator.comparatorID = :comparatorID and d.descriptorType.descriptorTypeID in (:descriptorTypeRetrievedIDs) and t in (select d.describedThing from Descriptor d where d.descriptorType.descriptorTypeID in (:descriptorTypeSearchedIDs))")
-    List<Thing> findThingAndComparesAndDescriptorsByParentAndComparatorAndDescriptorTypesDesc(@Param("parentThingID") Integer parentThingID, @Param("comparatorID") Integer comparatorID, @Param("descriptorTypeSearchedIDs") Collection<Integer> descriptorTypeSearchedIDs, @Param("descriptorTypeRetrievedIDs") Collection<Integer> descriptorTypeRetrievedIDs);
-
+    static Specification<Thing> hasComparators(Collection<Comparator> comparators) {
+        return (thing, cq, cb) -> cb.equal(thing.join("compares").join("comparator"), comparators);
+    }
 }

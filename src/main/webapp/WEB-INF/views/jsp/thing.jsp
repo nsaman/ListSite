@@ -15,9 +15,9 @@
 <p><a href="/user/${thing.createUserID}">${thing.createUserID}</a></p>
 <p><a href="/user/${thing.changeUserID}">${thing.changeUserID}</a></p>
 <p><a href="/thing/${thing.parentThing.thingID}">${thing.parentThing.title}</a></p>
-<c:forEach items="${thing.descriptors}" var="descriptor">
-    <a href="/descriptorType/${descriptor.descriptorType.descriptorTypeID}">${descriptor.descriptorType.title}</a>: <a href="/descriptor/${descriptor.descriptorID}">${descriptor.stringValue}</a><br>
-</c:forEach>
+<p><c:forEach items="${thing.descriptors}" var="descriptor">
+    <a href="/descriptorType/${descriptor.descriptorType.descriptorTypeID}">${descriptor.descriptorType.title}</a>: <a href="/descriptor/${descriptor.type.typeName}/${descriptor.descriptorID}">${descriptor.readableString}</a><br>
+</c:forEach></p>
 Children:
 <c:forEach items="${children}" var="child">
     <a href="/thing/${child.thingID}">${child.title}</a>

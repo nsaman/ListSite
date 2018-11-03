@@ -5,6 +5,7 @@ import com.lists.web.compares.Compares;
 import com.lists.web.descriptor.Descriptor;
 import com.lists.web.descriptorType.DescriptorType;
 
+import java.util.Collection;
 import java.util.Map;
 
 /**
@@ -13,7 +14,7 @@ import java.util.Map;
 public class ThingsRowView {
     private Thing thing;
     private Map<Comparator,Compares> comparesMap;
-    private Map<DescriptorType,Descriptor> descriptorMap;
+    private Map<DescriptorType,Collection<Descriptor>> descriptorMap;
 
     public Thing getThing() {
         return thing;
@@ -31,11 +32,11 @@ public class ThingsRowView {
         this.comparesMap = comparesMap;
     }
 
-    public Map<DescriptorType, Descriptor> getDescriptorMap() {
+    public Map<DescriptorType, Collection<Descriptor>> getDescriptorMap() {
         return descriptorMap;
     }
 
-    public void setDescriptorMap(Map<DescriptorType, Descriptor> descriptorMap) {
+    public void setDescriptorMap(Map<DescriptorType, Collection<Descriptor>> descriptorMap) {
         this.descriptorMap = descriptorMap;
     }
 }
