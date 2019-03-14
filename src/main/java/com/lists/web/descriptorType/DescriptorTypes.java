@@ -1,8 +1,6 @@
 package com.lists.web.descriptorType;
 
 import com.lists.web.descriptor.*;
-import com.lists.web.thing.IThingRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Created by nick on 3/4/2018.

@@ -13,8 +13,8 @@ import java.util.Map;
  */
 public class ThingsRowView {
     private Thing thing;
-    private Map<Comparator,Compares> comparesMap;
-    private Map<DescriptorType,Collection<Descriptor>> descriptorMap;
+    private Map<String,Compares> comparesMap;
+    private Map<String,Collection<Descriptor>> descriptorMap;
 
     public Thing getThing() {
         return thing;
@@ -24,19 +24,19 @@ public class ThingsRowView {
         this.thing = thing;
     }
 
-    public Map<Comparator, Compares> getComparesMap() {
+    public Map<String, Compares> getComparesMap() {
         return comparesMap;
     }
 
-    public void setComparesMap(Map<Comparator, Compares> comparesMap) {
+    public void setComparesMap(Map<String, Compares> comparesMap) {
         this.comparesMap = comparesMap;
     }
 
-    public Map<DescriptorType, Collection<Descriptor>> getDescriptorMap() {
+    public Map<String, Collection<Descriptor>> getDescriptorMap() {
         return descriptorMap;
     }
 
-    public void setDescriptorMap(Map<DescriptorType, Collection<Descriptor>> descriptorMap) {
+    public void setDescriptorMap(Map<String, Collection<Descriptor>> descriptorMap) {
         this.descriptorMap = descriptorMap;
     }
 }

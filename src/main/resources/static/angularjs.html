@@ -1,0 +1,339 @@
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/angular_material/1.1.12/angular-material.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.6/angular.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.6/angular-animate.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.6/angular-aria.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.6/angular-messages.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.6/angular-route.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angular_material/1.1.12/angular-material.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-http-auth/1.5.0/http-auth-interceptor.min.js"></script>
+    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/angular_material/1.0.0/angular-material.min.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="https://rawgit.com/daniel-nagy/md-data-table/master/dist/md-data-table.css">
+    <script src="https://rawgit.com/daniel-nagy/md-data-table/master/dist/md-data-table.js"></script>
+    <script src="https://rawgit.com/jraadt/fixed-table-header/master/src/fixed-table-header.js"></script>
+    <style>
+            body, md-content {
+                background-color: #f5f5f5 !important;
+            }
+
+            body > md-toolbar {
+                z-index: 3;
+            }
+
+            md-toolbar.md-table-toolbar.alternate {
+                color: #1e88e5;
+                background-color: #e3f2fd;
+            }
+
+            md-toolbar.md-table-toolbar.alternate .md-toolbar-tools {
+                font-size: 16px;
+            }
+
+            md-virtual-repeat-container {
+                height: 100%;
+            }
+        </style>
+    <script type="text/javascript">
+            var app = angular.module('basicUsageSidenavDemo', ['ngRoute', 'ngMaterial', 'ngMessages', 'md.data.table', 'fixed.table.header']).config(['$mdThemingProvider', function($mdThemingProvider) {
+                'use strict';
+
+                $mdThemingProvider.theme('default').primaryPalette('blue');
+            }
+            ]).controller('nutritionController', ['$mdEditDialog', '$scope', '$window', '$http', '$location', function($mdEditDialog, $scope, $window, $http, $location, userService) {
+                'use strict';
+
+                $scope.selected = [];
+
+                $scope.getQueryParams = function() {
+                    var url = $location.url();
+                    if (url.includes("?"))
+                        return "?" + url.split('?')[1];
+                    return "";
+                }
+
+                $scope.query = {
+                    order: 'name',
+                    limit: 10
+                };
+
+                $scope.things = [];
+                $http.get("api/thing" + $scope.getQueryParams()).then(function(response) {
+                    $scope.things = response.data;
+                });
+
+                $scope.desserts = {
+                    "count": 3,
+                    "data": [{
+                        "name": "Frozen yogurt",
+                        "type": "Ice cream",
+                        "calories": {
+                            "value": 159.0
+                        },
+                        "fat": {
+                            "value": 6.0
+                        },
+                        "carbs": {
+                            "value": 24.0
+                        },
+                        "protein": {
+                            "value": 4.0
+                        },
+                        "sodium": {
+                            "value": 87.0
+                        },
+                        "calcium": {
+                            "value": 14.0
+                        },
+                        "iron": {
+                            "value": 1.0
+                        },
+                        "comment": "Not as good as the real thing."
+                    }, {
+                        "name": "Ice cream sandwich",
+                        "type": "Ice cream",
+                        "calories": {
+                            "value": 237.0
+                        },
+                        "fat": {
+                            "value": 9.0
+                        },
+                        "carbs": {
+                            "value": 37.0
+                        },
+                        "protein": {
+                            "value": 4.3
+                        },
+                        "sodium": {
+                            "value": 129.0
+                        },
+                        "calcium": {
+                            "value": 8.0
+                        },
+                        "iron": {
+                            "value": 1.0
+                        }
+                    }, {
+                        "name": "Eclair",
+                        "type": "Pastry",
+                        "calories": {
+                            "value": 262.0
+                        },
+                        "fat": {
+                            "value": 16.0
+                        },
+                        "carbs": {
+                            "value": 24.0
+                        },
+                        "protein": {
+                            "value": 6.0
+                        },
+                        "sodium": {
+                            "value": 337.0
+                        },
+                        "calcium": {
+                            "value": 6.0
+                        },
+                        "iron": {
+                            "value": 7.0
+                        }
+                    }]
+                };
+
+                $scope.editComment = function(event, dessert) {
+                    event.stopPropagation();
+                    // in case autoselect is enabled
+
+                    var editDialog = {
+                        modelValue: dessert.comment,
+                        placeholder: 'Add a comment',
+                        save: function(input) {
+                            dessert.comment = input.$modelValue;
+                        },
+                        targetEvent: event,
+                        title: 'Add a comment',
+                        validators: {
+                            'md-maxlength': 30
+                        }
+                    };
+
+                    var promise = $mdEditDialog.small(editDialog);
+
+                    promise.then(function(ctrl) {
+                        var input = ctrl.getInput();
+
+                        input.$viewChangeListeners.push(function() {
+                            input.$setValidity('test', input.$modelValue !== 'test');
+                        });
+                    });
+
+                }
+                ;
+
+                $scope.getTypes = function() {
+                    return ['Candy', 'Ice cream', 'Other', 'Pastry'];
+                }
+                ;
+            }
+            ]).controller('AppCtrl', function($scope, $mdDialog, $timeout, $mdSidenav, $log, $http, userService) {
+
+                $scope.user = {};
+                $scope.user.loggedIn = false;
+                $scope.submitForm = function() {
+                    $http({
+                        method: 'POST',
+                        url: 'login',
+                        data: 'username=' + encodeURIComponent($scope.user.username) + '&password=' + encodeURIComponent($scope.user.password) + '&submit=submit',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded'
+                        }
+                    }).then(function mySuccess(response) {
+                        $scope.user.loggedIn = true;
+                        <!--$scope.setLoggedIn();-->
+                        $scope.cancel();
+                    }, function myError(response) {
+                        $scope.loginForm.usernameInput.$error = {
+                            failed: true
+                        };
+                    });
+                }
+                ;
+
+                $scope.toggleLeft = buildDelayedToggler('left');
+                $scope.toggleRight = buildToggler('right');
+                $scope.isOpenRight = function() {
+                    return $mdSidenav('right').isOpen();
+                }
+                ;
+
+                $scope.showLogin = function(ev) {
+                    $mdDialog.show({
+                        controller: DialogController,
+                        templateUrl: 'dialog1.tmpl.html',
+                        parent: angular.element(document.body),
+                        targetEvent: ev,
+                        scope: $scope,
+                        clickOutsideToClose: true,
+                        fullscreen: $scope.customFullscreen // Only for -xs, -sm breakpoints.
+                    });
+                }
+                ;
+
+                function DialogController($scope, $mdDialog) {
+                    $scope.cancel = function() {
+                        $mdDialog.cancel();
+                    }
+                    ;
+                    $scope.setLoggedIn = function() {
+                        $scope.user.loggedIn = true;
+                    }
+                    ;
+                }
+
+                /**
+                  * Supplies a function that will continue to operate until the
+                  * time is up.
+                  */
+                function debounce(func, wait, context) {
+                    var timer;
+
+                    return function debounced() {
+                        var context = $scope
+                          , args = Array.prototype.slice.call(arguments);
+                        $timeout.cancel(timer);
+                        timer = $timeout(function() {
+                            timer = undefined;
+                            func.apply(context, args);
+                        }, wait || 10);
+                    }
+                    ;
+                }
+
+                /**
+                  * Build handler to open/close a SideNav; when animation finishes
+                  * report completion in console
+                  */
+                function buildDelayedToggler(navID) {
+                    return debounce(function() {
+                        // Component lookup should always be available since we are not using `ng-if`
+                        $mdSidenav(navID).toggle().then(function() {
+                            $log.debug("toggle " + navID + " is done");
+                        });
+                    }, 10);
+                }
+
+                function buildToggler(navID) {
+                    return function() {
+                        // Component lookup should always be available since we are not using `ng-if`
+                        $mdSidenav(navID).toggle().then(function() {
+                            $log.debug("toggle " + navID + " is done");
+                        });
+                    }
+                    ;
+                }
+            }).controller('LeftCtrl', function($scope, $timeout, $mdSidenav, $log) {
+                $scope.close = function() {
+                    // Component lookup should always be available since we are not using `ng-if`
+                    $mdSidenav('left').close().then(function() {
+                        $log.debug("close LEFT is done");
+                    });
+
+                }
+                ;
+            });
+            app.config(function($routeProvider) {
+                $routeProvider.when("/things", {
+                    templateUrl: "things.html?asdf=asdf",
+                    controller: "nutritionController"
+                }).otherwise({
+                    templateUrl: "home.html"
+                });
+            }).service('userService', function() {
+                this.userAttributes = {
+                    "loggedIn": false
+                }
+            });
+        </script>
+</head>
+<body ng-app="basicUsageSidenavDemo" ng-controller="AppCtrl" layout="row" ng-cloak>
+<md-sidenav class="md-sidenav-left" md-component-id="left" md-is-locked-open="$mdMedia('gt-md')" md-whiteframe="4" flex>
+    <md-toolbar class="md-theme-indigo" ng-controller="LeftCtrl">
+        <div class="md-toolbar-tools">
+            <h1>Sidenav Left</h1>
+            <span flex></span>
+            <md-button class="md-icon-button" ng-click="close()">
+                <md-icon md-svg-src="img/icons/ic_close_24px.svg" aria-label="Close dialog"></md-icon>
+            </md-button>
+        </div>
+    </md-toolbar>
+    <md-content layout-padding ng-controller="LeftCtrl">
+        <p>hi</p>
+        <p hide show-gt-md>This sidenav is locked open on your device. To go back to the default behavior,
+            narrow your display.
+        </p>
+    </md-content>
+</md-sidenav>
+<div layout="column" tabindex="-1" role="main" flex class="layout-column flex">
+    <md-toolbar md-scroll-shrink ng-if="true">
+        <div class="md-toolbar-tools">
+            <md-button ng-click="toggleLeft()" class="md-primary">
+                <md-icon md-svg-src="img/icons/ic_close_24px.svg" aria-label="Close dialog"></md-icon>
+            </md-button>
+            <h3>
+                <span>title goes here</span>
+            </h3>
+            <span flex></span>
+            <h3>
+                <span>{{user.loggedIn}}</span>
+            </h3>
+            <md-button class="md-primary md-raised" ng-click="showLogin($event)">Login
+            </md-button>
+        </div>
+    </md-toolbar>
+    <md-content md-scroll-y flex layout-padding>
+        <div ng-view></div>
+    </md-content>
+</div>
+</body>
+</html>

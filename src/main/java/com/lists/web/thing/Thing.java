@@ -1,6 +1,8 @@
 package com.lists.web.thing;
 
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.lists.web.AuditedEntity;
 import com.lists.web.compares.Compares;
 import com.lists.web.descriptor.*;
@@ -17,21 +19,26 @@ import java.util.Set;
 
 @Entity
 public class Thing extends AuditedEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer thingID;
 
     private String title;
     private Boolean isAbstract;
+
+    @JsonManagedReference
     @ManyToOne
     @JoinColumn(name="parentThingID",foreignKey=@ForeignKey(name="FK_thing_1"))
     private Thing parentThing;
 
+    @JsonBackReference
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @Fetch(value = FetchMode.SUBSELECT)
     @JoinColumn(name = "thingID")
     private Set<Compares> compares = new HashSet<>();
 
+    @JsonBackReference
     public Set<Descriptor> getDescriptors() {
         Set<Descriptor> returnDescriptors = new HashSet<>();
         returnDescriptors.addAll(dateDescriptors);
@@ -45,36 +52,43 @@ public class Thing extends AuditedEntity {
         return returnDescriptors;
     }
 
+    @JsonBackReference
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @Fetch(value = FetchMode.SUBSELECT)
     @JoinColumn(name = "describedThingID")
     private Set<DateDescriptor> dateDescriptors = new HashSet<>();
 
+    @JsonBackReference
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @Fetch(value = FetchMode.SUBSELECT)
     @JoinColumn(name = "describedThingID")
     private Set<DoubleDescriptor> doubleDescriptors = new HashSet<>();
 
+    @JsonBackReference
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @Fetch(value = FetchMode.SUBSELECT)
     @JoinColumn(name = "describedThingID")
     private Set<IntegerDescriptor> integerDescriptors = new HashSet<>();
 
+    @JsonBackReference
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @Fetch(value = FetchMode.SUBSELECT)
     @JoinColumn(name = "describedThingID")
     private Set<LocationDescriptor> locationDescriptors = new HashSet<>();
 
+    @JsonBackReference
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @Fetch(value = FetchMode.SUBSELECT)
     @JoinColumn(name = "describedThingID")
     private Set<ReferenceThingDescriptor> referenceThingDescriptors = new HashSet<>();
 
+    @JsonBackReference
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @Fetch(value = FetchMode.SUBSELECT)
     @JoinColumn(name = "describedThingID")
     private Set<ResourceDescriptor> resourceDescriptors = new HashSet<>();
 
+    @JsonBackReference
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @Fetch(value = FetchMode.SUBSELECT)
     @JoinColumn(name = "describedThingID")

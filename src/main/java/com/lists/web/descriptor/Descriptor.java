@@ -1,13 +1,12 @@
 package com.lists.web.descriptor;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.lists.web.AuditedEntity;
 import com.lists.web.descriptorType.DescriptorType;
 import com.lists.web.descriptorType.DescriptorTypes;
 import com.lists.web.thing.Thing;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
-import java.util.Date;
 
 /**
  * Created by nick on 1/24/2018.
@@ -19,10 +18,12 @@ public abstract class Descriptor extends AuditedEntity {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer descriptorID;
 
+    @JsonManagedReference
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="describedThingID")
     private Thing describedThing;
 
+    @JsonManagedReference
     @ManyToOne
     @JoinColumn(name="descriptorTypeID")
     private DescriptorType descriptorType;

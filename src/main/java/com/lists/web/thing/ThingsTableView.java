@@ -4,24 +4,23 @@ import com.lists.web.comparator.Comparator;
 import com.lists.web.descriptorType.DescriptorType;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by nick on 10/17/2018.
  */
 public class ThingsTableView {
 
-    private Map<Thing, ThingsRowView> thingsMap;
+    private List<ThingsRowView> thingsRowViewList;
     private List<Comparator> comparesHeaders;
     private List<String> thingHeaders;
     private List<DescriptorType> descriptorHeaders;
 
-    public Map<Thing, ThingsRowView> getThingsMap() {
-        return thingsMap;
+    public List<ThingsRowView> getThingsRowViewList() {
+        return thingsRowViewList;
     }
 
-    public void setThingsMap(Map<Thing, ThingsRowView> thingsMap) {
-        this.thingsMap = thingsMap;
+    public void setThingsRowViewList(List<ThingsRowView> thingsRowViewList) {
+        this.thingsRowViewList = thingsRowViewList;
     }
 
     public List<Comparator> getComparesHeaders() {

@@ -1,0 +1,77 @@
+<body layout="column">
+<md-content layout="column" flex ng-controller="nutritionController">
+
+    <span>{{user.loggedIn}}</span>
+    <md-virtual-repeat-container fix-head>
+        <md-table-container>
+            <table md-table md-row-select ng-model="selected" md-progress="promise">
+                <thead md-head md-order="query.order" >
+                <tr md-row>
+                    <th ng-repeat="comparator in things.comparesHeaders" md-column md-numeric md-order-by="calories.value" md-desc><span>{{comparator.title}}</span></th>
+                    <th md-column md-order-by="Title"><span>Title</span></th>
+                    <th ng-repeat="descriptor in things.descriptorHeaders" md-column md-numeric md-order-by="calories.value" md-desc><span>{{descriptor.title}}</span></th>
+                    <th md-column md-order-by="comment">
+                        <md-icon>comments</md-icon>
+                        <span>Comments</span>
+                    </th>
+                </tr>
+                </thead>
+                <tbody md-body>
+                <tr md-row md-select="dessert" md-auto-select md-virtual-repeat="thingRow in things.thingsRowViewList | filter: filter.search | orderBy: query.order ">
+                    <td ng-repeat="comparator in things.comparesHeaders" md-column md-numeric md-order-by="calories.value" md-cell>{{thingRow.comparesMap[comparator.title].score}}</td>
+                    <td md-cell>{{thingRow.thing.title}}</td>
+                    <td ng-repeat="descriptor in things.descriptorHeaders" md-cell>
+                        <p ng-repeat="descriptor2 in thingRow.descriptorMap[descriptor.title]">{{descriptor2.value}}</p>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </md-table-container>
+    </md-virtual-repeat-container>
+
+    <md-virtual-repeat-container fix-head>
+        <md-table-container>
+            <table md-table md-row-select ng-model="selected" md-progress="promise">
+                <thead md-head md-order="query.order" >
+                <tr md-row>
+                    <th md-column md-order-by="name"><span>Dessert (100g serving)</span></th>
+                    <th md-column md-order-by="type"><span>Type</span></th>
+                    <th md-column md-numeric md-order-by="calories.value" md-desc><span>Calories</span></th>
+                    <th md-column md-numeric md-order-by="fat.value"><span>Fat (g)</span></th>
+                    <th md-column md-numeric md-order-by="carbs.value"><span>Carbs (g)</span></th>
+                    <th md-column md-numeric md-order-by="protein.value"><span>Protein (g)</span></th>
+                    <th md-column md-numeric md-order-by="sodium.value" hide-gt-xs show-gt-md><span>Sodium (mg)</span></th>
+                    <th md-column md-numeric md-order-by="calcium.value" hide-gt-xs show-gt-lg><span>Calcium (%)</span></th>
+                    <th md-column md-numeric md-order-by="iron.value" hide-gt-xs show-gt-lg><span>Iron (%)</span></th>
+                    <th md-column md-order-by="comment">
+                        <md-icon>comments</md-icon>
+                        <span>Comments</span>
+                    </th>
+                </tr>
+                </thead>
+                <tbody md-body>
+                <tr md-row md-select="dessert" md-auto-select md-virtual-repeat="dessert in desserts.data | filter: filter.search | orderBy: query.order ">
+                    <td md-cell>{{dessert.name}}</td>
+                    <td md-cell>
+                        <md-select ng-model="dessert.type" placeholder="Other">
+                            <md-option ng-value="type" ng-repeat="type in getTypes()">{{type}}</md-option>
+                        </md-select>
+                    </td>
+                    <td md-cell>{{dessert.calories.value}}</td>
+                    <td md-cell>{{dessert.fat.value | number: 2}}</td>
+                    <td md-cell>{{dessert.carbs.value}}</td>
+                    <td md-cell>{{dessert.protein.value | number: 2}}</td>
+                    <td md-cell hide-gt-xs show-gt-md>{{dessert.sodium.value}}</td>
+                    <td md-cell hide-gt-xs show-gt-lg>{{dessert.calcium.value}}%</td>
+                    <td md-cell hide-gt-xs show-gt-lg>{{dessert.iron.value}}%</td>
+                    <td md-cell ng-click="editComment($event, dessert)" ng-class="{'md-placeholder': !dessert.comment}">
+                        {{dessert.comment || 'Add a comment'}}
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </md-table-container>
+    </md-virtual-repeat-container>
+</md-content>
+
+</body>

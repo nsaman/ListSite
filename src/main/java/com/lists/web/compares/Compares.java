@@ -1,5 +1,6 @@
 package com.lists.web.compares;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.lists.web.AuditedEntity;
 import com.lists.web.comparator.Comparator;
 import com.lists.web.thing.Thing;
@@ -17,10 +18,12 @@ public class Compares extends AuditedEntity {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer comparesID;
 
+    @JsonManagedReference
     @ManyToOne
     @JoinColumn(name="comparatorID",foreignKey=@ForeignKey(name="FK_compares_1"))
     private Comparator comparator;
 
+    @JsonManagedReference
     @ManyToOne
     @JoinColumn(name="thingID",foreignKey=@ForeignKey(name="FK_compares_2"))
     private Thing thing;

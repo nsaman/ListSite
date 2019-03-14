@@ -1,0 +1,33 @@
+<md-dialog aria-label="Login Form" ng-app="basicUsageSidenavDemo">
+  <form name="loginForm">
+
+    <md-content layout-gt-sm="column" layout-padding>
+      <div>
+        <md-input-container>
+          <label>Username</label>
+          <input ng-model="user.username" name="usernameInput">
+          <div ng-messages="loginForm.usernameInput.$error" role="alert">
+            <p ng-message="failed">
+              LoginFailed!
+            </p>
+          </div>
+        </md-input-container>
+
+        <md-input-container>
+          <label>Password</label>
+          <input ng-model="user.password" type="password">
+        </md-input-container>
+      </div>
+    </md-content>
+
+    <md-dialog-actions layout="row">
+      <span flex></span>
+      <md-button ng-click="cancel()" >
+        Cancel
+      </md-button>
+      <md-button ng-click="submitForm()" style="margin-right:20px;" >
+        Submit
+      </md-button>
+    </md-dialog-actions>
+  </form>
+</md-dialog>
