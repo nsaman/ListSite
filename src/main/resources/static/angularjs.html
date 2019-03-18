@@ -13,6 +13,10 @@
     <link rel="stylesheet" href="https://rawgit.com/daniel-nagy/md-data-table/master/dist/md-data-table.css">
     <script src="https://rawgit.com/daniel-nagy/md-data-table/master/dist/md-data-table.js"></script>
     <script src="https://rawgit.com/jraadt/fixed-table-header/master/src/fixed-table-header.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.6/angular-touch.js"></script>
+    <link data-require="bootstrap@3.3.7" data-semver="3.3.7" rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>
+    <link data-require="bootstrap-css@3.*" data-semver="3.3.7" rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.css"/>
+    <script data-require="ui-bootstrap@*" data-semver="2.5.0" src="https://cdn.rawgit.com/angular-ui/bootstrap/gh-pages/ui-bootstrap-tpls-2.5.0.js"></script>
     <style>
             body, md-content {
                 background-color: #f5f5f5 !important;
@@ -36,7 +40,7 @@
             }
         </style>
     <script type="text/javascript">
-            var app = angular.module('basicUsageSidenavDemo', ['ngRoute', 'ngMaterial', 'ngMessages', 'md.data.table', 'fixed.table.header']).config(['$mdThemingProvider', function($mdThemingProvider) {
+            var app = angular.module('basicUsageSidenavDemo', ['ngRoute', 'ngMaterial', 'ngMessages', 'md.data.table', 'fixed.table.header', 'ui.bootstrap']).config(['$mdThemingProvider', function($mdThemingProvider) {
                 'use strict';
 
                 $mdThemingProvider.theme('default').primaryPalette('blue');
@@ -59,7 +63,7 @@
                 };
 
                 $scope.things = [];
-                $http.get("api/thing" + $scope.getQueryParams()).then(function(response) {
+                $http.get("api/things" + $scope.getQueryParams()).then(function(response) {
                     $scope.things = response.data;
                 });
 
@@ -176,29 +180,10 @@
                 }
                 ;
             }
-            ]).controller('AppCtrl', function($scope, $mdDialog, $timeout, $mdSidenav, $log, $http, userService) {
+            ]).controller('AppCtrl', function($scope, $mdDialog, $timeout, $mdSidenav, $log, $http, userService, $uibModal, $location) {
 
                 $scope.user = {};
                 $scope.user.loggedIn = false;
-                $scope.submitForm = function() {
-                    $http({
-                        method: 'POST',
-                        url: 'login',
-                        data: 'username=' + encodeURIComponent($scope.user.username) + '&password=' + encodeURIComponent($scope.user.password) + '&submit=submit',
-                        headers: {
-                            'Content-Type': 'application/x-www-form-urlencoded'
-                        }
-                    }).then(function mySuccess(response) {
-                        $scope.user.loggedIn = true;
-                        <!--$scope.setLoggedIn();-->
-                        $scope.cancel();
-                    }, function myError(response) {
-                        $scope.loginForm.usernameInput.$error = {
-                            failed: true
-                        };
-                    });
-                }
-                ;
 
                 $scope.toggleLeft = buildDelayedToggler('left');
                 $scope.toggleRight = buildToggler('right');
@@ -207,10 +192,54 @@
                 }
                 ;
 
-                $scope.showLogin = function(ev) {
+                $scope.openLogin = function() {
+                    var modalInstance = $uibModal.open({
+                        templateUrl: "loginModal.html",
+                        controller: "ModalContentCtrl",
+                        scope: $scope,
+                        size: '',
+                    });
+                }
+                ;
+
+                <!--function DialogController($scope, $mdDialog) {-->
+                <!--$scope.cancel = function() {-->
+                <!--$mdDialog.hide();-->
+                <!--}-->
+                <!--;-->
+                <!--}-->
+
+                <!--$scope.showLogin = function(ev) {-->
+                <!--$mdDialog.show({-->
+                <!--controller: DialogController,-->
+                <!--templateUrl: 'dialog1.tmpl.html',-->
+                <!--parent: angular.element(document.body),-->
+                <!--targetEvent: ev,-->
+                <!--scope: $scope,-->
+                <!--clickOutsideToClose: true,-->
+                <!--fullscreen: $scope.customFullscreen // Only for -xs, -sm breakpoints.-->
+                <!--});-->
+                <!--}-->
+                <!--;-->
+
+                $scope.parentToAddThingTo = {};
+                $scope.setParentToAddThingTo = function(parentID) {
+                    $http.get("api/thing?thingID=" + parentID).then(function(response) {
+                        $scope.parentToAddThingTo = response.data;
+                    })
+                }
+                ;
+
+                $scope.showAddThing = function(ev) {
+
+                    var parentThingID = 1
+                    if ($location.search()['thingID'] == null) {
+                        parentThingID = $location.search()['thingID']
+                    }
+                    $scope.setParentToAddThingTo(parentThingID)
                     $mdDialog.show({
                         controller: DialogController,
-                        templateUrl: 'dialog1.tmpl.html',
+                        templateUrl: 'addThing.tmpl.html',
                         parent: angular.element(document.body),
                         targetEvent: ev,
                         scope: $scope,
@@ -219,17 +248,6 @@
                     });
                 }
                 ;
-
-                function DialogController($scope, $mdDialog) {
-                    $scope.cancel = function() {
-                        $mdDialog.cancel();
-                    }
-                    ;
-                    $scope.setLoggedIn = function() {
-                        $scope.user.loggedIn = true;
-                    }
-                    ;
-                }
 
                 /**
                   * Supplies a function that will continue to operate until the
@@ -294,6 +312,34 @@
                     "loggedIn": false
                 }
             });
+
+            app.controller('ModalContentCtrl', function($scope, $http, $uibModalInstance) {
+
+                $scope.loginForm = {}
+
+                $scope.submit = function() {
+                    $http({
+                        method: 'POST',
+                        url: 'login',
+                        data: 'username=' + encodeURIComponent($scope.loginForm.username) + '&password=' + encodeURIComponent($scope.loginForm.password) + '&submit=submit',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded'
+                        }
+                    }).then(function mySuccess(response) {
+                        $scope.user.loggedIn = true;
+                        $scope.cancel();
+                    }, function myError(response) {
+                        $scope.loginForm.usernameInput.$error = {
+                            failed: true
+                        };
+                    })
+                }
+
+                $scope.cancel = function() {
+                    $uibModalInstance.dismiss();
+                }
+
+            });
         </script>
 </head>
 <body ng-app="basicUsageSidenavDemo" ng-controller="AppCtrl" layout="row" ng-cloak>
@@ -324,11 +370,7 @@
                 <span>title goes here</span>
             </h3>
             <span flex></span>
-            <h3>
-                <span>{{user.loggedIn}}</span>
-            </h3>
-            <md-button class="md-primary md-raised" ng-click="showLogin($event)">Login
-            </md-button>
+            <button class="btn btn-info" ng-click="openLogin()" style="margin: 15px;">Login</button>
         </div>
     </md-toolbar>
     <md-content md-scroll-y flex layout-padding>

@@ -1,0 +1,26 @@
+<div class="modal-header">
+    <h3>Login!</h3>
+</div>
+<div class="modal-body">
+    <form name="loginForm">
+
+                <md-input-container>
+                    <label>Username</label>
+                    <input ng-model="loginForm.username" name="usernameInput">
+                    <div ng-messages="loginForm.usernameInput.$error" role="alert">
+                        <p ng-message="failed">
+                            LoginFailed!
+                        </p>
+                    </div>
+                </md-input-container>
+
+                <md-input-container>
+                    <label>Password</label>
+                    <input ng-model="loginForm.password" type="password">
+                </md-input-container>
+    </form>
+</div>
+<div class="modal-footer">
+    <button class="btn btn-warning" ng-click="cancel()">Cancel</button>
+    <button class="btn btn-primary" ng-click="submit()">Submit</button>
+</div>

@@ -20,7 +20,7 @@ public class ThingApiController {
     @Autowired
     private IThingRepository thingRepository;
 
-    @RequestMapping(path="/api/thing", produces = "application/json")
+    @RequestMapping(path="/api/things", produces = "application/json")
     public ThingsTableView getThingsByParentAndComparator(@RequestParam(value="thingID") Thing parentThing,
                                                  @RequestParam(value="comparatorID", defaultValue="1") Set<Comparator> comparators,
                                                  @RequestParam(value="descriptorTypeSearchedIDs", defaultValue="") Set<DescriptorType> descriptorTypeSearchedIDs,
@@ -29,6 +29,11 @@ public class ThingApiController {
         Iterable<Thing> thingList = thingRepository.findAll(Specifications.where(IThingRepository.hasComparators(comparators)).and(IThingRepository.hasParentThing(parentThing)));
 
         return thingsToThingsTableView(thingList, comparators, descriptorTypeRetrievedIDs);
+    }
+
+    @RequestMapping(path="/api/thing", produces = "application/json")
+    public Thing getThingsByParentAndComparator(@RequestParam(value="thingID",required = true) Thing thing) {
+        return thing;
     }
 
     private ThingsTableView thingsToThingsTableView(Iterable<Thing> thingList, Collection<Comparator> showComparators, Collection<DescriptorType> showDescriptorTypes) {

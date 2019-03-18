@@ -1,7 +1,12 @@
 <body layout="column">
 <md-content layout="column" flex ng-controller="nutritionController">
 
-    <span>{{user.loggedIn}}</span>
+    <div ng-if="user.loggedIn">
+        <md-button ng-click="showAddThing($event)">
+            <md-icon md-svg-src="img/icons/plus.svg"></md-icon> Add a new thing
+        </md-button>
+    </div>
+
     <md-virtual-repeat-container fix-head>
         <md-table-container>
             <table md-table md-row-select ng-model="selected" md-progress="promise">
