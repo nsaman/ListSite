@@ -211,7 +211,8 @@
                             templateUrl: 'addThingDialog.html',
                             controller: 'AddThingDialogCtrl',
                             locals: {
-                                parentThings: response.data
+                                parentThings: response.data,
+                                firstParentThing: parentThingID
                             }
                         });
                     });
@@ -271,7 +272,7 @@
             });
             app.config(function($routeProvider) {
                 $routeProvider.when("/things", {
-                    templateUrl: "things.html?asdf=asdf",
+                    templateUrl: "things.html",
                     controller: "nutritionController"
                 }).otherwise({
                     templateUrl: "home.html"
@@ -310,12 +311,12 @@
 
             });
 
-            app.controller('AddThingDialogCtrl', function($scope, $http, $mdDialog, thingService, parentThings) {
+            app.controller('AddThingDialogCtrl', function($scope, $http, $mdDialog, thingService, parentThings, firstParentThing) {
 
                 $scope.parentThings = parentThings
                 $scope.addThingFormData = {};
                 $scope.addThingFormData.isAbstract = false;
-                $scope.addThingFormData.parentThingId = parentThings[0].thingID;
+                $scope.addThingFormData.parentThingId = firstParentThing;
                 <!--$scope.setParentThings = function(parentThingId) {-->
                     <!--thingService.getThing(1).then(function(response) {-->
                             <!--parentThings = response.data;-->
