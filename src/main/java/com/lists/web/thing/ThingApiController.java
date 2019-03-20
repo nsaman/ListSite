@@ -36,6 +36,19 @@ public class ThingApiController {
         return thing;
     }
 
+    @PreAuthorize("hasRole('ROLE_VIEWER')")
+    @RequestMapping(path="/api/thing", method = RequestMethod.POST, consumes={"application/json"})
+    public void createThing(@RequestBody NewThingRequest newThingRequest) {
+
+        Thing thing = new Thing();
+
+        thing.setTitle(newThingRequest.getTitle());
+        thing.setIsAbstract(newThingRequest.getIsAbstract());
+        thing.setParentThing(thingRepository.findOne(newThingRequest.getParentThingId()));
+
+        thingRepository.save(thing);
+    }
+
     private ThingsTableView thingsToThingsTableView(Iterable<Thing> thingList, Collection<Comparator> showComparators, Collection<DescriptorType> showDescriptorTypes) {
 
         ThingsTableView thingTableView = new ThingsTableView();

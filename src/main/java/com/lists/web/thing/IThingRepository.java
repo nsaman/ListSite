@@ -1,12 +1,9 @@
 package com.lists.web.thing;
 
 import com.lists.web.comparator.Comparator;
-import com.lists.web.descriptor.Descriptor;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
-import org.springframework.data.repository.query.Param;
 
 import java.util.Collection;
 import java.util.List;

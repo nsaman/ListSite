@@ -1,0 +1,40 @@
+<md-dialog aria-label="Login Form">
+    <md-content layout-gt-sm="column" layout-padding>
+        <form name="addThingForm">
+
+            <md-input-container>
+                <label>Title</label>
+                <input ng-model="addThingFormData.title" name="thingNameInput">
+                <div ng-messages="addThingFormData.thingNameInput.$error" role="alert">
+                    <p ng-message="failed">
+                        Bad Thing Name!
+                    </p>
+                </div>
+            </md-input-container>
+
+            <md-input-container>
+                <md-checkbox ng-model="addThingFormData.isAbstract">
+                    isAbstract
+                </md-checkbox>
+            </md-input-container>
+
+            <md-input-container>
+                <label>Parent Thing</label>
+                <md-select name="type" ng-model="addThingFormData.parentThingId" required>
+                    <md-option value="1">Base Thing</md-option>
+                    <md-option value="4">Lizard</md-option>
+                </md-select>
+            </md-input-container>
+        </form>
+        </md-content>
+
+        <md-dialog-actions layout="row">
+            <span flex></span>
+            <md-button ng-click="cancel()" >
+                Cancel
+            </md-button>
+            <md-button ng-click="submitAddThingForm()" style="margin-right:20px;" >
+                Submit
+            </md-button>
+        </md-dialog-actions>
+</md-dialog>

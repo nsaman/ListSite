@@ -1,6 +1,5 @@
 package com.lists.web.descriptor;
 
-import com.lists.web.descriptorType.DescriptorType;
 import com.lists.web.descriptorType.DescriptorTypes;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.CrudRepository;

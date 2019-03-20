@@ -1,6 +1,6 @@
 package com.lists.web.descriptor;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.lists.web.descriptorType.DescriptorTypes;
 import com.lists.web.thing.Thing;
 
@@ -15,7 +15,7 @@ import javax.persistence.ManyToOne;
 @Entity
 public class ReferenceThingDescriptor extends Descriptor {
 
-    @JsonManagedReference
+    @JsonBackReference
     @ManyToOne
     @JoinColumn(name="referenceThingID")
     private Thing referenceThing;

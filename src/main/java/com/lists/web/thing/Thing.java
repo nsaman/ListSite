@@ -1,7 +1,7 @@
 package com.lists.web.thing;
 
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.lists.web.AuditedEntity;
 import com.lists.web.compares.Compares;
@@ -27,18 +27,24 @@ public class Thing extends AuditedEntity {
     private String title;
     private Boolean isAbstract;
 
-    @JsonManagedReference
+    @JsonIgnore
+    @OneToMany
+    @Fetch(value = FetchMode.SUBSELECT)
+    @JoinColumn(name = "parentThingID")
+    private Set<Thing> childThings;
+
+    @JsonIgnore
     @ManyToOne
-    @JoinColumn(name="parentThingID",foreignKey=@ForeignKey(name="FK_thing_1"))
+    @JoinColumn(name = "parentThingID", foreignKey = @ForeignKey(name = "FK_thing_1"))
     private Thing parentThing;
 
-    @JsonBackReference
+    @JsonManagedReference(value="thingCompares")
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @Fetch(value = FetchMode.SUBSELECT)
     @JoinColumn(name = "thingID")
     private Set<Compares> compares = new HashSet<>();
 
-    @JsonBackReference
+    @JsonManagedReference
     public Set<Descriptor> getDescriptors() {
         Set<Descriptor> returnDescriptors = new HashSet<>();
         returnDescriptors.addAll(dateDescriptors);
@@ -52,43 +58,43 @@ public class Thing extends AuditedEntity {
         return returnDescriptors;
     }
 
-    @JsonBackReference
+    @JsonIgnore
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @Fetch(value = FetchMode.SUBSELECT)
     @JoinColumn(name = "describedThingID")
     private Set<DateDescriptor> dateDescriptors = new HashSet<>();
 
-    @JsonBackReference
+    @JsonIgnore
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @Fetch(value = FetchMode.SUBSELECT)
     @JoinColumn(name = "describedThingID")
     private Set<DoubleDescriptor> doubleDescriptors = new HashSet<>();
 
-    @JsonBackReference
+    @JsonIgnore
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @Fetch(value = FetchMode.SUBSELECT)
     @JoinColumn(name = "describedThingID")
     private Set<IntegerDescriptor> integerDescriptors = new HashSet<>();
 
-    @JsonBackReference
+    @JsonIgnore
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @Fetch(value = FetchMode.SUBSELECT)
     @JoinColumn(name = "describedThingID")
     private Set<LocationDescriptor> locationDescriptors = new HashSet<>();
 
-    @JsonBackReference
+    @JsonIgnore
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @Fetch(value = FetchMode.SUBSELECT)
     @JoinColumn(name = "describedThingID")
     private Set<ReferenceThingDescriptor> referenceThingDescriptors = new HashSet<>();
 
-    @JsonBackReference
+    @JsonIgnore
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @Fetch(value = FetchMode.SUBSELECT)
     @JoinColumn(name = "describedThingID")
     private Set<ResourceDescriptor> resourceDescriptors = new HashSet<>();
 
-    @JsonBackReference
+    @JsonIgnore
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @Fetch(value = FetchMode.SUBSELECT)
     @JoinColumn(name = "describedThingID")
@@ -188,5 +194,9 @@ public class Thing extends AuditedEntity {
 
     public void setStringDescriptors(Set<StringDescriptor> stringDescriptors) {
         this.stringDescriptors = stringDescriptors;
+    }
+
+    public Integer getParentThingID() {
+        return parentThing==null?null:parentThing.thingID;
     }
 }

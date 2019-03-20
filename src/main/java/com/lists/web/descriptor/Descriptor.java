@@ -1,6 +1,6 @@
 package com.lists.web.descriptor;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.lists.web.AuditedEntity;
 import com.lists.web.descriptorType.DescriptorType;
 import com.lists.web.descriptorType.DescriptorTypes;
@@ -18,12 +18,12 @@ public abstract class Descriptor extends AuditedEntity {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer descriptorID;
 
-    @JsonManagedReference
+    @JsonBackReference(value="descriptorDescribedThing")
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="describedThingID")
     private Thing describedThing;
 
-    @JsonManagedReference
+    @JsonBackReference(value="descriptorDescriptorType")
     @ManyToOne
     @JoinColumn(name="descriptorTypeID")
     private DescriptorType descriptorType;

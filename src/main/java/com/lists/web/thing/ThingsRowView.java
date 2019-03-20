@@ -1,9 +1,7 @@
 package com.lists.web.thing;
 
-import com.lists.web.comparator.Comparator;
 import com.lists.web.compares.Compares;
 import com.lists.web.descriptor.Descriptor;
-import com.lists.web.descriptorType.DescriptorType;
 
 import java.util.Collection;
 import java.util.Map;

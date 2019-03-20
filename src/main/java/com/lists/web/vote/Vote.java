@@ -1,6 +1,6 @@
 package com.lists.web.vote;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.lists.web.AuditedEntity;
 import com.lists.web.comparator.Comparator;
 import com.lists.web.thing.Thing;
@@ -19,22 +19,22 @@ public class Vote extends AuditedEntity {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer voteID;
 
-    @JsonManagedReference
+    @JsonBackReference(value="voteComparator")
     @ManyToOne
     @JoinColumn(name="comparatorID",foreignKey=@ForeignKey(name="FK_vote_1"))
     private Comparator comparator;
 
-    @JsonManagedReference
+    @JsonBackReference(value="voteWinningThing")
     @ManyToOne
     @JoinColumn(name="winnerThingID",foreignKey=@ForeignKey(name="FK_vote_2"))
     private Thing winnerThing;
 
-    @JsonManagedReference
+    @JsonBackReference(value="voteLoserThing")
     @ManyToOne
     @JoinColumn(name="loserThingID",foreignKey=@ForeignKey(name="FK_vote_3"))
     private Thing loserThing;
 
-    @JsonManagedReference
+    @JsonBackReference(value="voteUserID")
     @ManyToOne
     @JoinColumn(name="userID",foreignKey=@ForeignKey(name="FK_vote_4"))
     private UserStub user;

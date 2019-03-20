@@ -1,9 +1,8 @@
-<div class="modal-header">
-    <h3>Login!</h3>
-</div>
-<div class="modal-body">
+<md-dialog aria-label="Login Form">
+    <md-content layout-gt-sm="column" layout-padding>
     <form name="loginForm">
 
+            <div>
                 <md-input-container>
                     <label>Username</label>
                     <input ng-model="loginForm.username" name="usernameInput">
@@ -18,9 +17,17 @@
                     <label>Password</label>
                     <input ng-model="loginForm.password" type="password">
                 </md-input-container>
+            </div>
     </form>
-</div>
-<div class="modal-footer">
-    <button class="btn btn-warning" ng-click="cancel()">Cancel</button>
-    <button class="btn btn-primary" ng-click="submit()">Submit</button>
-</div>
+        </md-content>
+
+        <md-dialog-actions layout="row">
+            <span flex></span>
+            <md-button ng-click="cancel()" >
+                Cancel
+            </md-button>
+            <md-button ng-click="submitLoginForm()" style="margin-right:20px;" >
+                Submit
+            </md-button>
+        </md-dialog-actions>
+</md-dialog>
