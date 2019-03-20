@@ -212,7 +212,7 @@
                             controller: 'AddThingDialogCtrl',
                             locals: {
                                 parentThings: response.data,
-                                firstParentThing: parentThingID
+                                firstParentThingId: parentThingID
                             }
                         });
                     });
@@ -311,18 +311,14 @@
 
             });
 
-            app.controller('AddThingDialogCtrl', function($scope, $http, $mdDialog, thingService, parentThings, firstParentThing) {
+            app.controller('AddThingDialogCtrl', function($scope, $http, $mdDialog, thingService, parentThings, firstParentThingId) {
 
                 $scope.parentThings = parentThings
                 $scope.addThingFormData = {};
                 $scope.addThingFormData.isAbstract = false;
-                $scope.addThingFormData.parentThingId = firstParentThing;
-                <!--$scope.setParentThings = function(parentThingId) {-->
-                    <!--thingService.getThing(1).then(function(response) {-->
-                            <!--parentThings = response.data;-->
-                        <!--});-->
-                <!--}-->
-                <!--$scope.setParentThings(1)-->
+                $scope.addThingFormData.parentThingId = firstParentThingId;
+                $scope.parentThing = thingService.getThingFromListById($scope.parentThings, $scope.addThingFormData.parentThingId);
+
 
                 $scope.submitAddThingForm = function() {
                     $http({
@@ -342,8 +338,10 @@
                 }
 
                 $scope.newParentSelected = function() {
-                    thingService.getAbstractThingAndParentAndChildren($scope.addThingFormData.parentThingId).then(function(response) {
+                    thingService.getAbstractThingAndParentAndChildren($scope.addThingFormData.parentThingId).then(function mySuccess(response) {
                         $scope.parentThings = response.data;
+                    }, function myError(response) {
+                        $scope.cancel();
                     });
                 }
 
@@ -362,6 +360,15 @@
 
                 this.getAbstractThingAndParentAndChildren = function (thingId) {
                     return $http.get("api/thing/abstractThingAndParentAndChildren?thingID=" + thingId);
+                };
+
+                this.getThingFromListById = function (thingList, thingId) {
+                    for (i = 0; i < thingList.length; i++) {
+                        if (thingList[i].thingID == thingId) {
+                            return thingList[i];
+                        }
+                    }
+                    return null;
                 };
             }]);
 
