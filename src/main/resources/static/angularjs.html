@@ -206,7 +206,7 @@
                     if ($location.search()['thingID'] != null) {
                         parentThingID = $location.search()['thingID']
                     }
-                    thingService.getAbstractThingAndChildren(parentThingID).then(function(response) {
+                    thingService.getAbstractThingAndParentAndChildren(parentThingID).then(function(response) {
                         $mdDialog.show({
                             templateUrl: 'addThingDialog.html',
                             controller: 'AddThingDialogCtrl',
@@ -315,6 +315,7 @@
                 $scope.parentThings = parentThings
                 $scope.addThingFormData = {};
                 $scope.addThingFormData.isAbstract = false;
+                $scope.addThingFormData.parentThingId = parentThings[0].thingID;
                 <!--$scope.setParentThings = function(parentThingId) {-->
                     <!--thingService.getThing(1).then(function(response) {-->
                             <!--parentThings = response.data;-->
@@ -339,6 +340,12 @@
                     })
                 }
 
+                $scope.newParentSelected = function() {
+                    thingService.getAbstractThingAndParentAndChildren($scope.addThingFormData.parentThingId).then(function(response) {
+                        $scope.parentThings = response.data;
+                    });
+                }
+
                 $scope.cancel = function() {
                     $mdDialog.hide();
                 }
@@ -352,8 +359,8 @@
                     return $http.get("api/thing?thingID=" + thingId);
                 };
 
-                this.getAbstractThingAndChildren = function (thingId) {
-                    return $http.get("api/thing/abstractThingAndChildren?thingID=" + thingId);
+                this.getAbstractThingAndParentAndChildren = function (thingId) {
+                    return $http.get("api/thing/abstractThingAndParentAndChildren?thingID=" + thingId);
                 };
             }]);
 
@@ -372,7 +379,12 @@
         </div>
     </md-toolbar>
     <md-content layout-padding ng-controller="LeftCtrl">
-        <p>hi</p>
+        <div layout="row">
+            <a href="/angularjs.html#!/">home</a>
+        </div>
+        <div layout="row">
+            <a href="/angularjs.html#!/things?thingID=1&comparatorID=1&descriptorTypeSearchedIDs=1,2,3&descriptorTypeRetrievedIDs=1,2,3">things</a>
+        </div>
         <p hide show-gt-md>This sidenav is locked open on your device. To go back to the default behavior,
             narrow your display.
         </p>

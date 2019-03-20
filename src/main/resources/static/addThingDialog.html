@@ -10,9 +10,7 @@
             <div layout-gt-xs="row">
                 <md-input-container>
                     <label>Parent Thing</label>
-                    <th ng-repeat="descriptor in things.descriptorHeaders" md-column md-numeric md-order-by="calories.value" md-desc><span>{{descriptor.title}}</span></th>
-
-                    <md-select name="type" ng-model="addThingFormData.parentThingId" required>
+                    <md-select name="type" ng-model="addThingFormData.parentThingId"  ng-change="newParentSelected()" required>
                         <md-option ng-repeat="thing in parentThings" value="{{thing.thingID}}">{{thing.title}}</md-option>
                     </md-select>
                 </md-input-container>

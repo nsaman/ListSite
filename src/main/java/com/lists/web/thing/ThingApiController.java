@@ -37,9 +37,11 @@ public class ThingApiController {
         return thing;
     }
 
-    @RequestMapping(path="/api/thing/abstractThingAndChildren", produces = "application/json")
-    public Set<Thing> getThingAndAbstractChildrenByThingId(@RequestParam(value="thingID",required = true) Thing thing) {
+    @RequestMapping(path="/api/thing/abstractThingAndParentAndChildren", produces = "application/json")
+    public Set<Thing> getThingAndParentAndAbstractChildrenByThingId(@RequestParam(value="thingID",required = true) Thing thing) {
         LinkedHashSet<Thing> things = new LinkedHashSet<>();
+        if(thing.getParentThing() != null)
+            things.add(thing.getParentThing());
         things.add(thing);
 
         for(Thing childThing : thing.getChildThings())
