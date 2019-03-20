@@ -1,7 +1,22 @@
-<md-dialog aria-label="Login Form">
+<md-dialog aria-label="Add Thing Dialog">
+    <md-toolbar>
+        <div class="md-toolbar-tools">
+            <h2>Add a thing</h2>
+        </div>
+    </md-toolbar>
     <md-content layout-gt-sm="column" layout-padding>
         <form name="addThingForm">
 
+            <div layout-gt-xs="row">
+                <md-input-container>
+                    <label>Parent Thing</label>
+                    <th ng-repeat="descriptor in things.descriptorHeaders" md-column md-numeric md-order-by="calories.value" md-desc><span>{{descriptor.title}}</span></th>
+
+                    <md-select name="type" ng-model="addThingFormData.parentThingId" required>
+                        <md-option ng-repeat="thing in parentThings" value="{{thing.thingID}}">{{thing.title}}</md-option>
+                    </md-select>
+                </md-input-container>
+            </div>
             <md-input-container>
                 <label>Title</label>
                 <input ng-model="addThingFormData.title" name="thingNameInput">
@@ -18,13 +33,6 @@
                 </md-checkbox>
             </md-input-container>
 
-            <md-input-container>
-                <label>Parent Thing</label>
-                <md-select name="type" ng-model="addThingFormData.parentThingId" required>
-                    <md-option value="1">Base Thing</md-option>
-                    <md-option value="4">Lizard</md-option>
-                </md-select>
-            </md-input-container>
         </form>
         </md-content>
 

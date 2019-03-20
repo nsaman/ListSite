@@ -199,4 +199,12 @@ public class Thing extends AuditedEntity {
     public Integer getParentThingID() {
         return parentThing==null?null:parentThing.thingID;
     }
+
+    public Set<Thing> getChildThings() {
+        return childThings;
+    }
+
+    public void setChildThings(Set<Thing> childThings) {
+        this.childThings = childThings;
+    }
 }

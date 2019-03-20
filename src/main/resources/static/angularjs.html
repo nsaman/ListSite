@@ -177,7 +177,7 @@
                 }
                 ;
             }
-            ]).controller('AppCtrl', function($scope, $mdDialog, $timeout, $mdSidenav, $log, $http, userService, $location) {
+            ]).controller('AppCtrl', function($scope, $mdDialog, $timeout, $mdSidenav, $log, $http, userService, $location, thingService) {
 
                 $scope.user = {};
                 $scope.user.loggedIn = false;
@@ -200,26 +200,20 @@
                 }
                 ;
 
-                $scope.parentToAddThingTo = {};
-                $scope.setParentToAddThingTo = function(parentID) {
-                    $http.get("api/thing?thingID=" + parentID).then(function(response) {
-                        $scope.parentToAddThingTo = response.data;
-                    })
-                }
-                ;
-
                 $scope.showAddThing = function() {
 
                     var parentThingID = 1
-                    if ($location.search()['thingID'] == null) {
+                    if ($location.search()['thingID'] != null) {
                         parentThingID = $location.search()['thingID']
                     }
-
-                    $mdDialog.show({
-                        templateUrl: 'addThingDialog.html',
-                        controller: 'AddThingDialogCtrl'<!--locals: {-->
-                        <!--user: $scope.user-->
-                        <!--}-->
+                    thingService.getAbstractThingAndChildren(parentThingID).then(function(response) {
+                        $mdDialog.show({
+                            templateUrl: 'addThingDialog.html',
+                            controller: 'AddThingDialogCtrl',
+                            locals: {
+                                parentThings: response.data
+                            }
+                        });
                     });
                 }
                 ;
@@ -316,11 +310,17 @@
 
             });
 
-            app.controller('AddThingDialogCtrl', function($scope, $http, $mdDialog) {
+            app.controller('AddThingDialogCtrl', function($scope, $http, $mdDialog, thingService, parentThings) {
 
+                $scope.parentThings = parentThings
                 $scope.addThingFormData = {};
                 $scope.addThingFormData.isAbstract = false;
-                $scope.parentThings = ['Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California', 'Colorado', 'Connecticut', 'Delaware', 'Florida', 'Georgia', 'Hawaii', 'Idaho', 'Illinois', 'Indiana', 'Iowa', 'Kansas', 'Kentucky', 'Louisiana', 'Maine', 'Maryland', 'Massachusetts', 'Michigan', 'Minnesota', 'Mississippi', 'Missouri', 'Montana', 'Nebraska', 'Nevada', 'New Hampshire', 'New Jersey', 'New Mexico', 'New York', 'North Dakota', 'North Carolina', 'Ohio', 'Oklahoma', 'Oregon', 'Pennsylvania', 'Rhode Island', 'South Carolina', 'South Dakota', 'Tennessee', 'Texas', 'Utah', 'Vermont', 'Virginia', 'Washington', 'West Virginia', 'Wisconsin', 'Wyoming'];
+                <!--$scope.setParentThings = function(parentThingId) {-->
+                    <!--thingService.getThing(1).then(function(response) {-->
+                            <!--parentThings = response.data;-->
+                        <!--});-->
+                <!--}-->
+                <!--$scope.setParentThings(1)-->
 
                 $scope.submitAddThingForm = function() {
                     $http({
@@ -345,6 +345,19 @@
                 ;
 
             });
+
+            app.service('thingService', ['$http', function ($http) {
+
+                this.getThing = function (thingId) {
+                    return $http.get("api/thing?thingID=" + thingId);
+                };
+
+                this.getAbstractThingAndChildren = function (thingId) {
+                    return $http.get("api/thing/abstractThingAndChildren?thingID=" + thingId);
+                };
+            }]);
+
+
         </script>
 </head>
 <body ng-app="basicUsageSidenavDemo" ng-controller="AppCtrl" layout="row" ng-cloak>

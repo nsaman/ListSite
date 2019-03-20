@@ -32,8 +32,20 @@ public class ThingApiController {
     }
 
     @RequestMapping(path="/api/thing", produces = "application/json")
-    public Thing getThingsByParentAndComparator(@RequestParam(value="thingID",required = true) Thing thing) {
+    public Thing getThingByThingId(@RequestParam(value="thingID",required = true) Thing thing) {
         return thing;
+    }
+
+    @RequestMapping(path="/api/thing/abstractThingAndChildren", produces = "application/json")
+    public Set<Thing> getThingAndAbstractChildrenByThingId(@RequestParam(value="thingID",required = true) Thing thing) {
+        LinkedHashSet<Thing> things = new LinkedHashSet<>();
+        things.add(thing);
+
+        for(Thing childThing : thing.getChildThings())
+            if(childThing.getIsAbstract())
+                things.add(childThing);
+
+        return things;
     }
 
     @PreAuthorize("hasRole('ROLE_VIEWER')")
