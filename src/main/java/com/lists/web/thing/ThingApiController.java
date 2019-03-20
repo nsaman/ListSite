@@ -2,6 +2,7 @@ package com.lists.web.thing;
 
 import com.lists.web.comparator.Comparator;
 import com.lists.web.compares.Compares;
+import com.lists.web.compares.IComparesRepository;
 import com.lists.web.descriptor.Descriptor;
 import com.lists.web.descriptorType.DescriptorType;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +10,7 @@ import org.springframework.data.jpa.domain.Specifications;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import javax.transaction.Transactional;
 import javax.validation.Valid;
 import java.util.*;
 
@@ -20,6 +22,8 @@ import java.util.*;
 public class ThingApiController {
     @Autowired
     private IThingRepository thingRepository;
+    @Autowired
+    private IComparesRepository comparesRepository;
 
     @RequestMapping(path="/api/things", produces = "application/json")
     public ThingsTableView getThingsByParentAndComparator(@RequestParam(value="thingID") Thing parentThing,
@@ -51,6 +55,7 @@ public class ThingApiController {
         return things;
     }
 
+    @Transactional
     @PreAuthorize("hasRole('ROLE_VIEWER')")
     @RequestMapping(path="/api/thing", method = RequestMethod.POST, consumes={"application/json"})
     public void createThing(@Valid @RequestBody NewThingRequest newThingRequest) {
@@ -62,6 +67,16 @@ public class ThingApiController {
         thing.setParentThing(thingRepository.findOne(newThingRequest.getParentThingId()));
 
         thingRepository.save(thing);
+
+        Set<Compares> comparesSet = new HashSet<>();
+        for(Compares parentCompares : thing.getParentThing().getCompares()) {
+            Compares compares = new Compares();
+            compares.setThing(thing);
+            compares.setComparator(parentCompares.getComparator());
+            compares.setScore(Compares.DEFAULT_SCORE);
+
+            comparesRepository.save(compares);
+        }
     }
 
     private ThingsTableView thingsToThingsTableView(Iterable<Thing> thingList, Collection<Comparator> showComparators, Collection<DescriptorType> showDescriptorTypes) {

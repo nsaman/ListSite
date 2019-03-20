@@ -64,4 +64,8 @@ public abstract class Descriptor extends AuditedEntity {
     public DescriptorTypes getType() {
         return type;
     }
+
+    public String getDescriptorTypeTitle() {
+        return descriptorType.getTitle();
+    }
 }

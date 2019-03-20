@@ -57,7 +57,7 @@ public class ComparesController {
     @PreAuthorize("hasRole('ROLE_VIEWER')")
     @RequestMapping(method = RequestMethod.POST)
     public String createCompares(@ModelAttribute("compares") Compares compares) {
-        compares.setScore(1600);
+        compares.setScore(Compares.DEFAULT_SCORE);
         comparesRepository.save(compares);
 
         return "redirect:/compares/" + compares.getComparesID();

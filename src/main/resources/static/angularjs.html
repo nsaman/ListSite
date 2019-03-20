@@ -340,6 +340,7 @@
                 $scope.newParentSelected = function() {
                     thingService.getAbstractThingAndParentAndChildren($scope.addThingFormData.parentThingId).then(function mySuccess(response) {
                         $scope.parentThings = response.data;
+                        $scope.parentThing = thingService.getThingFromListById(response.data, $scope.addThingFormData.parentThingId);
                     }, function myError(response) {
                         $scope.cancel();
                     });

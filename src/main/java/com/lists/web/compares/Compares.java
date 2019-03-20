@@ -14,6 +14,9 @@ import javax.persistence.*;
 @Entity
 @Table(uniqueConstraints={@UniqueConstraint(columnNames={"comparatorID", "thingID"})})
 public class Compares extends AuditedEntity {
+
+    public static float DEFAULT_SCORE = 1600;
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer comparesID;
