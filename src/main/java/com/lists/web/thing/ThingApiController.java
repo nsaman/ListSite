@@ -9,6 +9,7 @@ import org.springframework.data.jpa.domain.Specifications;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.*;
 
 /**
@@ -50,7 +51,7 @@ public class ThingApiController {
 
     @PreAuthorize("hasRole('ROLE_VIEWER')")
     @RequestMapping(path="/api/thing", method = RequestMethod.POST, consumes={"application/json"})
-    public void createThing(@RequestBody NewThingRequest newThingRequest) {
+    public void createThing(@Valid @RequestBody NewThingRequest newThingRequest) {
 
         Thing thing = new Thing();
 

@@ -1,9 +1,14 @@
 package com.lists.web.thing;
 
+import javax.validation.constraints.NotNull;
+
 public class NewThingRequest {
 
+    @NotNull
     private String title;
+    @NotNull
     private Boolean isAbstract;
+    @NotNull
     private Integer parentThingId;
 
     public String getTitle() {
