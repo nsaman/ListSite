@@ -42,7 +42,7 @@
 
                 $mdThemingProvider.theme('default').primaryPalette('blue');
             }
-            ]).controller('nutritionController', ['$mdEditDialog', '$scope', '$window', '$http', '$location', function($mdEditDialog, $scope, $window, $http, $location, userService) {
+            ]).controller('nutritionController', function($mdDialog, $mdEditDialog, $q, $scope, $timeout, $window, $http, $location, userService, thingService) {
                 'use strict';
 
                 $scope.selected = [];
@@ -54,130 +54,124 @@
                     return "";
                 }
 
-                $scope.query = {
-                    order: 'name',
-                    limit: 10
-                };
-
                 $scope.things = [];
-                $http.get("api/things" + $scope.getQueryParams()).then(function(response) {
-                    $scope.things = response.data;
-                });
+                <!--$scope.thingsLength = {};-->
+                $scope.loadThings = function() {
+                    $http.get("api/things" + $scope.getQueryParams()).then(function(response) {
+                        $scope.things = response.data;
+                        <!--$scope.thingsLength.length=$scope.things.length-->
+                    });
+                }
+                $scope.loadThings();
 
-                $scope.desserts = {
-                    "count": 3,
-                    "data": [{
-                        "name": "Frozen yogurt",
-                        "type": "Ice cream",
-                        "calories": {
-                            "value": 159.0
-                        },
-                        "fat": {
-                            "value": 6.0
-                        },
-                        "carbs": {
-                            "value": 24.0
-                        },
-                        "protein": {
-                            "value": 4.0
-                        },
-                        "sodium": {
-                            "value": 87.0
-                        },
-                        "calcium": {
-                            "value": 14.0
-                        },
-                        "iron": {
-                            "value": 1.0
-                        },
-                        "comment": "Not as good as the real thing."
-                    }, {
-                        "name": "Ice cream sandwich",
-                        "type": "Ice cream",
-                        "calories": {
-                            "value": 237.0
-                        },
-                        "fat": {
-                            "value": 9.0
-                        },
-                        "carbs": {
-                            "value": 37.0
-                        },
-                        "protein": {
-                            "value": 4.3
-                        },
-                        "sodium": {
-                            "value": 129.0
-                        },
-                        "calcium": {
-                            "value": 8.0
-                        },
-                        "iron": {
-                            "value": 1.0
-                        }
-                    }, {
-                        "name": "Eclair",
-                        "type": "Pastry",
-                        "calories": {
-                            "value": 262.0
-                        },
-                        "fat": {
-                            "value": 16.0
-                        },
-                        "carbs": {
-                            "value": 24.0
-                        },
-                        "protein": {
-                            "value": 6.0
-                        },
-                        "sodium": {
-                            "value": 337.0
-                        },
-                        "calcium": {
-                            "value": 6.0
-                        },
-                        "iron": {
-                            "value": 7.0
-                        }
-                    }]
-                };
+                $scope.showAddThing = function() {
 
-                $scope.editComment = function(event, dessert) {
-                    event.stopPropagation();
-                    // in case autoselect is enabled
-
-                    var editDialog = {
-                        modelValue: dessert.comment,
-                        placeholder: 'Add a comment',
-                        save: function(input) {
-                            dessert.comment = input.$modelValue;
-                        },
-                        targetEvent: event,
-                        title: 'Add a comment',
-                        validators: {
-                            'md-maxlength': 30
-                        }
-                    };
-
-                    var promise = $mdEditDialog.small(editDialog);
-
-                    promise.then(function(ctrl) {
-                        var input = ctrl.getInput();
-
-                        input.$viewChangeListeners.push(function() {
-                            input.$setValidity('test', input.$modelValue !== 'test');
+                    var parentThingID = 1
+                    if ($location.search()['thingID'] != null) {
+                        parentThingID = $location.search()['thingID']
+                    }
+                    thingService.getAbstractThingAndParentAndChildren(parentThingID).then(function(response) {
+                        $mdDialog.show({
+                            templateUrl: 'addThingDialog.html',
+                            controller: 'AddThingDialogCtrl',
+                            locals: {
+                                parentThings: response.data,
+                                firstParentThingId: parentThingID
+                            }
+                        })
+                        .finally(function() {
+                          $http.get("api/things" + $scope.getQueryParams()).then(function(response) {
+                              $scope.things = response.data;
+                          });
                         });
                     });
-
                 }
                 ;
 
-                $scope.getTypes = function() {
-                    return ['Candy', 'Ice cream', 'Other', 'Pastry'];
-                }
-                ;
-            }
-            ]).controller('AppCtrl', function($scope, $mdDialog, $timeout, $mdSidenav, $log, $http, userService, $location, thingService) {
+
+
+  $scope.limitOptions = [5, 10, 15];
+
+  $scope.options = {
+    rowSelection: true,
+    multiSelect: true,
+    autoSelect: true,
+    decapitate: false,
+    largeEditDialog: false,
+    boundaryLinks: false,
+    limitSelect: true,
+    pageSelect: true
+  };
+
+  $scope.query = {
+    order: 'name',
+    limit: 5,
+    page: 1
+  };
+
+  $scope.editComment = function (event, dessert) {
+    event.stopPropagation(); // in case autoselect is enabled
+
+    var editDialog = {
+      modelValue: dessert.comment,
+      placeholder: 'Add a comment',
+      save: function (input) {
+        if(input.$modelValue === 'Donald Trump') {
+          input.$invalid = true;
+          return $q.reject();
+        }
+        if(input.$modelValue === 'Bernie Sanders') {
+          return dessert.comment = 'FEEL THE BERN!'
+        }
+        dessert.comment = input.$modelValue;
+      },
+      targetEvent: event,
+      title: 'Add a comment',
+      validators: {
+        'md-maxlength': 30
+      }
+    };
+
+    var promise;
+
+    if($scope.options.largeEditDialog) {
+      promise = $mdEditDialog.large(editDialog);
+    } else {
+      promise = $mdEditDialog.small(editDialog);
+    }
+
+    promise.then(function (ctrl) {
+      var input = ctrl.getInput();
+
+      input.$viewChangeListeners.push(function () {
+        input.$setValidity('test', input.$modelValue !== 'test');
+      });
+    });
+  };
+
+  $scope.toggleLimitOptions = function () {
+    $scope.limitOptions = $scope.limitOptions ? undefined : [5, 25, 50];
+  };
+
+  $scope.loadStuff = function () {
+    $scope.promise = $timeout(function () {
+      // loading
+    }, 2000);
+  }
+
+  $scope.logItem = function (item) {
+    console.log(item.thing.title, 'was selected');
+  };
+
+  $scope.logOrder = function (order) {
+    console.log('order: ', order);
+  };
+
+  $scope.logPagination = function (page, limit) {
+    console.log('page: ', page);
+    console.log('limit: ', limit);
+  }
+            }).controller('AppCtrl', function($scope, $mdDialog, $timeout, $mdSidenav, $log, $http, userService, $location, thingService) {
 
                 $scope.user = {};
                 $scope.user.loggedIn = false;
@@ -196,25 +190,6 @@
                         locals: {
                             user: $scope.user
                         }
-                    });
-                }
-                ;
-
-                $scope.showAddThing = function() {
-
-                    var parentThingID = 1
-                    if ($location.search()['thingID'] != null) {
-                        parentThingID = $location.search()['thingID']
-                    }
-                    thingService.getAbstractThingAndParentAndChildren(parentThingID).then(function(response) {
-                        $mdDialog.show({
-                            templateUrl: 'addThingDialog.html',
-                            controller: 'AddThingDialogCtrl',
-                            locals: {
-                                parentThings: response.data,
-                                firstParentThingId: parentThingID
-                            }
-                        });
                     });
                 }
                 ;
