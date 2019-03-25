@@ -15,21 +15,29 @@
                     </md-select>
                 </md-input-container>
             </div>
-            <md-input-container>
-                <label>Title</label>
-                <input ng-model="addThingFormData.title" name="thingNameInput">
-                <div ng-messages="addThingFormData.thingNameInput.$error" role="alert">
-                    <p ng-message="failed">
-                        Bad Thing Name!
-                    </p>
-                </div>
-            </md-input-container>
+            <div layout-gt-xs="row">
+                <md-input-container>
+                    <label>Title</label>
+                    <input ng-model="addThingFormData.title" name="thingNameInput">
+                    <div ng-messages="addThingFormData.thingNameInput.$error" role="alert">
+                        <p ng-message="failed">
+                            Bad Thing Name!
+                        </p>
+                    </div>
+                </md-input-container>
 
-            <md-input-container>
-                <md-checkbox ng-model="addThingFormData.isAbstract">
-                    isAbstract
-                </md-checkbox>
-            </md-input-container>
+                <md-input-container>
+                    <md-checkbox ng-model="addThingFormData.isAbstract">
+                        isAbstract
+                    </md-checkbox>
+                </md-input-container>
+            </div>
+            <div layout-gt-xs="row" ng-repeat="descriptor in parentThing.descriptors">
+                <md-input-container>
+                    <label>{{descriptor.descriptorType.title}}</label>
+                    <input ng-disabled="addThingFormData.isAbstract" ng-model="addThingFormData.descriptors[descriptor.descriptorType.descriptorTypeID]">
+                </md-input-container>
+            </div>
 
         </form>
         </md-content>

@@ -292,7 +292,12 @@
                 $scope.addThingFormData = {};
                 $scope.addThingFormData.isAbstract = false;
                 $scope.addThingFormData.parentThingId = firstParentThingId;
+                $scope.addThingFormData.descriptors = {};
                 $scope.parentThing = thingService.getThingFromListById($scope.parentThings, $scope.addThingFormData.parentThingId);
+                for (i = 0; i < $scope.parentThing.descriptors.length; i++) {
+                    var descriptorTypeID = $scope.parentThing.descriptors[i].descriptorType.descriptorTypeID;
+                    $scope.addThingFormData.descriptors[descriptorTypeID] = null;
+                }
 
 
                 $scope.submitAddThingForm = function() {
@@ -316,6 +321,10 @@
                     thingService.getAbstractThingAndParentAndChildren($scope.addThingFormData.parentThingId).then(function mySuccess(response) {
                         $scope.parentThings = response.data;
                         $scope.parentThing = thingService.getThingFromListById(response.data, $scope.addThingFormData.parentThingId);
+                        for (i = 0; i < $scope.parentThing.descriptors.length; i++) {
+                            var descriptorTypeID = $scope.parentThing.descriptors[i].descriptorType.descriptorTypeID;
+                            $scope.addThingFormData.descriptors[descriptorTypeID] = null;
+                        }
                     }, function myError(response) {
                         $scope.cancel();
                     });

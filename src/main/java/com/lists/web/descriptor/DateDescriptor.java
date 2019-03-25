@@ -6,6 +6,8 @@ import org.springframework.format.annotation.DateTimeFormat;
 import javax.persistence.Entity;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
@@ -15,8 +17,10 @@ import java.util.Date;
 @Entity
 public class DateDescriptor extends Descriptor {
 
+    public static final String DATE_FORMAT = "yyyy-MM-dd";
+
     @Temporal(TemporalType.TIMESTAMP)
-    @DateTimeFormat(pattern="yyyy-MM-dd")
+    @DateTimeFormat(pattern=DATE_FORMAT)
     private Date value;
 
     public DateDescriptor() {
@@ -27,6 +31,10 @@ public class DateDescriptor extends Descriptor {
     public String getReadableString() {
         return value.toString();
     }
+    @Override
+    public void setValueFromString(String value) {
+        this.value = formatDate(value);
+    }
 
     public Date getValue() {
         return value;
@@ -34,5 +42,14 @@ public class DateDescriptor extends Descriptor {
 
     public void setValue(Date value) {
         this.value = value;
+    }
+
+
+    public static Date formatDate(String string) {
+        try {
+            return new SimpleDateFormat(DATE_FORMAT).parse(string);
+        } catch (ParseException ex) {
+            throw new IllegalArgumentException("Could not convert to " + DATE_FORMAT + " from value=" + string, ex);
+        }
     }
 }

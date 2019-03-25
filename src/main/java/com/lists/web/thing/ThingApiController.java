@@ -4,7 +4,10 @@ import com.lists.web.comparator.Comparator;
 import com.lists.web.compares.Compares;
 import com.lists.web.compares.IComparesRepository;
 import com.lists.web.descriptor.Descriptor;
+import com.lists.web.descriptor.DescriptorRepositoryHelper;
 import com.lists.web.descriptorType.DescriptorType;
+import com.lists.web.descriptorType.IDescriptorTypeRepository;
+import com.sun.deploy.util.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specifications;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -24,6 +27,10 @@ public class ThingApiController {
     private IThingRepository thingRepository;
     @Autowired
     private IComparesRepository comparesRepository;
+    @Autowired
+    private IDescriptorTypeRepository descriptorTypeRepository;
+    @Autowired
+    private DescriptorRepositoryHelper descriptorRepositoryHelper;
 
     @RequestMapping(path="/api/things", produces = "application/json")
     public ThingsTableView getThingsByParentAndComparator(@RequestParam(value="thingID") Thing parentThing,
@@ -68,7 +75,6 @@ public class ThingApiController {
 
         thingRepository.save(thing);
 
-        Set<Compares> comparesSet = new HashSet<>();
         for(Compares parentCompares : thing.getParentThing().getCompares()) {
             Compares compares = new Compares();
             compares.setThing(thing);
@@ -77,6 +83,34 @@ public class ThingApiController {
 
             comparesRepository.save(compares);
         }
+
+        List<Descriptor> undefinedDescriptorList = new ArrayList<>();
+        for(Descriptor parentDescriptor : thing.getParentThing().getDescriptors()) {
+            if(!parentDescriptor.getDescriptorType().getIsNullable() && !newThingRequest.getDescriptors().containsKey(parentDescriptor.getDescriptorID())) {
+                undefinedDescriptorList.add(parentDescriptor);
+            }
+        }
+        if (!undefinedDescriptorList.isEmpty())
+            throw new IllegalArgumentException("Undefined descriptors in parent and new thing not abstract=" + StringUtils.join(undefinedDescriptorList, ", "));
+
+        Set<Descriptor> descriptors = new HashSet<>();
+
+        for (Integer descriptorTypeId : newThingRequest.getDescriptors().keySet()) {
+            DescriptorType descriptorType = descriptorTypeRepository.findOne(descriptorTypeId);
+            Descriptor descriptor = descriptorType.createEmptyChild();
+            descriptor.setDescribedThing(thing);
+            if (!newThingRequest.getIsAbstract()) {
+                try {
+                    descriptor.setValueFromString(newThingRequest.getDescriptors().get(descriptorTypeId));
+                } catch (Exception e) {
+                    throw new IllegalStateException("Error parsing and setting descriptor value for descriptorType=" + descriptorType.getTitle()
+                            + " value=" + newThingRequest.getDescriptors().get(descriptorTypeId));
+                }
+            }
+            descriptors.add(descriptor);
+        }
+
+        descriptorRepositoryHelper.save(descriptors);
     }
 
     private ThingsTableView thingsToThingsTableView(Iterable<Thing> thingList, Collection<Comparator> showComparators, Collection<DescriptorType> showDescriptorTypes) {

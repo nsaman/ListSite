@@ -2,11 +2,14 @@ package com.lists.web.descriptor;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.lists.web.descriptorType.DescriptorTypes;
+import com.lists.web.thing.IThingRepository;
 import com.lists.web.thing.Thing;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.Transient;
 
 /**
  * Created by nick on 10/28/2018.
@@ -14,6 +17,10 @@ import javax.persistence.ManyToOne;
 
 @Entity
 public class ReferenceThingDescriptor extends Descriptor {
+
+    @Transient
+    @Autowired
+    IThingRepository thingRepository;
 
     @JsonBackReference
     @ManyToOne
@@ -27,6 +34,11 @@ public class ReferenceThingDescriptor extends Descriptor {
     @Override
     public String getReadableString() {
         return referenceThing.getTitle();
+    }
+
+    @Override
+    public void setValueFromString(String value) {
+        referenceThing = thingRepository.findOne(Integer.parseInt(value));
     }
 
     public Thing getReferenceThing() {

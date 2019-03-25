@@ -1,6 +1,7 @@
 package com.lists.web.thing;
 
 import javax.validation.constraints.NotNull;
+import java.util.Map;
 
 public class NewThingRequest {
 
@@ -10,6 +11,9 @@ public class NewThingRequest {
     private Boolean isAbstract;
     @NotNull
     private Integer parentThingId;
+    @NotNull
+    private Map<Integer, String> descriptors;
+
 
     public String getTitle() {
         return title;
@@ -33,5 +37,13 @@ public class NewThingRequest {
 
     public void setParentThingId(Integer parentThingId) {
         this.parentThingId = parentThingId;
+    }
+
+    public Map<Integer, String> getDescriptors() {
+        return descriptors;
+    }
+
+    public void setDescriptors(Map<Integer, String> descriptors) {
+        this.descriptors = descriptors;
     }
 }

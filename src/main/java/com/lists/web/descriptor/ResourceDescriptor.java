@@ -22,6 +22,11 @@ public class ResourceDescriptor extends Descriptor {
         return value;
     }
 
+    @Override
+    public void setValueFromString(String value) {
+        this.value = value;
+    }
+
     public String getValue() {
         return value;
     }

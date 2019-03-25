@@ -1,6 +1,7 @@
 package com.lists.web.descriptorType;
 
 import com.lists.web.AuditedEntity;
+import com.lists.web.descriptor.*;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -60,5 +61,28 @@ public class DescriptorType extends AuditedEntity {
 
     public void setIsUnique(Boolean unique) {
         isUnique = unique;
+    }
+
+    public Descriptor createEmptyChild() {
+        Descriptor descriptor;
+        if (valueType.equals(DescriptorTypes.DATE.getTypeName())) {
+            descriptor = new DateDescriptor();
+        } else if (valueType.equals(DescriptorTypes.DOUBLE.getTypeName())) {
+            descriptor = new DoubleDescriptor();
+        } else if (valueType.equals(DescriptorTypes.INTEGER.getTypeName())) {
+            descriptor = new IntegerDescriptor();
+        } else if (valueType.equals(DescriptorTypes.LOCATION.getTypeName())) {
+            descriptor = new LocationDescriptor();
+        } else if (valueType.equals(DescriptorTypes.REFERENCE_THING.getTypeName())) {
+            descriptor = new ReferenceThingDescriptor();
+        } else if (valueType.equals(DescriptorTypes.RESOURCE.getTypeName())) {
+            descriptor = new ResourceDescriptor();
+        } else if (valueType.equals(DescriptorTypes.STRING.getTypeName())) {
+            descriptor = new StringDescriptor();
+        } else {
+            throw new IllegalStateException("DescriptorType tried to make child with valueType=" + valueType);
+        }
+        descriptor.setDescriptorType(this);
+        return descriptor;
     }
 }

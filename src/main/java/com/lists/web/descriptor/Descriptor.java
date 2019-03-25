@@ -23,12 +23,12 @@ public abstract class Descriptor extends AuditedEntity {
     @JoinColumn(name="describedThingID")
     private Thing describedThing;
 
-    @JsonBackReference(value="descriptorDescriptorType")
     @ManyToOne
     @JoinColumn(name="descriptorTypeID")
     private DescriptorType descriptorType;
 
     public abstract String getReadableString();
+    public abstract void setValueFromString(String value);
 
     @Transient
     final public DescriptorTypes type;
