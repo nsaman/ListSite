@@ -40,7 +40,8 @@ dependencies {
 			'org.springframework.boot:spring-boot-starter-security',
 			'mysql:mysql-connector-java',
 			'javax.servlet:jstl',
-            'org.apache.tiles:tiles-jsp:3.0.4')
+            'org.apache.tiles:tiles-jsp:3.0.4',
+			'commons-lang:commons-lang:2.6')
 	testCompile('org.springframework.boot:spring-boot-starter-test')
 }
 

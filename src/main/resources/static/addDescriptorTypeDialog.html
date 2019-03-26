@@ -1,0 +1,55 @@
+<md-dialog aria-label="Add Descriptor Type Dialog">
+    <md-toolbar>
+        <div class="md-toolbar-tools">
+            <h2>Add a descriptor type</h2>
+        </div>
+    </md-toolbar>
+    <md-content layout-gt-sm="column" layout-padding>
+        <form name="addDescriptorTypeForm">
+
+            <div layout-gt-xs="row">
+                <md-input-container>
+                    <label>Title</label>
+                    <input ng-model="addDescriptorTypeFormData.title" name="descriptorTypeNameInput">
+                    <div ng-messages="addDescriptorTypeFormData.descriptorTypeNameInput.$error" role="alert">
+                        <p ng-message="failed">
+                            Bad Descriptor Type Name!
+                        </p>
+                    </div>
+                </md-input-container>
+
+                <md-input-container>
+                    <label>Descriptor Type</label>
+                    <md-select name="type" ng-model="addDescriptorTypeFormData.valueType" required>
+                        <md-option ng-repeat="descriptorTypeType in descriptorTypeTypes" value="{{descriptorTypeType}}">{{descriptorTypeType}}</md-option>
+                    </md-select>
+                </md-input-container>
+            </div>
+
+            <div layout-gt-xs="row">
+                <md-input-container>
+                    <md-checkbox ng-model="addDescriptorTypeFormData.isNullable">
+                        Nullable
+                    </md-checkbox>
+                </md-input-container>
+
+                <md-input-container>
+                    <md-checkbox ng-model="addDescriptorTypeFormData.isUnique">
+                        Unique
+                    </md-checkbox>
+                </md-input-container>
+            </div>
+
+        </form>
+        </md-content>
+
+        <md-dialog-actions layout="row">
+            <span flex></span>
+            <md-button ng-click="cancel()" >
+                Cancel
+            </md-button>
+            <md-button ng-click="submitAddDescriptorTypeForm()" style="margin-right:20px;" >
+                Submit
+            </md-button>
+        </md-dialog-actions>
+</md-dialog>

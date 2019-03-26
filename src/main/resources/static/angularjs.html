@@ -42,22 +42,14 @@
 
                 $mdThemingProvider.theme('default').primaryPalette('blue');
             }
-            ]).controller('nutritionController', function($mdDialog, $mdEditDialog, $q, $scope, $timeout, $window, $http, $location, userService, thingService) {
+            ]).controller('nutritionController', function($mdDialog, $mdEditDialog, $q, $scope, $timeout, $window, $http, $location, userService, thingService, locationService) {
                 'use strict';
 
                 $scope.selected = [];
 
-                $scope.getQueryParams = function() {
-                    var url = $location.url();
-                    if (url.includes("?"))
-                        return "?" + url.split('?')[1];
-                    return "";
-                }
-
                 $scope.things = [];
-                <!--$scope.thingsLength = {};-->
                 $scope.loadThings = function() {
-                    $http.get("api/things" + $scope.getQueryParams()).then(function(response) {
+                    $http.get("api/things" + locationService.getQueryParams()).then(function(response) {
                         $scope.things = response.data;
                         <!--$scope.thingsLength.length=$scope.things.length-->
                     });
@@ -80,7 +72,7 @@
                             }
                         })
                         .finally(function() {
-                          $http.get("api/things" + $scope.getQueryParams()).then(function(response) {
+                          $http.get("api/things" + locationService.getQueryParams()).then(function(response) {
                               $scope.things = response.data;
                           });
                         });
@@ -89,6 +81,118 @@
                 ;
 
 
+
+  $scope.limitOptions = [5, 10, 15];
+
+  $scope.options = {
+    rowSelection: true,
+    multiSelect: true,
+    autoSelect: true,
+    decapitate: false,
+    largeEditDialog: false,
+    boundaryLinks: false,
+    limitSelect: true,
+    pageSelect: true
+  };
+
+  $scope.query = {
+    order: 'name',
+    limit: 5,
+    page: 1
+  };
+
+  $scope.editComment = function (event, dessert) {
+    event.stopPropagation(); // in case autoselect is enabled
+
+    var editDialog = {
+      modelValue: dessert.comment,
+      placeholder: 'Add a comment',
+      save: function (input) {
+        if(input.$modelValue === 'Donald Trump') {
+          input.$invalid = true;
+          return $q.reject();
+        }
+        if(input.$modelValue === 'Bernie Sanders') {
+          return dessert.comment = 'FEEL THE BERN!'
+        }
+        dessert.comment = input.$modelValue;
+      },
+      targetEvent: event,
+      title: 'Add a comment',
+      validators: {
+        'md-maxlength': 30
+      }
+    };
+
+    var promise;
+
+    if($scope.options.largeEditDialog) {
+      promise = $mdEditDialog.large(editDialog);
+    } else {
+      promise = $mdEditDialog.small(editDialog);
+    }
+
+    promise.then(function (ctrl) {
+      var input = ctrl.getInput();
+
+      input.$viewChangeListeners.push(function () {
+        input.$setValidity('test', input.$modelValue !== 'test');
+      });
+    });
+  };
+
+  $scope.toggleLimitOptions = function () {
+    $scope.limitOptions = $scope.limitOptions ? undefined : [5, 25, 50];
+  };
+
+  $scope.loadStuff = function () {
+    $scope.promise = $timeout(function () {
+      // loading
+    }, 2000);
+  }
+
+  $scope.logItem = function (item) {
+    console.log(item.thing.title, 'was selected');
+  };
+
+  $scope.logOrder = function (order) {
+    console.log('order: ', order);
+  };
+
+  $scope.logPagination = function (page, limit) {
+    console.log('page: ', page);
+    console.log('limit: ', limit);
+  }
+            }).controller('descriptorTypesController', function($mdDialog, $mdEditDialog, $q, $scope, $timeout, $window, $http, $location, userService, descriptorTypeService, locationService) {
+                'use strict';
+
+                $scope.selected = [];
+
+                $scope.descriptorTypes = [];
+                $scope.loadDescriptorTypes = function() {
+                    $http.get("api/descriptorTypes").then(function(response) {
+                        $scope.descriptorTypes = response.data;
+                    });
+                }
+                $scope.loadDescriptorTypes();
+
+                $scope.showAddDescriptorTypes = function() {
+
+                    descriptorTypeService.getDescriptorTypeTypes().then(function(response) {
+                        $mdDialog.show({
+                            templateUrl: 'addDescriptorTypeDialog.html',
+                            controller: 'AddDescriptorTypeDialogCtrl',
+                            locals: {
+                                descriptorTypeTypes: response.data,
+                            }
+                        })
+                        .finally(function() {
+                            $http.get("api/descriptorTypes").then(function(response) {
+                                $scope.descriptorTypes = response.data;
+                            });
+                        });
+                    });
+                };
 
   $scope.limitOptions = [5, 10, 15];
 
@@ -249,6 +353,9 @@
                 $routeProvider.when("/things", {
                     templateUrl: "things.html",
                     controller: "nutritionController"
+                }).when("/descriptorTypes", {
+                    templateUrl: "descriptorTypes.html",
+                    controller: "descriptorTypesController"
                 }).otherwise({
                     templateUrl: "home.html"
                 });
@@ -337,6 +444,35 @@
 
             });
 
+            app.controller('AddDescriptorTypeDialogCtrl', function($scope, $http, $mdDialog, descriptorTypeService, descriptorTypeTypes) {
+
+                $scope.descriptorTypeTypes = descriptorTypeTypes
+                $scope.addDescriptorTypeFormData = {};
+                $scope.addDescriptorTypeFormData.isNullable = false;
+                $scope.addDescriptorTypeFormData.isUnique = false;
+
+                $scope.submitAddDescriptorTypeForm = function() {
+                    $http({
+                        method: 'POST',
+                        url: 'api/descriptorType',
+                        data: $scope.addDescriptorTypeFormData,
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    }).then(function mySuccess(response) {
+                        $scope.cancel();
+                    }, function myError(response) {
+                        $scope.addDescriptorTypeForm.descriptorTypeNameInput.$error = {
+                            failed: true
+                        };
+                    })
+                }
+
+                $scope.cancel = function() {
+                    $mdDialog.hide();
+                };
+            });
+
             app.service('thingService', ['$http', function ($http) {
 
                 this.getThing = function (thingId) {
@@ -355,6 +491,23 @@
                     }
                     return null;
                 };
+            }]).service('descriptorTypeService', ['$http', function ($http) {
+
+                this.getDescriptorType = function (descriptorTypeId) {
+                    return $http.get("api/descriptorType?descriptorTypeId=" + descriptorTypeId);
+                };
+
+                this.getDescriptorTypeTypes = function () {
+                    return $http.get("api/descriptorTypeTypes");
+                };
+            }]).service('locationService', ['$location', function ($location) {
+
+                this.getQueryParams = function() {
+                    var url = $location.url();
+                    if (url.includes("?"))
+                        return "?" + url.split('?')[1];
+                    return "";
+                }
             }]);
 
 
@@ -377,6 +530,9 @@
         </div>
         <div layout="row">
             <a href="/angularjs.html#!/things?thingID=1&comparatorID=1&descriptorTypeSearchedIDs=1,2,3&descriptorTypeRetrievedIDs=1,2,3">things</a>
+        </div>
+        <div layout="row">
+            <a href="/angularjs.html#!/descriptorTypes">descriptorTypes</a>
         </div>
         <p hide show-gt-md>This sidenav is locked open on your device. To go back to the default behavior,
             narrow your display.
