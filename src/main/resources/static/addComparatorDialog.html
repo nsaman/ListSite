@@ -1,0 +1,34 @@
+<md-dialog aria-label="Add Comparator Dialog">
+    <md-toolbar>
+        <div class="md-toolbar-tools">
+            <h2>Add a comparator</h2>
+        </div>
+    </md-toolbar>
+    <md-content layout-gt-sm="column" layout-padding>
+        <form name="addComparatorForm">
+
+            <div layout-gt-xs="row">
+                <md-input-container>
+                    <label>Title</label>
+                    <input ng-model="addComparatorFormData.title" name="comparatorNameInput">
+                    <div ng-messages="addComparatorFormData.comparatorNameInput.$error" role="alert">
+                        <p ng-message="failed">
+                            Bad Descriptor Type Name!
+                        </p>
+                    </div>
+                </md-input-container>
+            </div>
+
+        </form>
+        </md-content>
+
+        <md-dialog-actions layout="row">
+            <span flex></span>
+            <md-button ng-click="cancel()" >
+                Cancel
+            </md-button>
+            <md-button ng-click="submitAddComparatorForm()" style="margin-right:20px;" >
+                Submit
+            </md-button>
+        </md-dialog-actions>
+</md-dialog>

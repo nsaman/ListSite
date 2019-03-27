@@ -275,6 +275,113 @@
     console.log('page: ', page);
     console.log('limit: ', limit);
   }
+            }).controller('comparatorsController', function($mdDialog, $mdEditDialog, $q, $scope, $timeout, $window, $http, $location, userService, comparatorService, locationService) {
+                'use strict';
+
+                $scope.selected = [];
+
+                $scope.comparators = [];
+                $scope.loadComparators = function() {
+                    $http.get("api/comparators").then(function(response) {
+                        $scope.comparators = response.data;
+                    });
+                }
+                $scope.loadComparators();
+
+                $scope.showAddComparators = function() {
+
+                    $mdDialog.show({
+                        templateUrl: 'addComparatorDialog.html',
+                        controller: 'AddComparatorDialogCtrl'
+                    })
+                    .finally(function() {
+                        $http.get("api/comparators").then(function(response) {
+                            $scope.comparators = response.data;
+                        });
+                    });
+                };
+
+  $scope.limitOptions = [5, 10, 15];
+
+  $scope.options = {
+    rowSelection: true,
+    multiSelect: true,
+    autoSelect: true,
+    decapitate: false,
+    largeEditDialog: false,
+    boundaryLinks: false,
+    limitSelect: true,
+    pageSelect: true
+  };
+
+  $scope.query = {
+    order: 'name',
+    limit: 5,
+    page: 1
+  };
+
+  $scope.editComment = function (event, dessert) {
+    event.stopPropagation(); // in case autoselect is enabled
+
+    var editDialog = {
+      modelValue: dessert.comment,
+      placeholder: 'Add a comment',
+      save: function (input) {
+        if(input.$modelValue === 'Donald Trump') {
+          input.$invalid = true;
+          return $q.reject();
+        }
+        if(input.$modelValue === 'Bernie Sanders') {
+          return dessert.comment = 'FEEL THE BERN!'
+        }
+        dessert.comment = input.$modelValue;
+      },
+      targetEvent: event,
+      title: 'Add a comment',
+      validators: {
+        'md-maxlength': 30
+      }
+    };
+
+    var promise;
+
+    if($scope.options.largeEditDialog) {
+      promise = $mdEditDialog.large(editDialog);
+    } else {
+      promise = $mdEditDialog.small(editDialog);
+    }
+
+    promise.then(function (ctrl) {
+      var input = ctrl.getInput();
+
+      input.$viewChangeListeners.push(function () {
+        input.$setValidity('test', input.$modelValue !== 'test');
+      });
+    });
+  };
+
+  $scope.toggleLimitOptions = function () {
+    $scope.limitOptions = $scope.limitOptions ? undefined : [5, 25, 50];
+  };
+
+  $scope.loadStuff = function () {
+    $scope.promise = $timeout(function () {
+      // loading
+    }, 2000);
+  }
+
+  $scope.logItem = function (item) {
+    console.log(item.thing.title, 'was selected');
+  };
+
+  $scope.logOrder = function (order) {
+    console.log('order: ', order);
+  };
+
+  $scope.logPagination = function (page, limit) {
+    console.log('page: ', page);
+    console.log('limit: ', limit);
+  }
             }).controller('AppCtrl', function($scope, $mdDialog, $timeout, $mdSidenav, $log, $http, userService, $location, thingService) {
 
                 $scope.user = {};
@@ -356,6 +463,9 @@
                 }).when("/descriptorTypes", {
                     templateUrl: "descriptorTypes.html",
                     controller: "descriptorTypesController"
+                }).when("/comparators", {
+                    templateUrl: "comparators.html",
+                    controller: "comparatorsController"
                 }).otherwise({
                     templateUrl: "home.html"
                 });
@@ -473,6 +583,34 @@
                 };
             });
 
+            app.controller('AddComparatorDialogCtrl', function($scope, $http, $mdDialog, descriptorTypeService) {
+
+                $scope.addComparatorFormData = {};
+                $scope.addComparatorFormData.isNullable = false;
+                $scope.addComparatorFormData.isUnique = false;
+
+                $scope.submitAddComparatorForm = function() {
+                    $http({
+                        method: 'POST',
+                        url: 'api/comparator',
+                        data: $scope.addComparatorFormData,
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    }).then(function mySuccess(response) {
+                        $scope.cancel();
+                    }, function myError(response) {
+                        $scope.addComparatorForm.comparatorNameInput.$error = {
+                            failed: true
+                        };
+                    })
+                }
+
+                $scope.cancel = function() {
+                    $mdDialog.hide();
+                };
+            });
+
             app.service('thingService', ['$http', function ($http) {
 
                 this.getThing = function (thingId) {
@@ -499,6 +637,11 @@
 
                 this.getDescriptorTypeTypes = function () {
                     return $http.get("api/descriptorTypeTypes");
+                };
+            }]).service('comparatorService', ['$http', function ($http) {
+
+                this.getComparator = function (comparatorId) {
+                    return $http.get("api/comparator?comparatorId=" + comparatorId);
                 };
             }]).service('locationService', ['$location', function ($location) {
 
@@ -533,6 +676,9 @@
         </div>
         <div layout="row">
             <a href="/angularjs.html#!/descriptorTypes">descriptorTypes</a>
+        </div>
+        <div layout="row">
+            <a href="/angularjs.html#!/comparators">comparators</a>
         </div>
         <p hide show-gt-md>This sidenav is locked open on your device. To go back to the default behavior,
             narrow your display.
