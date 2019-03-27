@@ -33,7 +33,6 @@ public class Thing extends AuditedEntity {
     @JoinColumn(name = "parentThingID")
     private Set<Thing> childThings;
 
-    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "parentThingID", foreignKey = @ForeignKey(name = "FK_thing_1"))
     private Thing parentThing;
@@ -194,10 +193,6 @@ public class Thing extends AuditedEntity {
 
     public void setStringDescriptors(Set<StringDescriptor> stringDescriptors) {
         this.stringDescriptors = stringDescriptors;
-    }
-
-    public Integer getParentThingID() {
-        return parentThing==null?null:parentThing.thingID;
     }
 
     public Set<Thing> getChildThings() {

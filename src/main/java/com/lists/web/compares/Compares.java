@@ -21,7 +21,6 @@ public class Compares extends AuditedEntity {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer comparesID;
 
-    @JsonBackReference(value="comparatorCompares")
     @ManyToOne
     @JoinColumn(name="comparatorID",foreignKey=@ForeignKey(name="FK_compares_1"))
     private Comparator comparator;

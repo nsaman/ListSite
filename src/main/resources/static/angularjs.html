@@ -42,7 +42,7 @@
 
                 $mdThemingProvider.theme('default').primaryPalette('blue');
             }
-            ]).controller('nutritionController', function($mdDialog, $mdEditDialog, $q, $scope, $timeout, $window, $http, $location, userService, thingService, locationService) {
+            ]).controller('thingsController', function($mdDialog, $mdEditDialog, $q, $scope, $timeout, $window, $http, $location, userService, thingService, locationService) {
                 'use strict';
 
                 $scope.selected = [];
@@ -77,10 +77,25 @@
                           });
                         });
                     });
-                }
-                ;
+                };
 
+                $scope.showThing = function(thingID) {
 
+                    thingService.getThing(thingID).then(function(response) {
+                        $mdDialog.show({
+                            templateUrl: 'thingDialog.html',
+                            controller: 'ThingDialogCtrl',
+                            locals: {
+                                thing: response.data
+                            }
+                        })
+                        .finally(function() {
+                          $http.get("api/things" + locationService.getQueryParams()).then(function(response) {
+                              $scope.things = response.data;
+                          });
+                        });
+                    });
+                };
 
   $scope.limitOptions = [5, 10, 15];
 
@@ -264,7 +279,7 @@
   }
 
   $scope.logItem = function (item) {
-    console.log(item.thing.title, 'was selected');
+    console.log(item.title, 'was selected');
   };
 
   $scope.logOrder = function (order) {
@@ -371,7 +386,7 @@
   }
 
   $scope.logItem = function (item) {
-    console.log(item.thing.title, 'was selected');
+    console.log(item.title, 'was selected');
   };
 
   $scope.logOrder = function (order) {
@@ -459,7 +474,7 @@
             app.config(function($routeProvider) {
                 $routeProvider.when("/things", {
                     templateUrl: "things.html",
-                    controller: "nutritionController"
+                    controller: "thingsController"
                 }).when("/descriptorTypes", {
                     templateUrl: "descriptorTypes.html",
                     controller: "descriptorTypesController"
@@ -609,6 +624,52 @@
                 $scope.cancel = function() {
                     $mdDialog.hide();
                 };
+            });
+
+            app.controller('ThingDialogCtrl', function($scope, $http, $mdDialog, thingService, thing) {
+
+                $scope.thing = thing
+                <!--$scope.parentThing = thingService.getThingFromListById($scope.parentThings, $scope.addThingFormData.parentThingId);-->
+                <!--for (i = 0; i < $scope.parentThing.descriptors.length; i++) {-->
+                    <!--var descriptorTypeID = $scope.parentThing.descriptors[i].descriptorType.descriptorTypeID;-->
+                    <!--$scope.addThingFormData.descriptors[descriptorTypeID] = null;-->
+                <!--}-->
+
+                <!--$scope.submitAddThingForm = function() {-->
+                    <!--$http({-->
+                        <!--method: 'POST',-->
+                        <!--url: 'api/thing',-->
+                        <!--data: $scope.addThingFormData,-->
+                        <!--headers: {-->
+                            <!--'Content-Type': 'application/json'-->
+                        <!--}-->
+                    <!--}).then(function mySuccess(response) {-->
+                        <!--$scope.cancel();-->
+                    <!--}, function myError(response) {-->
+                        <!--$scope.addThingForm.thingNameInput.$error = {-->
+                            <!--failed: true-->
+                        <!--};-->
+                    <!--})-->
+                <!--}-->
+
+                <!--$scope.newParentSelected = function() {-->
+                    <!--thingService.getAbstractThingAndParentAndChildren($scope.addThingFormData.parentThingId).then(function mySuccess(response) {-->
+                        <!--$scope.parentThings = response.data;-->
+                        <!--$scope.parentThing = thingService.getThingFromListById(response.data, $scope.addThingFormData.parentThingId);-->
+                        <!--for (i = 0; i < $scope.parentThing.descriptors.length; i++) {-->
+                            <!--var descriptorTypeID = $scope.parentThing.descriptors[i].descriptorType.descriptorTypeID;-->
+                            <!--$scope.addThingFormData.descriptors[descriptorTypeID] = null;-->
+                        <!--}-->
+                    <!--}, function myError(response) {-->
+                        <!--$scope.cancel();-->
+                    <!--});-->
+                <!--}-->
+
+                $scope.cancel = function() {
+                    $mdDialog.hide();
+                }
+                ;
+
             });
 
             app.service('thingService', ['$http', function ($http) {

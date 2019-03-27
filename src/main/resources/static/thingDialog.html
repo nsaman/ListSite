@@ -1,0 +1,17 @@
+<md-dialog aria-label="Add Thing Dialog">
+    <md-toolbar>
+        <div class="md-toolbar-tools">
+            <h2>{{thing.title}}</h2>
+            <span flex></span>
+            <md-button ng-click="cancel()" class="md-primary">
+                <md-icon md-svg-src="img/icons/ic_close_24px.svg" aria-label="Close dialog"></md-icon>
+            </md-button>
+        </div>
+    </md-toolbar>
+    <md-content layout-gt-sm="column" layout-padding>
+        <p>Parent Thing: {{thing.parentThing.title}}</p>
+        <p>Abstract: {{thing.isAbstract}}</p>
+        <p ng-repeat="descriptor in thing.descriptors">{{descriptor.descriptorType.title}}: {{descriptor.readableString}}</p>
+        <p ng-repeat="compares in thing.compares">{{compares.comparator.title}}: {{compares.score}}</p>
+    </md-content>
+</md-dialog>
