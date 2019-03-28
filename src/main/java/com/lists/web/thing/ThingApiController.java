@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.transaction.Transactional;
 import javax.validation.Valid;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Created by nick on 1/23/2018.
@@ -86,12 +87,12 @@ public class ThingApiController {
 
         List<Descriptor> undefinedDescriptorList = new ArrayList<>();
         for(Descriptor parentDescriptor : thing.getParentThing().getDescriptors()) {
-            if(!parentDescriptor.getDescriptorType().getIsNullable() && !newThingRequest.getDescriptors().containsKey(parentDescriptor.getDescriptorID())) {
+            if(!parentDescriptor.getDescriptorType().getIsNullable() && !newThingRequest.getDescriptors().containsKey(parentDescriptor.getDescriptorType().getDescriptorTypeID())) {
                 undefinedDescriptorList.add(parentDescriptor);
             }
         }
         if (!undefinedDescriptorList.isEmpty())
-            throw new IllegalArgumentException("Undefined descriptors in parent and new thing not abstract=" + StringUtils.join(undefinedDescriptorList, ", "));
+            throw new IllegalArgumentException("Undefined descriptors in parent or new thing not abstract=" + StringUtils.join(undefinedDescriptorList.stream().map(Descriptor::getDescriptorType).map(DescriptorType::getTitle).collect(Collectors.toList()), ", "));
 
         Set<Descriptor> descriptors = new HashSet<>();
 
@@ -101,10 +102,10 @@ public class ThingApiController {
             descriptor.setDescribedThing(thing);
             if (!newThingRequest.getIsAbstract()) {
                 try {
-                    descriptor.setValueFromString(newThingRequest.getDescriptors().get(descriptorTypeId));
+                    descriptorRepositoryHelper.setDescriptorValueFromString(descriptor,newThingRequest.getDescriptors().get(descriptorTypeId));
                 } catch (Exception e) {
                     throw new IllegalStateException("Error parsing and setting descriptor value for descriptorType=" + descriptorType.getTitle()
-                            + " value=" + newThingRequest.getDescriptors().get(descriptorTypeId));
+                            + " value=" + newThingRequest.getDescriptors().get(descriptorTypeId), e);
                 }
             }
             descriptors.add(descriptor);

@@ -518,9 +518,9 @@
 
             });
 
-            app.controller('AddThingDialogCtrl', function($scope, $http, $mdDialog, thingService, parentThings, firstParentThingId) {
+            app.controller('AddThingDialogCtrl', function($scope, $http, $mdDialog, thingService, descriptorTypeService, parentThings, firstParentThingId) {
 
-                $scope.parentThings = parentThings
+                $scope.parentThings = parentThings;
                 $scope.addThingFormData = {};
                 $scope.addThingFormData.isAbstract = false;
                 $scope.addThingFormData.parentThingId = firstParentThingId;
@@ -531,6 +531,8 @@
                     $scope.addThingFormData.descriptors[descriptorTypeID] = null;
                 }
 
+                $scope.showNewDescriptor = false;
+                $scope.descriptorTypes = {};
 
                 $scope.submitAddThingForm = function() {
                     $http({
@@ -562,10 +564,25 @@
                     });
                 }
 
+                $scope.showAddNewDescriptor = function() {
+                    descriptorTypeService.getDescriptorTypes().then(function mySuccess(response) {
+                        $scope.descriptorTypes = response.data;
+                        $scope.showNewDescriptor=true;
+                    });
+                };
+
+                $scope.addNewDescriptor = function(descriptorType) {
+                    var newDescriptor = {}
+                    newDescriptor.descriptorType = descriptorType;
+                    newDescriptor.type = descriptorType.valueType;
+                    $scope.parentThing.descriptors.push(newDescriptor);
+                    $scope.addThingFormData.descriptors[descriptorType.descriptorTypeID] = null;
+                    $scope.showNewDescriptor=false;
+                };
+
                 $scope.cancel = function() {
                     $mdDialog.hide();
-                }
-                ;
+                };
 
             });
 
@@ -696,6 +713,10 @@
                     return $http.get("api/descriptorType?descriptorTypeId=" + descriptorTypeId);
                 };
 
+                this.getDescriptorTypes = function () {
+                    return $http.get("api/descriptorTypes");
+                };
+
                 this.getDescriptorTypeTypes = function () {
                     return $http.get("api/descriptorTypeTypes");
                 };
@@ -730,15 +751,15 @@
     </md-toolbar>
     <md-content layout-padding ng-controller="LeftCtrl">
         <div layout="row">
-            <a href="/angularjs.html#!/">home</a>
+            <a href="/angularjs.html#!/" ng-click="close()">home</a>
         </div>
-        <div layout="row">
+        <div layout="row" ng-click="close()">
             <a href="/angularjs.html#!/things?thingID=1&comparatorID=1&descriptorTypeSearchedIDs=1,2,3&descriptorTypeRetrievedIDs=1,2,3">things</a>
         </div>
-        <div layout="row">
+        <div layout="row" ng-click="close()">
             <a href="/angularjs.html#!/descriptorTypes">descriptorTypes</a>
         </div>
-        <div layout="row">
+        <div layout="row" ng-click="close()">
             <a href="/angularjs.html#!/comparators">comparators</a>
         </div>
         <p hide show-gt-md>This sidenav is locked open on your device. To go back to the default behavior,

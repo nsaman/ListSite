@@ -28,7 +28,6 @@ public abstract class Descriptor extends AuditedEntity {
     private DescriptorType descriptorType;
 
     public abstract String getReadableString();
-    public abstract void setValueFromString(String value);
 
     @Transient
     final public DescriptorTypes type;
@@ -65,7 +64,4 @@ public abstract class Descriptor extends AuditedEntity {
         return type;
     }
 
-    public String getDescriptorTypeTitle() {
-        return descriptorType.getTitle();
-    }
 }

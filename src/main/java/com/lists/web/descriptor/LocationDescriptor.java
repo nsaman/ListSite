@@ -23,15 +23,6 @@ public class LocationDescriptor extends Descriptor {
         return latitude.toString() + "," + longitude.toString();
     }
 
-    @Override
-    public void setValueFromString(String value) {
-        String[] split = value.split(",");
-        if(split.length != 2)
-            throw new IllegalArgumentException("Malformed lattitude,longitude=" + value);
-        latitude = Double.parseDouble(split[0]);
-        longitude = Double.parseDouble(split[1]);
-    }
-
     public Double getLatitude() {
         return latitude;
     }

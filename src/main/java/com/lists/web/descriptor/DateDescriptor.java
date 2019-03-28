@@ -31,10 +31,6 @@ public class DateDescriptor extends Descriptor {
     public String getReadableString() {
         return value.toString();
     }
-    @Override
-    public void setValueFromString(String value) {
-        this.value = formatDate(value);
-    }
 
     public Date getValue() {
         return value;
@@ -43,7 +39,6 @@ public class DateDescriptor extends Descriptor {
     public void setValue(Date value) {
         this.value = value;
     }
-
 
     public static Date formatDate(String string) {
         try {

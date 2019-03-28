@@ -1,6 +1,7 @@
 package com.lists.web.descriptor;
 
 import com.lists.web.descriptorType.DescriptorTypes;
+import com.lists.web.thing.IThingRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Component;
@@ -23,11 +24,12 @@ public class DescriptorRepositoryHelper {
     private IReferenceThingDescriptorRepository referenceThingDescriptorRepository;
     private IResourceDescriptorRepository resourceDescriptorRepository;
     private IStringDescriptorRepository stringDescriptorRepository;
+    private IThingRepository thingRepository;
 
     Map<DescriptorTypes,CrudRepository<? extends Descriptor, Integer>> descriptorRepoMap = new HashMap<>();
 
     @Autowired
-    public DescriptorRepositoryHelper(IDateDescriptorRepository dateDescriptorRepository, IDoubleDescriptorRepository doubleDescriptorRepository, IIntegerDescriptorRepository integerDescriptorRepository, ILocationDescriptorRepository locationDescriptorRepository, IReferenceThingDescriptorRepository referenceThingDescriptorRepository, IResourceDescriptorRepository resourceDescriptorRepository, IStringDescriptorRepository stringDescriptorRepository) {
+    public DescriptorRepositoryHelper(IDateDescriptorRepository dateDescriptorRepository, IDoubleDescriptorRepository doubleDescriptorRepository, IIntegerDescriptorRepository integerDescriptorRepository, ILocationDescriptorRepository locationDescriptorRepository, IReferenceThingDescriptorRepository referenceThingDescriptorRepository, IResourceDescriptorRepository resourceDescriptorRepository, IStringDescriptorRepository stringDescriptorRepository, IThingRepository thingRepository) {
         this.dateDescriptorRepository = dateDescriptorRepository;
         this.doubleDescriptorRepository = doubleDescriptorRepository;
         this.integerDescriptorRepository = integerDescriptorRepository;
@@ -35,6 +37,7 @@ public class DescriptorRepositoryHelper {
         this.referenceThingDescriptorRepository = referenceThingDescriptorRepository;
         this.resourceDescriptorRepository = resourceDescriptorRepository;
         this.stringDescriptorRepository = stringDescriptorRepository;
+        this.thingRepository = thingRepository;
         descriptorRepoMap.put(DescriptorTypes.DATE,dateDescriptorRepository);
         descriptorRepoMap.put(DescriptorTypes.DOUBLE,doubleDescriptorRepository);
         descriptorRepoMap.put(DescriptorTypes.INTEGER,integerDescriptorRepository);
@@ -98,6 +101,28 @@ public class DescriptorRepositoryHelper {
         stringDescriptorRepository.save(stringDescriptorDescriptors).forEach(returnDescriptors::add);
 
         return returnDescriptors;
+    }
+
+    public void setDescriptorValueFromString(Descriptor descriptor, String value) {
+        if (descriptor instanceof DateDescriptor)
+            ((DateDescriptor)descriptor).setValue(DateDescriptor.formatDate(value));
+        else if (descriptor instanceof DoubleDescriptor)
+            ((DoubleDescriptor)descriptor).setValue(Double.parseDouble(value));
+        else if (descriptor instanceof IntegerDescriptor)
+            ((IntegerDescriptor)descriptor).setValue(Integer.parseInt(value));
+        else if (descriptor instanceof LocationDescriptor){
+            String[] split = value.split(",");
+            if(split.length != 2)
+                throw new IllegalArgumentException("Malformed lattitude,longitude=" + value);
+            ((LocationDescriptor)descriptor).setLatitude(Double.parseDouble(split[0]));
+            ((LocationDescriptor)descriptor).setLongitude(Double.parseDouble(split[1]));
+        }
+        else if (descriptor instanceof ReferenceThingDescriptor)
+            ((ReferenceThingDescriptor)descriptor).setReferenceThing(thingRepository.findOne(Integer.parseInt(value)));
+        else if (descriptor instanceof ResourceDescriptor)
+            ((ResourceDescriptor)descriptor).setValue(value);
+        else if (descriptor instanceof StringDescriptor)
+            ((StringDescriptor)descriptor).setValue(value);
     }
 
     Descriptor findOne(String descriptorType, Integer id) {

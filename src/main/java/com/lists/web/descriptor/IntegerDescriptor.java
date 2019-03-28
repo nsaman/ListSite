@@ -22,11 +22,6 @@ public class IntegerDescriptor extends Descriptor {
         return value.toString();
     }
 
-    @Override
-    public void setValueFromString(String value) {
-        this.value = Integer.parseInt(value);
-    }
-
     public Integer getValue() {
         return value;
     }

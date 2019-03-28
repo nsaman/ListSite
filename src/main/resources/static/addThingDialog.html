@@ -38,9 +38,22 @@
             </div>
             <div layout-gt-xs="row" ng-repeat="descriptor in parentThing.descriptors">
                 <md-input-container>
-                    <label>{{descriptor.descriptorType.title}}</label>
+                    <label>{{descriptor.descriptorType.title}}{{descriptor.descriptorType.isNullable ? '' : '*'}}</label>
                     <input ng-disabled="addThingFormData.isAbstract" ng-model="addThingFormData.descriptors[descriptor.descriptorType.descriptorTypeID]">
                 </md-input-container>
+            </div>
+            <div layout-gt-xs="row" ng-if="showNewDescriptor">
+                <md-input-container>
+                    <label>New Descriptor Type</label>
+                    <md-select name="type" ng-model="addThingFormData.newDescriptorType">
+                        <md-option ng-repeat="descriptorType in descriptorTypes" ng-click="addNewDescriptor(descriptorType)">{{descriptorType.title}}</md-option>
+                    </md-select>
+                </md-input-container>
+            </div>
+            <div layout-gt-xs="row" ng-if="!showNewDescriptor">
+                <md-button ng-click="showAddNewDescriptor()">
+                    <md-icon md-svg-src="img/icons/plus.svg"></md-icon> Add a new descriptor
+                </md-button>
             </div>
 
         </form>

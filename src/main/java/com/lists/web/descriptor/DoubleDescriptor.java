@@ -22,11 +22,6 @@ public class DoubleDescriptor extends Descriptor {
         return value.toString();
     }
 
-    @Override
-    public void setValueFromString(String value) {
-        this.value = Double.parseDouble(value);
-    }
-
     public Double getValue() {
         return value;
     }
