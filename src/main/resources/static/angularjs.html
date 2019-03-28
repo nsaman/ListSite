@@ -555,6 +555,7 @@
                     thingService.getAbstractThingAndParentAndChildren($scope.addThingFormData.parentThingId).then(function mySuccess(response) {
                         $scope.parentThings = response.data;
                         $scope.parentThing = thingService.getThingFromListById(response.data, $scope.addThingFormData.parentThingId);
+                        $scope.addThingFormData.descriptors={};
                         for (i = 0; i < $scope.parentThing.descriptors.length; i++) {
                             var descriptorTypeID = $scope.parentThing.descriptors[i].descriptorType.descriptorTypeID;
                             $scope.addThingFormData.descriptors[descriptorTypeID] = null;
