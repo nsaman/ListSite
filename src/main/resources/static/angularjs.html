@@ -90,7 +90,8 @@
                             templateUrl: 'thingDialog.html',
                             controller: 'ThingDialogCtrl',
                             locals: {
-                                thing: response.data
+                                thing: response.data,
+                                loggedIn: $scope.user.loggedIn
                             }
                         })
                         .finally(function() {
@@ -649,9 +650,10 @@
                 };
             });
 
-            app.controller('ThingDialogCtrl', function($scope, $http, $mdDialog, thingService, thing) {
+            app.controller('ThingDialogCtrl', function($scope, $http, $mdDialog, thingService, thing, loggedIn) {
 
-                $scope.thing = thing
+                $scope.thing = thing;
+                $scope.loggedIn = loggedIn;
                 <!--$scope.parentThing = thingService.getThingFromListById($scope.parentThings, $scope.addThingFormData.parentThingId);-->
                 <!--for (i = 0; i < $scope.parentThing.descriptors.length; i++) {-->
                     <!--var descriptorTypeID = $scope.parentThing.descriptors[i].descriptorType.descriptorTypeID;-->
