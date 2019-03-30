@@ -29,7 +29,7 @@ public class DateDescriptor extends Descriptor {
 
     @Override
     public String getReadableString() {
-        return value.toString();
+        return value!=null?value.toString():"";
     }
 
     public Date getValue() {

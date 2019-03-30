@@ -20,7 +20,7 @@ public class LocationDescriptor extends Descriptor {
 
     @Override
     public String getReadableString() {
-        return latitude.toString() + "," + longitude.toString();
+        return (latitude!=null?latitude.toString():"") + "," + (longitude!=null?longitude.toString():"");
     }
 
     public Double getLatitude() {

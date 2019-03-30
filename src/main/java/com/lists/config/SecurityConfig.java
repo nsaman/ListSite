@@ -60,7 +60,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
             @Override
             public void commence(HttpServletRequest request, HttpServletResponse response,
-                                 AuthenticationException authException) throws IOException, ServletException {
+                                 AuthenticationException authException) {
                 if (authException != null) {
                     response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                 }
@@ -69,12 +69,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and().csrf().csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
                 .and().formLogin().successHandler(new AuthenticationSuccessHandler() {
             @Override
-            public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
+            public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
                 //do nothing
             }
         }).failureHandler(new AuthenticationFailureHandler() {
                               @Override
-                              public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
+                              public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) {
                                   response.setStatus(400);
                               }
                           }

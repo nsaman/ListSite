@@ -26,7 +26,7 @@ public class ReferenceThingDescriptor extends Descriptor {
 
     @Override
     public String getReadableString() {
-        return referenceThing!=null?referenceThing.getTitle():null;
+        return referenceThing!=null?referenceThing.getTitle():"";
     }
 
     public Thing getReferenceThing() {

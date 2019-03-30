@@ -39,6 +39,13 @@ public class ThingApiController {
                                                  @RequestParam(value="descriptorTypeSearchedIDs", defaultValue="") Set<DescriptorType> descriptorTypeSearchedIDs,
                                                  @RequestParam(value="descriptorTypeRetrievedIDs", defaultValue="") Set<DescriptorType> descriptorTypeRetrievedIDs) {
 
+        if(comparators.contains(null))
+            comparators.remove(null);
+        if(descriptorTypeSearchedIDs.contains(null))
+            descriptorTypeSearchedIDs.remove(null);
+        if(descriptorTypeRetrievedIDs.contains(null))
+            descriptorTypeRetrievedIDs.remove(null);
+
         Iterable<Thing> thingList = thingRepository.findAll(Specifications.where(IThingRepository.hasComparators(comparators)).and(IThingRepository.hasParentThing(parentThing)));
 
         return thingsToThingsTableView(thingList, comparators, descriptorTypeRetrievedIDs);

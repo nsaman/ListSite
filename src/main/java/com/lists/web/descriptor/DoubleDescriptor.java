@@ -19,7 +19,7 @@ public class DoubleDescriptor extends Descriptor {
 
     @Override
     public String getReadableString() {
-        return value.toString();
+        return value!=null?value.toString():"";
     }
 
     public Double getValue() {
