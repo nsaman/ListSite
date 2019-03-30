@@ -51,7 +51,6 @@
                 $scope.loadThings = function() {
                     $http.get("api/things" + locationService.getQueryParams()).then(function(response) {
                         $scope.things = response.data;
-                        <!--$scope.thingsLength.length=$scope.things.length-->
                     });
                 }
                 $scope.loadThings();
@@ -93,6 +92,7 @@
                           $http.get("api/things" + locationService.getQueryParams()).then(function(response) {
                               $scope.things = response.data;
                           });
+                          $scope.selected = [];
                         });
                     });
                 };

@@ -9,6 +9,7 @@ import com.lists.web.descriptorType.DescriptorType;
 import com.lists.web.descriptorType.IDescriptorTypeRepository;
 import com.sun.deploy.util.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.domain.Specifications;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -46,7 +47,22 @@ public class ThingApiController {
         if(descriptorTypeRetrievedIDs.contains(null))
             descriptorTypeRetrievedIDs.remove(null);
 
-        Iterable<Thing> thingList = thingRepository.findAll(Specifications.where(IThingRepository.hasComparators(comparators)).and(IThingRepository.hasParentThing(parentThing)));
+        List<Specification<Thing>> searchItems = new ArrayList<>();
+        if(parentThing!=null)
+            searchItems.add(IThingRepository.hasParentThing(parentThing));
+        if(!comparators.isEmpty())
+            searchItems.add(IThingRepository.hasComparators(comparators));
+
+        Iterable<Thing> thingList;
+
+        if(!searchItems.isEmpty()) {
+            Specifications<Thing> searchSpecifications = Specifications.where(searchItems.get(0));
+            for (int i = 1; i < searchItems.size(); i++)
+                searchSpecifications.and(searchItems.get(i));
+            thingList = thingRepository.findAll(searchSpecifications);
+        } else {
+            thingList = thingRepository.findAll();
+        }
 
         return thingsToThingsTableView(thingList, comparators, descriptorTypeRetrievedIDs);
     }
