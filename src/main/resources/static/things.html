@@ -51,7 +51,8 @@
 
             <md-toolbar class="md-table-toolbar md-default" ng-hide="options.rowSelection && selected.length">
                 <div class="md-toolbar-tools">
-                    <span>Things</span>
+                    <span ng-if="parentThing.title" ng-click="showThing(parentThing.thingID)">{{parentThing.title}}</span>
+                    <span ng-if="!parentThing.title">Things</span>
                     <div flex></div>
                     <md-button class="md-icon-button" ng-click="loadThings()">
                         <md-icon>refresh</md-icon>
@@ -83,7 +84,7 @@
                         <td ng-repeat="comparator in things.comparesHeaders" md-column md-numeric md-order-by="calories.value" md-cell>{{thingRow.comparesMap[comparator.title].score}}</td>
                         <td md-cell>{{thingRow.thing.title}}</td>
                         <td ng-repeat="descriptor in things.descriptorHeaders" md-cell>
-                            <p ng-repeat="descriptor2 in thingRow.descriptorMap[descriptor.title]">{{descriptor2.value}}</p>
+                            <p ng-repeat="descriptor2 in thingRow.descriptorMap[descriptor.title]">{{descriptor2.readableString}}</p>
                         </td>
                         <!--<td md-cell ng-click="editComment($event, dessert)" ng-class="{'md-placeholder': !dessert.comment}">-->
                             <!--{{dessert.comment || 'Add a comment'}}-->

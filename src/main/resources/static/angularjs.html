@@ -47,6 +47,15 @@
 
                 $scope.selected = [];
 
+                $scope.parentThing = {};
+                $scope.parentThingID = 0;
+                if ($location.search()['thingID'] != null) {
+                    $scope.parentThingID = $location.search()['thingID']
+                }
+                thingService.getThing($scope.parentThingID).then(function(response) {
+                    $scope.parentThing = response.data;
+                });
+
                 $scope.things = [];
                 $scope.loadThings = function() {
                     $http.get("api/things" + locationService.getQueryParams()).then(function(response) {
@@ -57,17 +66,13 @@
 
                 $scope.showAddThing = function() {
 
-                    var parentThingID = 1
-                    if ($location.search()['thingID'] != null) {
-                        parentThingID = $location.search()['thingID']
-                    }
-                    thingService.getAbstractThingAndParentAndChildren(parentThingID).then(function(response) {
+                    thingService.getAbstractThingAndParentAndChildren($scope.parentThingID!=null?$scope.parentThingID:1).then(function(response) {
                         $mdDialog.show({
                             templateUrl: 'addThingDialog.html',
                             controller: 'AddThingDialogCtrl',
                             locals: {
                                 parentThings: response.data,
-                                firstParentThingId: parentThingID
+                                firstParentThingId: $scope.parentThingID
                             }
                         })
                         .finally(function() {
