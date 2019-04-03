@@ -1,0 +1,48 @@
+<form name="addThingForm">
+
+    <div layout-gt-xs="row">
+        <md-input-container>
+            <label>Parent Thing</label>
+            <md-select name="type" ng-model="thingEditFormData.parentThingId"  ng-change="newParentSelected()" required>
+                <md-option ng-repeat="thing in parentThings" value="{{thing.thingID}}">{{thing.title}}</md-option>
+            </md-select>
+        </md-input-container>
+    </div>
+    <div layout-gt-xs="row">
+        <md-input-container>
+            <label>Title</label>
+            <input ng-model="thingEditFormData.title" name="thingNameInput">
+            <div ng-messages="thingEditFormData.thingNameInput.$error" role="alert">
+                <p ng-message="failed">
+                    Bad Thing Name!
+                </p>
+            </div>
+        </md-input-container>
+
+        <md-input-container>
+            <md-checkbox ng-model="thingEditFormData.isAbstract">
+                isAbstract
+            </md-checkbox>
+        </md-input-container>
+    </div>
+    <div layout-gt-xs="row" ng-repeat="descriptor in descriptors">
+        <md-input-container>
+            <label>{{descriptor.descriptorType.title}}{{descriptor.descriptorType.isNullable ? '' : '*'}}</label>
+            <input ng-disabled="thingEditFormData.isAbstract" ng-model="thingEditFormData.descriptors[descriptor.descriptorType.descriptorTypeID]">
+        </md-input-container>
+    </div>
+    <div layout-gt-xs="row" ng-if="showNewDescriptor">
+        <md-input-container>
+            <label>New Descriptor Type</label>
+            <md-select name="type" ng-model="thingEditFormData.newDescriptorType">
+                <md-option ng-repeat="descriptorType in descriptorTypes" ng-click="addNewDescriptor(descriptorType)">{{descriptorType.title}}</md-option>
+            </md-select>
+        </md-input-container>
+    </div>
+    <div layout-gt-xs="row" ng-if="!showNewDescriptor">
+        <md-button ng-click="showAddNewDescriptor()">
+            <md-icon md-svg-src="img/icons/plus.svg"></md-icon> Add a new descriptor
+        </md-button>
+    </div>
+
+</form>

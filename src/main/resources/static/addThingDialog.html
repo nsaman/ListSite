@@ -9,63 +9,16 @@
         </div>
     </md-toolbar>
     <md-content layout-gt-sm="column" layout-padding>
-        <form name="addThingForm">
+        <thing-edit-form></thing-edit-form>
+    </md-content>
 
-            <div layout-gt-xs="row">
-                <md-input-container>
-                    <label>Parent Thing</label>
-                    <md-select name="type" ng-model="addThingFormData.parentThingId"  ng-change="newParentSelected()" required>
-                        <md-option ng-repeat="thing in parentThings" value="{{thing.thingID}}">{{thing.title}}</md-option>
-                    </md-select>
-                </md-input-container>
-            </div>
-            <div layout-gt-xs="row">
-                <md-input-container>
-                    <label>Title</label>
-                    <input ng-model="addThingFormData.title" name="thingNameInput">
-                    <div ng-messages="addThingFormData.thingNameInput.$error" role="alert">
-                        <p ng-message="failed">
-                            Bad Thing Name!
-                        </p>
-                    </div>
-                </md-input-container>
-
-                <md-input-container>
-                    <md-checkbox ng-model="addThingFormData.isAbstract">
-                        isAbstract
-                    </md-checkbox>
-                </md-input-container>
-            </div>
-            <div layout-gt-xs="row" ng-repeat="descriptor in parentThing.descriptors">
-                <md-input-container>
-                    <label>{{descriptor.descriptorType.title}}{{descriptor.descriptorType.isNullable ? '' : '*'}}</label>
-                    <input ng-disabled="addThingFormData.isAbstract" ng-model="addThingFormData.descriptors[descriptor.descriptorType.descriptorTypeID]">
-                </md-input-container>
-            </div>
-            <div layout-gt-xs="row" ng-if="showNewDescriptor">
-                <md-input-container>
-                    <label>New Descriptor Type</label>
-                    <md-select name="type" ng-model="addThingFormData.newDescriptorType">
-                        <md-option ng-repeat="descriptorType in descriptorTypes" ng-click="addNewDescriptor(descriptorType)">{{descriptorType.title}}</md-option>
-                    </md-select>
-                </md-input-container>
-            </div>
-            <div layout-gt-xs="row" ng-if="!showNewDescriptor">
-                <md-button ng-click="showAddNewDescriptor()">
-                    <md-icon md-svg-src="img/icons/plus.svg"></md-icon> Add a new descriptor
-                </md-button>
-            </div>
-
-        </form>
-        </md-content>
-
-        <md-dialog-actions layout="row">
-            <span flex></span>
-            <md-button ng-click="cancel()" >
-                Cancel
-            </md-button>
-            <md-button ng-click="submitAddThingForm()" style="margin-right:20px;" >
-                Submit
-            </md-button>
-        </md-dialog-actions>
+    <md-dialog-actions layout="row">
+        <span flex></span>
+        <md-button ng-click="cancel()" >
+            Cancel
+        </md-button>
+        <md-button ng-click="submitAddThingForm()" style="margin-right:20px;" >
+            Submit
+        </md-button>
+    </md-dialog-actions>
 </md-dialog>

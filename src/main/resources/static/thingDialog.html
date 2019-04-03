@@ -3,7 +3,7 @@
         <div class="md-toolbar-tools">
             <h2>{{thing.title}}</h2>
             <span flex></span>
-            <md-button ng-click="cancel()" ng-if="loggedIn" class="md-primary">
+            <md-button ng-click="edit()" ng-if="loggedIn" class="md-primary">
                 <md-icon md-svg-src="img/icons/edit.svg" aria-label="Edit dialog"></md-icon>
             </md-button>
             <md-button ng-click="cancel()" class="md-primary">
@@ -12,9 +12,24 @@
         </div>
     </md-toolbar>
     <md-content layout-gt-sm="column" layout-padding>
-        <p>Parent Thing: {{thing.parentThing.title}}</p>
-        <p>Abstract: {{thing.isAbstract}}</p>
-        <p ng-repeat="descriptor in thing.descriptors">{{descriptor.descriptorType.title}}: {{descriptor.readableString}}</p>
-        <p ng-repeat="compares in thing.compares">{{compares.comparator.title}}: {{compares.score}}</p>
+        <div ng-if="!editing">
+            <p>Parent Thing: {{thing.parentThing.title}}</p>
+            <p>Abstract: {{thing.isAbstract}}</p>
+            <p ng-repeat="descriptor in thing.descriptors">{{descriptor.descriptorType.title}}: {{descriptor.readableString}}</p>
+            <p ng-repeat="compares in thing.compares">{{compares.comparator.title}}: {{compares.score}}</p>
+        </div>
+        <div ng-if="editing">
+            <thing-edit-form></thing-edit-form>
+        </div>
     </md-content>
+
+    <md-dialog-actions layout="row" ng-if="editing">
+        <span flex></span>
+        <md-button ng-click="cancel()" >
+            Cancel
+        </md-button>
+        <md-button ng-click="submitEditThingForm()" style="margin-right:20px;" >
+            Submit
+        </md-button>
+    </md-dialog-actions>
 </md-dialog>

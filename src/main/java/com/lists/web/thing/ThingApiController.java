@@ -74,6 +74,10 @@ public class ThingApiController {
 
     @RequestMapping(path="/api/thing/abstractThingAndParentAndChildren", produces = "application/json")
     public Set<Thing> getThingAndParentAndAbstractChildrenByThingId(@RequestParam(value="thingID",required = true) Thing thing) {
+
+        if(thing == null)
+            return null;
+
         LinkedHashSet<Thing> things = new LinkedHashSet<>();
         if(thing.getParentThing() != null)
             things.add(thing.getParentThing());
@@ -91,11 +95,24 @@ public class ThingApiController {
     @RequestMapping(path="/api/thing", method = RequestMethod.POST, consumes={"application/json"})
     public void createThing(@Valid @RequestBody NewThingRequest newThingRequest) {
 
+
+        Thing parentThing = thingRepository.findOne(newThingRequest.getParentThingId());
+
+        List<Descriptor> undefinedDescriptorList = new ArrayList<>();
+        for(Descriptor parentDescriptor : parentThing.getDescriptors()) {
+            if(!parentDescriptor.getDescriptorType().getIsNullable() && !newThingRequest.getDescriptors().containsKey(parentDescriptor.getDescriptorType().getDescriptorTypeID())) {
+                undefinedDescriptorList.add(parentDescriptor);
+            }
+        }
+        if (!undefinedDescriptorList.isEmpty())
+            throw new IllegalArgumentException("Undefined descriptors in parent or new thing not abstract=" + StringUtils.join(undefinedDescriptorList.stream().map(Descriptor::getDescriptorType).map(DescriptorType::getTitle).collect(Collectors.toList()), ", "));
+
+
         Thing thing = new Thing();
 
         thing.setTitle(newThingRequest.getTitle());
         thing.setIsAbstract(newThingRequest.getIsAbstract());
-        thing.setParentThing(thingRepository.findOne(newThingRequest.getParentThingId()));
+        thing.setParentThing(parentThing);
 
         thingRepository.save(thing);
 
@@ -107,15 +124,6 @@ public class ThingApiController {
 
             comparesRepository.save(compares);
         }
-
-        List<Descriptor> undefinedDescriptorList = new ArrayList<>();
-        for(Descriptor parentDescriptor : thing.getParentThing().getDescriptors()) {
-            if(!parentDescriptor.getDescriptorType().getIsNullable() && !newThingRequest.getDescriptors().containsKey(parentDescriptor.getDescriptorType().getDescriptorTypeID())) {
-                undefinedDescriptorList.add(parentDescriptor);
-            }
-        }
-        if (!undefinedDescriptorList.isEmpty())
-            throw new IllegalArgumentException("Undefined descriptors in parent or new thing not abstract=" + StringUtils.join(undefinedDescriptorList.stream().map(Descriptor::getDescriptorType).map(DescriptorType::getTitle).collect(Collectors.toList()), ", "));
 
         Set<Descriptor> descriptors = new HashSet<>();
 
@@ -129,6 +137,73 @@ public class ThingApiController {
                 } catch (Exception e) {
                     throw new IllegalStateException("Error parsing and setting descriptor value for descriptorType=" + descriptorType.getTitle()
                             + " value=" + newThingRequest.getDescriptors().get(descriptorTypeId), e);
+                }
+            }
+            descriptors.add(descriptor);
+        }
+
+        descriptorRepositoryHelper.save(descriptors);
+    }
+
+    @Transactional
+    @PreAuthorize("hasRole('ROLE_VIEWER')")
+    @RequestMapping(path="/api/thing", method = RequestMethod.PUT, consumes={"application/json"})
+    public void updateThing(@Valid @RequestBody UpdateThingRequest updateThingRequest) {
+
+        Thing thing = thingRepository.findOne(updateThingRequest.getThingID());
+        if(thing == null)
+            throw new IllegalArgumentException("Could find thing to update thingID=" + updateThingRequest.getThingID());
+
+        List<Descriptor> undefinedDescriptorList = new ArrayList<>();
+        for(Descriptor parentDescriptor : thing.getParentThing().getDescriptors()) {
+            if(!parentDescriptor.getDescriptorType().getIsNullable() && !updateThingRequest.getDescriptors().containsKey(parentDescriptor.getDescriptorType().getDescriptorTypeID())) {
+                undefinedDescriptorList.add(parentDescriptor);
+            }
+        }
+        if (!undefinedDescriptorList.isEmpty())
+            throw new IllegalArgumentException("Undefined descriptors in parent or new thing not abstract=" + StringUtils.join(undefinedDescriptorList.stream().map(Descriptor::getDescriptorType).map(DescriptorType::getTitle).collect(Collectors.toList()), ", "));
+
+
+        thing.setTitle(updateThingRequest.getTitle());
+        thing.setIsAbstract(updateThingRequest.getIsAbstract());
+        thing.setParentThing(thingRepository.findOne(updateThingRequest.getParentThingId()));
+
+        thingRepository.save(thing);
+
+        // todo add logic for logical deletion
+        Set<Integer> thingComparatorIds = thing.getCompares().stream().map(Compares::getComparator).map(Comparator::getComparatorID).collect(Collectors.toSet());
+        for(Compares parentCompares : thing.getParentThing().getCompares()) {
+            if(!thingComparatorIds.contains(parentCompares.getComparator().getComparatorID())) {
+                Compares compares = new Compares();
+                compares.setThing(thing);
+                compares.setComparator(parentCompares.getComparator());
+                compares.setScore(Compares.DEFAULT_SCORE);
+
+                comparesRepository.save(compares);
+            }
+        }
+
+        // todo add logic for logical deletion
+        Set<Descriptor> descriptors = new HashSet<>();
+        Map<Integer,Descriptor> descriptorTypeIdMap = new HashMap<>();
+        for (Descriptor descriptor : thing.getDescriptors()) {
+            descriptorTypeIdMap.put(descriptor.getDescriptorType().getDescriptorTypeID(),descriptor);
+        }
+        for (Integer descriptorTypeId : updateThingRequest.getDescriptors().keySet()) {
+            Descriptor descriptor = null;
+            DescriptorType descriptorType = descriptorTypeRepository.findOne(descriptorTypeId);
+            if(descriptorTypeIdMap.containsKey(descriptorTypeId)) {
+                descriptor = descriptorRepositoryHelper.findOne(descriptorType,descriptorTypeId);
+            } else {
+                descriptor = descriptorType.createEmptyChild();
+                descriptor.setDescribedThing(thing);
+            }
+            if (!updateThingRequest.getIsAbstract()) {
+                try {
+                    descriptorRepositoryHelper.setDescriptorValueFromString(descriptor,updateThingRequest.getDescriptors().get(descriptorTypeId));
+                } catch (Exception e) {
+                    throw new IllegalStateException("Error parsing and setting descriptor value for descriptorType=" + descriptorType.getTitle()
+                            + " value=" + updateThingRequest.getDescriptors().get(descriptorTypeId), e);
                 }
             }
             descriptors.add(descriptor);

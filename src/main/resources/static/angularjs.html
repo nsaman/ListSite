@@ -66,13 +66,13 @@
 
                 $scope.showAddThing = function() {
 
-                    thingService.getAbstractThingAndParentAndChildren($scope.parentThingID!=null?$scope.parentThingID:1).then(function(response) {
+                    thingService.getAbstractThingAndParentAndChildren($scope.parentThing!=""?$scope.parentThing.thingID:1).then(function(response) {
                         $mdDialog.show({
                             templateUrl: 'addThingDialog.html',
                             controller: 'AddThingDialogCtrl',
                             locals: {
                                 parentThings: response.data,
-                                firstParentThingId: $scope.parentThingID
+                                firstParentThingId: $scope.parentThing!=""?$scope.parentThing.thingID:1
                             }
                         })
                         .finally(function() {
@@ -527,14 +527,17 @@
             app.controller('AddThingDialogCtrl', function($scope, $http, $mdDialog, thingService, descriptorTypeService, parentThings, firstParentThingId) {
 
                 $scope.parentThings = parentThings;
-                $scope.addThingFormData = {};
-                $scope.addThingFormData.isAbstract = false;
-                $scope.addThingFormData.parentThingId = firstParentThingId;
-                $scope.addThingFormData.descriptors = {};
-                $scope.parentThing = thingService.getThingFromListById($scope.parentThings, $scope.addThingFormData.parentThingId);
-                for (i = 0; i < $scope.parentThing.descriptors.length; i++) {
-                    var descriptorTypeID = $scope.parentThing.descriptors[i].descriptorType.descriptorTypeID;
-                    $scope.addThingFormData.descriptors[descriptorTypeID] = null;
+                $scope.thingEditFormData = {};
+                $scope.thingEditFormData.isAbstract = false;
+                $scope.thingEditFormData.parentThingId = firstParentThingId;
+                $scope.thingEditFormData.descriptors = {};
+                $scope.parentThing = thingService.getThingFromListById($scope.parentThings, $scope.thingEditFormData.parentThingId);
+                $scope.descriptors = $scope.parentThing.descriptors;
+                if($scope.descriptors != null) {
+                    for (i = 0; i < $scope.descriptors.length; i++) {
+                        var descriptorTypeID = $scope.descriptors[i].descriptorType.descriptorTypeID;
+                        $scope.thingEditFormData.descriptors[descriptorTypeID] = null;
+                    }
                 }
 
                 $scope.showNewDescriptor = false;
@@ -544,7 +547,7 @@
                     $http({
                         method: 'POST',
                         url: 'api/thing',
-                        data: $scope.addThingFormData,
+                        data: $scope.thingEditFormData,
                         headers: {
                             'Content-Type': 'application/json'
                         }
@@ -558,13 +561,14 @@
                 }
 
                 $scope.newParentSelected = function() {
-                    thingService.getAbstractThingAndParentAndChildren($scope.addThingFormData.parentThingId).then(function mySuccess(response) {
+                    thingService.getAbstractThingAndParentAndChildren($scope.thingEditFormData.parentThingId).then(function mySuccess(response) {
                         $scope.parentThings = response.data;
-                        $scope.parentThing = thingService.getThingFromListById(response.data, $scope.addThingFormData.parentThingId);
-                        $scope.addThingFormData.descriptors={};
-                        for (i = 0; i < $scope.parentThing.descriptors.length; i++) {
-                            var descriptorTypeID = $scope.parentThing.descriptors[i].descriptorType.descriptorTypeID;
-                            $scope.addThingFormData.descriptors[descriptorTypeID] = null;
+                        $scope.parentThing = thingService.getThingFromListById(response.data, $scope.thingEditFormData.parentThingId);
+                        $scope.descriptors = $scope.parentThing.descriptors;
+                        $scope.thingEditFormData.descriptors={};
+                        for (i = 0; i < $scope.descriptors.length; i++) {
+                            var descriptorTypeID = $scope.descriptors[i].descriptorType.descriptorTypeID;
+                            $scope.thingEditFormData.descriptors[descriptorTypeID] = null;
                         }
                     }, function myError(response) {
                         $scope.cancel();
@@ -582,8 +586,8 @@
                     var newDescriptor = {}
                     newDescriptor.descriptorType = descriptorType;
                     newDescriptor.type = descriptorType.valueType;
-                    $scope.parentThing.descriptors.push(newDescriptor);
-                    $scope.addThingFormData.descriptors[descriptorType.descriptorTypeID] = null;
+                    $scope.descriptors.push(newDescriptor);
+                    $scope.thingEditFormData.descriptors[descriptorType.descriptorTypeID] = null;
                     $scope.showNewDescriptor=false;
                 };
 
@@ -650,51 +654,92 @@
                 };
             });
 
-            app.controller('ThingDialogCtrl', function($scope, $http, $mdDialog, thingService, thing, loggedIn) {
+            app.controller('ThingDialogCtrl', function($scope, $http, $mdDialog, thingService, descriptorTypeService, thing, loggedIn) {
 
                 $scope.thing = thing;
                 $scope.loggedIn = loggedIn;
-                <!--$scope.parentThing = thingService.getThingFromListById($scope.parentThings, $scope.addThingFormData.parentThingId);-->
-                <!--for (i = 0; i < $scope.parentThing.descriptors.length; i++) {-->
-                    <!--var descriptorTypeID = $scope.parentThing.descriptors[i].descriptorType.descriptorTypeID;-->
-                    <!--$scope.addThingFormData.descriptors[descriptorTypeID] = null;-->
-                <!--}-->
+                $scope.action = {};
+                $scope.editing = false;
 
-                <!--$scope.submitAddThingForm = function() {-->
-                    <!--$http({-->
-                        <!--method: 'POST',-->
-                        <!--url: 'api/thing',-->
-                        <!--data: $scope.addThingFormData,-->
-                        <!--headers: {-->
-                            <!--'Content-Type': 'application/json'-->
-                        <!--}-->
-                    <!--}).then(function mySuccess(response) {-->
-                        <!--$scope.cancel();-->
-                    <!--}, function myError(response) {-->
-                        <!--$scope.addThingForm.thingNameInput.$error = {-->
-                            <!--failed: true-->
-                        <!--};-->
-                    <!--})-->
-                <!--}-->
+                $scope.cancel = function() {
+                    $mdDialog.hide();
+                };
+                $scope.edit = function() {
+                    $scope.editing = !$scope.editing;
+                };
 
-                <!--$scope.newParentSelected = function() {-->
-                    <!--thingService.getAbstractThingAndParentAndChildren($scope.addThingFormData.parentThingId).then(function mySuccess(response) {-->
+                $scope.thingEditFormData = {};
+                $scope.thingEditFormData.thingID = $scope.thing.thingID;
+                $scope.thingEditFormData.title = $scope.thing.title;
+                $scope.thingEditFormData.isAbstract = $scope.thing.isAbstract;
+                $scope.thingEditFormData.parentThingId = $scope.thing.thingID;
+                $scope.thingEditFormData.descriptors = {};
+                $scope.thingEditFormData.parentThingId = null;
+                $scope.parentThings = [];
+                if($scope.thing.parentThing!=null) {
+                    $scope.thingEditFormData.parentThingId = $scope.thing.parentThing.thingID;
+                    thingService.getThing($scope.thing.parentThing.thingID).then(function(response) {
+                        $scope.parentThings.push(response.data);
+                    });
+                }
+                $scope.descriptors = [];
+                for (i = 0; i < $scope.thing.descriptors.length; i++) {
+                    //band aid fix to not mess up thing after clicking edit again
+                    $scope.descriptors.push($scope.thing.descriptors[i]);
+                    var descriptorTypeID = $scope.thing.descriptors[i].descriptorType.descriptorTypeID;
+                    $scope.descriptors[i].descriptorType.descriptorTypeID = $scope.thing.descriptors[i].descriptorType.descriptorTypeID;
+                    $scope.thingEditFormData.descriptors[descriptorTypeID] = $scope.thing.descriptors[i].readableString;
+                }
+
+                $scope.showNewDescriptor = false;
+                $scope.descriptorTypes = {};
+
+                $scope.submitEditThingForm = function() {
+                    $http({
+                        method: 'PUT',
+                        url: 'api/thing',
+                        data: $scope.thingEditFormData,
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    }).then(function mySuccess(response) {
+                        $scope.cancel();
+                    }, function myError(response) {
+                        $scope.addThingForm.thingNameInput.$error = {
+                            failed: true
+                        };
+                    })
+                }
+
+                $scope.newParentSelected = function() {
+                    <!--thingService.getAbstractThingAndParentAndChildren($scope.thingEditFormData.parentThingId).then(function mySuccess(response) {-->
                         <!--$scope.parentThings = response.data;-->
-                        <!--$scope.parentThing = thingService.getThingFromListById(response.data, $scope.addThingFormData.parentThingId);-->
+                        <!--$scope.parentThing = thingService.getThingFromListById(response.data, $scope.thingEditFormData.parentThingId);-->
+                        <!--$scope.thingEditFormData.descriptors={};-->
                         <!--for (i = 0; i < $scope.parentThing.descriptors.length; i++) {-->
                             <!--var descriptorTypeID = $scope.parentThing.descriptors[i].descriptorType.descriptorTypeID;-->
-                            <!--$scope.addThingFormData.descriptors[descriptorTypeID] = null;-->
+                            <!--$scope.thingEditFormData.descriptors[descriptorTypeID] = null;-->
                         <!--}-->
                     <!--}, function myError(response) {-->
                         <!--$scope.cancel();-->
                     <!--});-->
-                <!--}-->
-
-                $scope.cancel = function() {
-                    $mdDialog.hide();
                 }
-                ;
 
+                $scope.showAddNewDescriptor = function() {
+                    descriptorTypeService.getDescriptorTypes().then(function mySuccess(response) {
+                        $scope.descriptorTypes = response.data;
+                        $scope.showNewDescriptor=true;
+                    });
+                };
+
+                $scope.addNewDescriptor = function(descriptorType) {
+                    var newDescriptor = {}
+                    newDescriptor.descriptorType = descriptorType;
+                    newDescriptor.type = descriptorType.valueType;
+                    $scope.descriptors.push(newDescriptor);
+                    $scope.thingEditFormData.descriptors[descriptorType.descriptorTypeID] = null;
+                    $scope.showNewDescriptor=false;
+                };
             });
 
             app.service('thingService', ['$http', function ($http) {
@@ -741,9 +786,16 @@
                         return "?" + url.split('?')[1];
                     return "";
                 }
-            }]);
+            }]).directive('thingEditForm', thingEditFormFactory);
 
-
+            function thingEditFormFactory()
+            {
+                return {
+                    restrict: 'E',
+                    scope: false,
+                    templateUrl: "thingEditForm.html"
+                };
+            };
         </script>
 </head>
 <body ng-app="basicUsageSidenavDemo" ng-controller="AppCtrl" layout="row" ng-cloak>

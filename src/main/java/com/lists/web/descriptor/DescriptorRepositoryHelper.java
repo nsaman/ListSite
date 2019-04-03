@@ -1,5 +1,6 @@
 package com.lists.web.descriptor;
 
+import com.lists.web.descriptorType.DescriptorType;
 import com.lists.web.descriptorType.DescriptorTypes;
 import com.lists.web.thing.IThingRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -125,7 +126,11 @@ public class DescriptorRepositoryHelper {
             ((StringDescriptor)descriptor).setValue(value);
     }
 
-    Descriptor findOne(String descriptorType, Integer id) {
+    public Descriptor findOne(DescriptorType descriptorType, Integer id) {
+        return findOne(descriptorType.getValueType(),id);
+    }
+
+    public Descriptor findOne(String descriptorType, Integer id) {
         return descriptorRepoMap.get(DescriptorTypes.byString(descriptorType)).findOne(id);
     }
 
