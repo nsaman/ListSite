@@ -517,10 +517,56 @@
                     })
                 }
 
-                $scope.cancel = function() {
-                    $mdDialog.hide();
+                $scope.signUp = function() {
+                    $mdDialog.show({
+                        templateUrl: 'signUpDialog.html',
+                        controller: 'SignUpDialogCtrl',
+                        locals: {
+                            user: user
+                        }
+                    }).finally(function() {
+                        if(user.loggedIn == true) {
+                            $scope.cancel();
+                        }
+                    });;
                 }
                 ;
+
+                $scope.cancel = function() {
+                    $mdDialog.hide();
+                };
+
+            });
+
+            app.controller('SignUpDialogCtrl', function($scope, $http, $mdDialog, user) {
+                $scope.signUpForm = {};
+                $scope.signUpFormData = {};
+
+                $scope.submitSignInForm = function() {
+                    if ($scope.signUpFormData.password === $scope.signUpFormData.repeatPassword) {
+                        $http({
+                            method: 'POST',
+                            url: 'api/user',
+                            data: $scope.signUpFormData,
+                            headers: {
+                                'Content-Type': 'application/json'
+                            }
+                        }).then(function mySuccess(response) {
+                            user.loggedIn = true;
+                            $scope.cancel();
+                        }, function myError(response) {
+                            $scope.loginForm.usernameInput.$error = {
+                                failed: true
+                            };
+                        })
+                    } else {
+                        $scope.signUpForm.passwordInput.$setValidity('validationError', false);
+                    }
+                }
+
+                $scope.cancel = function() {
+                    $mdDialog.hide();
+                };
 
             });
 

@@ -41,7 +41,7 @@ public class DescriptorTypesApiController {
     @Transactional
     @PreAuthorize("hasRole('ROLE_VIEWER')")
     @RequestMapping(path="/api/descriptorType", method = RequestMethod.POST, consumes={"application/json"})
-    public void createThing(@Valid @RequestBody DescriptorType descriptorType) {
+    public void createDescriptorType(@Valid @RequestBody DescriptorType descriptorType) {
 
         if(StringUtils.isBlank(descriptorType.getTitle())) {
             throw new IllegalArgumentException("Empty title found");
