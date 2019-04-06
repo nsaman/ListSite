@@ -14,7 +14,7 @@ public class UpdateThingRequest {
     private String title;
     @NotNull
     private Boolean isAbstract;
-    @NotNull
+
     private Integer parentThingId;
     @NotNull
     private Map<Integer, String> descriptors;

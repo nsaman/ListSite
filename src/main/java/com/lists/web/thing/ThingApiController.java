@@ -181,9 +181,11 @@ public class ThingApiController {
             throw new IllegalArgumentException("Could find thing to update thingID=" + updateThingRequest.getThingID());
 
         List<Descriptor> undefinedDescriptorList = new ArrayList<>();
-        for(Descriptor parentDescriptor : thing.getParentThing().getDescriptors()) {
-            if(!parentDescriptor.getDescriptorType().getIsNullable() && !updateThingRequest.getDescriptors().containsKey(parentDescriptor.getDescriptorType().getDescriptorTypeID())) {
-                undefinedDescriptorList.add(parentDescriptor);
+        if (thing.getParentThing() != null) {
+            for(Descriptor parentDescriptor : thing.getParentThing().getDescriptors()) {
+                if(!parentDescriptor.getDescriptorType().getIsNullable() && !updateThingRequest.getDescriptors().containsKey(parentDescriptor.getDescriptorType().getDescriptorTypeID())) {
+                    undefinedDescriptorList.add(parentDescriptor);
+                }
             }
         }
         if (!undefinedDescriptorList.isEmpty())
@@ -192,7 +194,7 @@ public class ThingApiController {
 
         thing.setTitle(updateThingRequest.getTitle());
         thing.setIsAbstract(updateThingRequest.getIsAbstract());
-        thing.setParentThing(thingRepository.findOne(updateThingRequest.getParentThingId()));
+        thing.setParentThing(updateThingRequest.getParentThingId()!=null?thingRepository.findOne(updateThingRequest.getParentThingId()):null);
 
         thingRepository.save(thing);
 
@@ -228,7 +230,10 @@ public class ThingApiController {
         Set<Compares> comparesList = new HashSet<>();
 
         Set<Integer> thingComparatorIds = thing.getCompares().stream().map(Compares::getComparator).map(Comparator::getComparatorID).collect(Collectors.toSet());
-        Set<Integer> parentThingComparatorIds = thing.getParentThing().getCompares().stream().map(Compares::getComparator).map(Comparator::getComparatorID).collect(Collectors.toSet());
+        Set<Integer> parentThingComparatorIds = new HashSet<>();
+        if (thing.getParentThing() != null)
+            parentThingComparatorIds = thing.getParentThing().getCompares().stream().map(Compares::getComparator).map(Comparator::getComparatorID).collect(Collectors.toSet());
+
         for(Comparator inputComparator : updateThingRequest.getChildComparators()) {
             if(!parentThingComparatorIds.contains(inputComparator.getComparatorID()) && !thingComparatorIds.contains((inputComparator.getComparatorID()))) {
                 Comparator comparator = comparatorRepository.findOne(inputComparator.getComparatorID());
