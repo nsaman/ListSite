@@ -570,7 +570,7 @@
 
             });
 
-            app.controller('AddThingDialogCtrl', function($scope, $http, $mdDialog, thingService, descriptorTypeService, parentThings, firstParentThingId) {
+            app.controller('AddThingDialogCtrl', function($scope, $http, $mdDialog, thingService, descriptorTypeService, comparatorService, parentThings, firstParentThingId) {
 
                 $scope.parentThings = parentThings;
                 $scope.thingEditFormData = {};
@@ -579,17 +579,20 @@
                 $scope.thingEditFormData.descriptors = {};
                 $scope.parentThing = thingService.getThingFromListById($scope.parentThings, $scope.thingEditFormData.parentThingId);
                 $scope.descriptors = $scope.parentThing.descriptors;
-                if($scope.descriptors != null) {
-                    for (i = 0; i < $scope.descriptors.length; i++) {
-                        var descriptorTypeID = $scope.descriptors[i].descriptorType.descriptorTypeID;
-                        $scope.thingEditFormData.descriptors[descriptorTypeID] = null;
-                    }
+                for (i = 0; i < $scope.descriptors.length; i++) {
+                    var descriptorTypeID = $scope.descriptors[i].descriptorType.descriptorTypeID;
+                    $scope.thingEditFormData.descriptors[descriptorTypeID] = null;
                 }
-
-                $scope.showNewDescriptor = false;
-                $scope.descriptorTypes = {};
+                $scope.parentComparators = [];
+                for (i = 0; i < $scope.parentThing.compares.length; i++) {
+                    var parentCompares = $scope.parentThing.compares[i];
+                    $scope.parentComparators.push(parentCompares.comparator);
+                }
+                $scope.thingEditFormData.childComparators = [];
 
                 $scope.submitAddThingForm = function() {
+                    $scope.showNewDescriptor=false;
+                    $scope.showNewCompares=false;
                     $http({
                         method: 'POST',
                         url: 'api/thing',
@@ -616,10 +619,18 @@
                             var descriptorTypeID = $scope.descriptors[i].descriptorType.descriptorTypeID;
                             $scope.thingEditFormData.descriptors[descriptorTypeID] = null;
                         }
+                        $scope.parentComparators = [];
+                        for (i = 0; i < $scope.parentThing.compares.length; i++) {
+                            var parentCompares = $scope.parentThing.compares[i];
+                            $scope.parentComparators.push(parentCompares.comparator);
+                        }
                     }, function myError(response) {
                         $scope.cancel();
                     });
                 }
+
+                $scope.showNewDescriptor = false;
+                $scope.descriptorTypes = {};
 
                 $scope.showAddNewDescriptor = function() {
                     descriptorTypeService.getDescriptorTypes().then(function mySuccess(response) {
@@ -635,6 +646,25 @@
                     $scope.descriptors.push(newDescriptor);
                     $scope.thingEditFormData.descriptors[descriptorType.descriptorTypeID] = null;
                     $scope.showNewDescriptor=false;
+                };
+
+                $scope.showNewCompares = false;
+                $scope.comparators = {};
+
+                $scope.showAddNewComparator = function() {
+                    comparatorService.getComparators().then(function mySuccess(response) {
+                        $scope.comparators = response.data;
+                        $scope.showNewCompares=true;
+                    });
+                };
+
+                $scope.addNewComparator = function(comparator) {
+                    $scope.thingEditFormData.childComparators.push(comparator);
+                    $scope.showNewCompares=false;
+                };
+
+                $scope.clearChildComparators = function() {
+                    $scope.thingEditFormData.childComparators = [];
                 };
 
                 $scope.cancel = function() {
@@ -700,7 +730,7 @@
                 };
             });
 
-            app.controller('ThingDialogCtrl', function($scope, $http, $mdDialog, thingService, descriptorTypeService, thing, loggedIn) {
+            app.controller('ThingDialogCtrl', function($scope, $http, $mdDialog, thingService, descriptorTypeService, comparatorService, thing, loggedIn) {
 
                 $scope.thing = thing;
                 $scope.loggedIn = loggedIn;
@@ -736,9 +766,22 @@
                     $scope.descriptors[i].descriptorType.descriptorTypeID = $scope.thing.descriptors[i].descriptorType.descriptorTypeID;
                     $scope.thingEditFormData.descriptors[descriptorTypeID] = $scope.thing.descriptors[i].readableString;
                 }
-
-                $scope.showNewDescriptor = false;
-                $scope.descriptorTypes = {};
+                $scope.parentComparators = [];
+                $scope.parentComparatorIDs = [];
+                if($scope.thing.parentThing!=null) {
+                    for (i = 0; i < $scope.thing.parentThing.compares.length; i++) {
+                        var parentCompares = $scope.thing.parentThing.compares[i];
+                        $scope.parentComparators.push(parentCompares.comparator);
+                        $scope.parentComparatorIDs.push(parentCompares.comparator.comparatorID);
+                    }
+                }
+                $scope.thingEditFormData.childComparators = [];
+                for (i = 0; i < $scope.thing.compares.length; i++) {
+                    var childCompares = $scope.thing.compares[i];
+                    if(!$scope.parentComparatorIDs.includes(childCompares.comparator.comparatorID)) {
+                        $scope.thingEditFormData.childComparators.push(childCompares.comparator);
+                    }
+                }
 
                 $scope.submitEditThingForm = function() {
                     $http({
@@ -769,7 +812,15 @@
                     <!--}, function myError(response) {-->
                         <!--$scope.cancel();-->
                     <!--});-->
+                        <!--$scope.parentComparators = [];-->
+                        <!--for (i = 0; i < $scope.parentThing.compares.length; i++) {-->
+                            <!--var parentCompares = $scope.parentThing.compares[i];-->
+                            <!--$scope.parentComparators.push(parentCompares.comparator);-->
+                        <!--}-->
                 }
+
+                $scope.showNewDescriptor = false;
+                $scope.descriptorTypes = {};
 
                 $scope.showAddNewDescriptor = function() {
                     descriptorTypeService.getDescriptorTypes().then(function mySuccess(response) {
@@ -785,6 +836,25 @@
                     $scope.descriptors.push(newDescriptor);
                     $scope.thingEditFormData.descriptors[descriptorType.descriptorTypeID] = null;
                     $scope.showNewDescriptor=false;
+                };
+
+                $scope.showNewCompares = false;
+                $scope.comparators = {};
+
+                $scope.showAddNewComparator = function() {
+                    comparatorService.getComparators().then(function mySuccess(response) {
+                        $scope.comparators = response.data;
+                        $scope.showNewCompares=true;
+                    });
+                };
+
+                $scope.addNewComparator = function(comparator) {
+                    $scope.thingEditFormData.childComparators.push(comparator);
+                    $scope.showNewCompares=false;
+                };
+
+                $scope.clearChildComparators = function() {
+                    $scope.thingEditFormData.childComparators = [];
                 };
             });
 
@@ -823,6 +893,9 @@
 
                 this.getComparator = function (comparatorId) {
                     return $http.get("api/comparator?comparatorId=" + comparatorId);
+                };
+                this.getComparators = function () {
+                    return $http.get("api/comparators");
                 };
             }]).service('locationService', ['$location', function ($location) {
 

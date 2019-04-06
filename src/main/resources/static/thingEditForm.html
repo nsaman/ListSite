@@ -20,7 +20,7 @@
         </md-input-container>
 
         <md-input-container>
-            <md-checkbox ng-model="thingEditFormData.isAbstract">
+            <md-checkbox ng-model="thingEditFormData.isAbstract" ng-click="clearChildComparators()">
                 isAbstract
             </md-checkbox>
         </md-input-container>
@@ -42,6 +42,37 @@
     <div layout-gt-xs="row" ng-if="!showNewDescriptor">
         <md-button ng-click="showAddNewDescriptor()">
             <md-icon md-svg-src="img/icons/plus.svg"></md-icon> Add a new descriptor
+        </md-button>
+    </div>
+    <div layout-gt-xs="row">
+        <md-chips ng-model="parentComparators" readonly="true" md-removable="false">
+            <md-chip-template>
+                <span>
+                  <p>{{$chip.title}}</p>
+                </span>
+            </md-chip-template>
+        </md-chips>
+    </div>
+    <div layout-gt-xs="row">
+        <md-chips ng-model="thingEditFormData.childComparators" readonly="true" md-removable="true">
+            <md-chip-template>
+                <span>
+                  <p>{{$chip.title}}</p>
+                </span>
+            </md-chip-template>
+        </md-chips>
+    </div>
+    <div layout-gt-xs="row" ng-if="showNewCompares">
+        <md-input-container>
+            <label>New Compared by</label>
+            <md-select name="type" ng-model="thingEditFormData.newCompare">
+                <md-option ng-repeat="comparator in comparators" ng-click="addNewComparator(comparator)">{{comparator.title}}</md-option>
+            </md-select>
+        </md-input-container>
+    </div>
+    <div layout-gt-xs="row" ng-if="!showNewCompares && thingEditFormData.isAbstract">
+        <md-button ng-click="showAddNewComparator()">
+            <md-icon md-svg-src="img/icons/plus.svg"></md-icon> Add a new Comparator
         </md-button>
     </div>
 

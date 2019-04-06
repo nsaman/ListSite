@@ -81,7 +81,7 @@
                     </thead>
                     <tbody md-body>
                     <tr md-row md-select="thingRow" ng-click="showThing(thingRow.thing.thingID)" md-on-select="logItem" md-auto-select="options.autoSelect" ng-repeat="thingRow in things.thingsRowViewList | filter: filter.search | orderBy: query.order | limitTo: query.limit : (query.page -1) * query.limit">
-                        <td ng-repeat="comparator in things.comparesHeaders" md-column md-numeric md-order-by="calories.value" md-cell>{{thingRow.comparesMap[comparator.title].score}}</td>
+                        <td ng-repeat="comparator in things.comparesHeaders" md-numeric md-cell>{{thingRow.comparesMap[comparator.title].score}}</td>
                         <td md-cell>{{thingRow.thing.title}}</td>
                         <td ng-repeat="descriptor in things.descriptorHeaders" md-cell>
                             <p ng-repeat="descriptor2 in thingRow.descriptorMap[descriptor.title]">{{descriptor2.readableString}}</p>

@@ -1,6 +1,7 @@
 package com.lists.web.thing;
 
 import com.lists.web.comparator.Comparator;
+import com.lists.web.comparator.IComparatorRepository;
 import com.lists.web.compares.Compares;
 import com.lists.web.compares.IComparesRepository;
 import com.lists.web.descriptor.Descriptor;
@@ -29,6 +30,8 @@ public class ThingApiController {
     private IThingRepository thingRepository;
     @Autowired
     private IComparesRepository comparesRepository;
+    @Autowired
+    private IComparatorRepository comparatorRepository;
     @Autowired
     private IDescriptorTypeRepository descriptorTypeRepository;
     @Autowired
@@ -116,15 +119,6 @@ public class ThingApiController {
 
         thingRepository.save(thing);
 
-        for(Compares parentCompares : thing.getParentThing().getCompares()) {
-            Compares compares = new Compares();
-            compares.setThing(thing);
-            compares.setComparator(parentCompares.getComparator());
-            compares.setScore(Compares.DEFAULT_SCORE);
-
-            comparesRepository.save(compares);
-        }
-
         Set<Descriptor> descriptors = new HashSet<>();
 
         for (Integer descriptorTypeId : newThingRequest.getDescriptors().keySet()) {
@@ -143,6 +137,38 @@ public class ThingApiController {
         }
 
         descriptorRepositoryHelper.save(descriptors);
+
+        Set<Compares> comparesList = new HashSet<>();
+        Set<Comparator> parentComparators = new HashSet<>();
+
+        for(Compares parentCompares : thing.getParentThing().getCompares()) {
+
+            parentComparators.add(parentCompares.getComparator());
+
+            Compares compares = new Compares();
+            compares.setThing(thing);
+            compares.setComparator(parentCompares.getComparator());
+            compares.setScore(Compares.DEFAULT_SCORE);
+
+            comparesList.add(compares);
+        }
+
+        if(thing.getIsAbstract()) {
+            for (Comparator inputComparator : newThingRequest.getChildComparators()) {
+                Comparator comparator = comparatorRepository.findOne(inputComparator.getComparatorID());
+                if(!parentComparators.contains(comparator)) {
+
+                    Compares compares = new Compares();
+                    compares.setThing(thing);
+                    compares.setComparator(comparator);
+                    compares.setScore(Compares.DEFAULT_SCORE);
+
+                    comparesList.add(compares);
+                }
+            }
+        }
+
+        comparesRepository.save(comparesList);
     }
 
     @Transactional
@@ -171,19 +197,6 @@ public class ThingApiController {
         thingRepository.save(thing);
 
         // todo add logic for logical deletion
-        Set<Integer> thingComparatorIds = thing.getCompares().stream().map(Compares::getComparator).map(Comparator::getComparatorID).collect(Collectors.toSet());
-        for(Compares parentCompares : thing.getParentThing().getCompares()) {
-            if(!thingComparatorIds.contains(parentCompares.getComparator().getComparatorID())) {
-                Compares compares = new Compares();
-                compares.setThing(thing);
-                compares.setComparator(parentCompares.getComparator());
-                compares.setScore(Compares.DEFAULT_SCORE);
-
-                comparesRepository.save(compares);
-            }
-        }
-
-        // todo add logic for logical deletion
         Set<Descriptor> descriptors = new HashSet<>();
         Map<Integer,Descriptor> descriptorTypeIdMap = new HashMap<>();
         for (Descriptor descriptor : thing.getDescriptors()) {
@@ -210,6 +223,24 @@ public class ThingApiController {
         }
 
         descriptorRepositoryHelper.save(descriptors);
+
+        // todo add logic for logical deletion
+        Set<Compares> comparesList = new HashSet<>();
+
+        Set<Integer> thingComparatorIds = thing.getCompares().stream().map(Compares::getComparator).map(Comparator::getComparatorID).collect(Collectors.toSet());
+        Set<Integer> parentThingComparatorIds = thing.getParentThing().getCompares().stream().map(Compares::getComparator).map(Comparator::getComparatorID).collect(Collectors.toSet());
+        for(Comparator inputComparator : updateThingRequest.getChildComparators()) {
+            if(!parentThingComparatorIds.contains(inputComparator.getComparatorID()) && !thingComparatorIds.contains((inputComparator.getComparatorID()))) {
+                Comparator comparator = comparatorRepository.findOne(inputComparator.getComparatorID());
+                Compares compares = new Compares();
+                compares.setThing(thing);
+                compares.setComparator(comparator);
+                compares.setScore(Compares.DEFAULT_SCORE);
+
+                comparesList.add(compares);
+            }
+        }
+        comparesRepository.save(comparesList);
     }
 
     private ThingsTableView thingsToThingsTableView(Iterable<Thing> thingList, Collection<Comparator> showComparators, Collection<DescriptorType> showDescriptorTypes) {
