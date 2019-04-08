@@ -8,7 +8,6 @@ loserThingID int,
 comparatorID int,
 userID char(25),
 PRIMARY KEY (voteID),
-UNIQUE KEY (comparatorID, winnerThingID, loserThingID, userID),
 CONSTRAINT FK_vote_1
 FOREIGN KEY (comparatorID)
 REFERENCES comparator(comparatorID)

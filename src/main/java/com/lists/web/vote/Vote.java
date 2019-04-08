@@ -3,6 +3,7 @@ package com.lists.web.vote;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.lists.web.AuditedEntity;
 import com.lists.web.comparator.Comparator;
+import com.lists.web.customSet.CustomSet;
 import com.lists.web.thing.Thing;
 import com.lists.web.user.UserStub;
 
@@ -13,7 +14,6 @@ import javax.persistence.*;
  */
 
 @Entity
-@Table(uniqueConstraints={@UniqueConstraint(columnNames={"comparatorID", "winnerThingID", "loserThingID", "userID"})})
 public class Vote extends AuditedEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -33,6 +33,11 @@ public class Vote extends AuditedEntity {
     @ManyToOne
     @JoinColumn(name="loserThingID",foreignKey=@ForeignKey(name="FK_vote_3"))
     private Thing loserThing;
+
+    @JsonBackReference(value="voteCustomSet")
+    @ManyToOne
+    @JoinColumn(name="customSetID",foreignKey=@ForeignKey(name="FK_vote_5"))
+    private CustomSet customSet;
 
     @JsonBackReference(value="voteUserID")
     @ManyToOne
@@ -69,6 +74,14 @@ public class Vote extends AuditedEntity {
 
     public void setLoserThing(Thing loserThing) {
         this.loserThing = loserThing;
+    }
+
+    public CustomSet getCustomSet() {
+        return customSet;
+    }
+
+    public void setCustomSet(CustomSet customSet) {
+        this.customSet = customSet;
     }
 
     public UserStub getUser() {

@@ -3,6 +3,7 @@ package com.lists.web.compares;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.lists.web.AuditedEntity;
 import com.lists.web.comparator.Comparator;
+import com.lists.web.customSet.CustomSet;
 import com.lists.web.thing.Thing;
 
 import javax.persistence.*;
@@ -30,6 +31,11 @@ public class Compares extends AuditedEntity {
     @JoinColumn(name="thingID",foreignKey=@ForeignKey(name="FK_compares_2"))
     private Thing thing;
 
+    @JsonBackReference(value="customSetCompares")
+    @ManyToOne
+    @JoinColumn(name="customSetID",foreignKey=@ForeignKey(name="FK_compares_3"))
+    private CustomSet customSet;
+
     private float score;
 
     public Integer getComparesID() {
@@ -54,6 +60,14 @@ public class Compares extends AuditedEntity {
 
     public void setThing(Thing thing) {
         this.thing = thing;
+    }
+
+    public CustomSet getCustomSet() {
+        return customSet;
+    }
+
+    public void setCustomSet(CustomSet customSet) {
+        this.customSet = customSet;
     }
 
     public float getScore() {
