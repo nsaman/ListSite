@@ -53,8 +53,8 @@ public class ThingApiController {
         List<Specification<Thing>> searchItems = new ArrayList<>();
         if(parentThing!=null)
             searchItems.add(IThingRepository.hasParentThing(parentThing));
-        if(!comparators.isEmpty())
-            searchItems.add(IThingRepository.hasComparators(comparators));
+        comparators.forEach(x -> searchItems.add(IThingRepository.hasComparator(x)));
+
 
         Iterable<Thing> thingList;
 

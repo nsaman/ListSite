@@ -15,8 +15,8 @@ public interface IThingRepository extends CrudRepository<Thing, Integer>, JpaSpe
 
     List<Thing> findByParentThing(Thing parentThing);
 
-    static Specification<Thing> hasComparators(Collection<Comparator> comparators) {
-        return (thing, cq, cb) -> cb.equal(thing.join("compares").join("comparator"), comparators);
+    static Specification<Thing> hasComparator(Comparator comparator) {
+        return (thing, cq, cb) -> cb.equal(thing.join("compares").join("comparator"), comparator);
     }
 
     static Specification<Thing> hasParentThing(Thing parentThing) {

@@ -34,21 +34,21 @@ public class ThingController {
         return new ModelAndView("createThing", "thing", new Thing());
     }
 
-    @GetMapping
-    public String getThingsByParentAndComparator(@RequestParam(value="thingID") Thing parentThing,
-                                                 @RequestParam(value="comparatorID", defaultValue="1") Set<Comparator> comparators,
-                                                 @RequestParam(value="descriptorTypeSearchedIDs", defaultValue="") Set<DescriptorType> descriptorTypeSearchedIDs,
-                                                 @RequestParam(value="descriptorTypeRetrievedIDs", defaultValue="") Set<DescriptorType> descriptorTypeRetrievedIDs, Model model) {
-
-        Iterable<Thing> thingList = thingRepository.findAll(IThingRepository.hasComparators(comparators));
-
-        ThingsTableView thingsTableView = thingsToThingsTableView(thingList, comparators, descriptorTypeRetrievedIDs);
-
-        model.addAttribute("thingsTableView", thingsTableView);
-        model.addAttribute("parentThingDescriptors", parentThing.getDescriptors());
-
-        return "things";
-    }
+//    @GetMapping
+//    public String getThingsByParentAndComparator(@RequestParam(value="thingID") Thing parentThing,
+//                                                 @RequestParam(value="comparatorID", defaultValue="1") Set<Comparator> comparators,
+//                                                 @RequestParam(value="descriptorTypeSearchedIDs", defaultValue="") Set<DescriptorType> descriptorTypeSearchedIDs,
+//                                                 @RequestParam(value="descriptorTypeRetrievedIDs", defaultValue="") Set<DescriptorType> descriptorTypeRetrievedIDs, Model model) {
+//
+//        Iterable<Thing> thingList = thingRepository.findAll(IThingRepository.hasComparator(comparators));
+//
+//        ThingsTableView thingsTableView = thingsToThingsTableView(thingList, comparators, descriptorTypeRetrievedIDs);
+//
+//        model.addAttribute("thingsTableView", thingsTableView);
+//        model.addAttribute("parentThingDescriptors", parentThing.getDescriptors());
+//
+//        return "things";
+//    }
 
     @RequestMapping(value = "/{thingID}", method = RequestMethod.GET)
     public String getThing(@PathVariable(value="thingID") int thingID, Model model) {
