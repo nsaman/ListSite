@@ -3,10 +3,10 @@ drop table vote;
 create table vote
 (
 voteID int NOT NULL AUTO_INCREMENT,
-winnerThingID int,
-loserThingID int,
-comparatorID int,
-userID char(25),
+winnerThingID int NOT NULL,
+loserThingID int NOT NULL,
+comparatorID int NOT NULL,
+userID char(25) NOT NULL,
 PRIMARY KEY (voteID),
 CONSTRAINT FK_vote_1
 FOREIGN KEY (comparatorID)

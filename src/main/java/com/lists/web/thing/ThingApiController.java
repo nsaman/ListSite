@@ -38,7 +38,7 @@ public class ThingApiController {
     private DescriptorRepositoryHelper descriptorRepositoryHelper;
 
     @RequestMapping(path="/api/things", produces = "application/json")
-    public ThingsTableView getThingsByParentAndComparator(@RequestParam(value="thingID") Thing parentThing,
+    public ThingsTableView getThingsByParentAndComparator(@RequestParam(value="thingID", required=false) Thing parentThing,
                                                  @RequestParam(value="comparatorID", defaultValue="1") Set<Comparator> comparators,
                                                  @RequestParam(value="descriptorTypeSearchedIDs", defaultValue="") Set<DescriptorType> descriptorTypeSearchedIDs,
                                                  @RequestParam(value="descriptorTypeRetrievedIDs", defaultValue="") Set<DescriptorType> descriptorTypeRetrievedIDs) {
@@ -61,13 +61,71 @@ public class ThingApiController {
         if(!searchItems.isEmpty()) {
             Specifications<Thing> searchSpecifications = Specifications.where(searchItems.get(0));
             for (int i = 1; i < searchItems.size(); i++)
-                searchSpecifications.and(searchItems.get(i));
+                searchSpecifications = searchSpecifications.and(searchItems.get(i));
             thingList = thingRepository.findAll(searchSpecifications);
         } else {
             thingList = thingRepository.findAll();
         }
 
         return thingsToThingsTableView(thingList, comparators, descriptorTypeRetrievedIDs);
+    }
+
+    @PreAuthorize("hasRole('ROLE_VIEWER')")
+    @RequestMapping(path="/api/thing/comparison", produces = "application/json")
+    public List<Thing> getCompareThings(@RequestParam(value="comparedThingID", required=false) Thing comparedThing,
+                                       @RequestParam(value="thingID", required=false) Thing parentThing,
+                                       @RequestParam(value="comparatorID", defaultValue="1") Set<Comparator> comparators,
+                                       @RequestParam(value="descriptorTypeSearchedIDs", defaultValue="") Set<DescriptorType> descriptorTypeSearchedIDs,
+                                       @RequestParam(value="descriptorTypeRetrievedIDs", defaultValue="") Set<DescriptorType> descriptorTypeRetrievedIDs) {
+
+        if(comparators.contains(null))
+            comparators.remove(null);
+        if(descriptorTypeSearchedIDs.contains(null))
+            descriptorTypeSearchedIDs.remove(null);
+        if(descriptorTypeRetrievedIDs.contains(null))
+            descriptorTypeRetrievedIDs.remove(null);
+
+        List<Specification<Thing>> searchItems = new ArrayList<>();
+        if(parentThing!=null)
+            searchItems.add(IThingRepository.hasParentThing(parentThing));
+        comparators.forEach(x -> searchItems.add(IThingRepository.hasComparator(x)));
+
+        Iterable<Thing> thingList;
+
+        if(!searchItems.isEmpty()) {
+            Specifications<Thing> searchSpecifications = Specifications.where(searchItems.get(0));
+            for (int i = 1; i < searchItems.size(); i++)
+                searchSpecifications = searchSpecifications.and(searchItems.get(i));
+            if(comparedThing!=null) {
+                if(thingRepository.findAll(searchSpecifications.and(IThingRepository.hasThing(comparedThing))).isEmpty())
+                    throw new IllegalArgumentException("comparedThing=" + comparedThing.getThingID() + " not in searched set");
+            }
+            thingList = thingRepository.findAll(searchSpecifications);
+        } else {
+            thingList = thingRepository.findAll();
+        }
+
+        List<Thing> thingListSet = new ArrayList<>();
+        thingList.forEach(thingListSet::add);
+        Collections.shuffle(thingListSet);
+
+        if(thingListSet.size() < 2) {
+            return null;
+        }
+
+        List<Thing> comparisonPair = new ArrayList<>();
+        if (comparedThing != null) {
+            comparisonPair.add(comparedThing);
+            thingListSet.remove(comparedThing);
+        } else {
+            comparisonPair.add(thingListSet.get(0));
+            thingListSet.remove(thingListSet.get(0));
+        }
+        comparisonPair.add(thingListSet.get(0));
+
+        //todo retry x times to find a unvoted on pair
+
+        return comparisonPair;
     }
 
     @RequestMapping(path="/api/thing", produces = "application/json")

@@ -21,4 +21,8 @@ public interface IThingRepository extends CrudRepository<Thing, Integer>, JpaSpe
     static Specification<Thing> hasParentThing(Thing parentThing) {
         return (thing, cq, cb) -> cb.equal(thing.join("parentThing"), parentThing);
     }
+
+    static Specification<Thing> hasThing(Thing thing) {
+        return (rootThing, cq, cb) -> cb.equal(rootThing, thing);
+    }
 }

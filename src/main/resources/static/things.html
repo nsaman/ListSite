@@ -54,6 +54,9 @@
                     <span ng-if="parentThing.title" ng-click="showThing(parentThing.thingID)">{{parentThing.title}}</span>
                     <span ng-if="!parentThing.title">Things</span>
                     <div flex></div>
+                    <md-button ng-if="user.loggedIn && things.comparesHeaders.length<=1" ng-click="showThingCompare(null, things.comparesHeaders.length==1?things.comparesHeaders[0].comparatorID:1); $event.stopPropagation();" class="md-icon-button">
+                        <md-icon>swap_vert</md-icon>
+                    </md-button>
                     <md-button class="md-icon-button" ng-click="loadThings()">
                         <md-icon>refresh</md-icon>
                     </md-button>
@@ -70,7 +73,7 @@
                 <table md-table md-row-select="options.rowSelection" multiple="{{options.multiSelect}}" ng-model="selected" md-progress="promise">
                     <thead ng-if="!options.decapitate" md-head md-order="query.order" md-on-reorder="logOrder">
                         <tr md-row>
-                            <th ng-repeat="comparator in things.comparesHeaders" md-column md-numeric md-order-by="comparesMap[comparator.title].score" md-desc><span>{{comparator.title}}</span></th>
+                            <th ng-repeat="comparator in things.comparesHeaders" md-column md-numeric md-order-by="comparesMap[comparator.title].score" md-desc ><span><md-button class="md-icon-button" ng-if="user.loggedIn && things.comparesHeaders.length>1" ng-click="showThingCompare(null, comparator.comparatorID); $event.stopPropagation();"><md-icon>swap_vert</md-icon></md-button>{{comparator.title}}</span></th>
                             <th md-column md-order-by="thing.title"><span>Title</span></th>
                             <th ng-repeat="descriptor in things.descriptorHeaders" md-column md-numeric md-order-by="descriptorMap[descriptor.title].value" md-desc><span>{{descriptor.title}}</span></th>
                             <!--<th md-column md-order-by="comment">-->
@@ -81,7 +84,7 @@
                     </thead>
                     <tbody md-body>
                     <tr md-row md-select="thingRow" ng-click="showThing(thingRow.thing.thingID)" md-on-select="logItem" md-auto-select="options.autoSelect" ng-repeat="thingRow in things.thingsRowViewList | filter: filter.search | orderBy: query.order | limitTo: query.limit : (query.page -1) * query.limit">
-                        <td ng-repeat="comparator in things.comparesHeaders" md-numeric md-cell>{{thingRow.comparesMap[comparator.title].score}}</td>
+                        <td ng-repeat="comparator in things.comparesHeaders" md-numeric md-cell><md-button class="md-icon-button" ng-if="user.loggedIn && thingRow.comparesMap[comparator.title]" ng-click="showThingCompare(thingRow.thing.thingID, comparator.comparatorID); $event.stopPropagation();"><md-icon>swap_vert</md-icon></md-button><span flex></span>{{thingRow.comparesMap[comparator.title].score}}</td>
                         <td md-cell>{{thingRow.thing.title}}</td>
                         <td ng-repeat="descriptor in things.descriptorHeaders" md-cell>
                             <p ng-repeat="descriptor2 in thingRow.descriptorMap[descriptor.title]">{{descriptor2.readableString}}</p>

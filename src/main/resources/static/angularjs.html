@@ -35,6 +35,14 @@
             md-virtual-repeat-container {
                 height: 100%;
             }
+
+            .thingCompareRow {
+              display: flex;
+            }
+
+            .thingCompareColumn {
+              flex: 50%;
+            }
         </style>
     <script type="text/javascript">
             var app = angular.module('basicUsageSidenavDemo', ['ngRoute', 'ngMaterial', 'ngMessages', 'md.data.table', 'fixed.table.header']).config(['$mdThemingProvider', function($mdThemingProvider) {
@@ -42,8 +50,26 @@
 
                 $mdThemingProvider.theme('default').primaryPalette('blue');
             }
-            ]).controller('thingsController', function($mdDialog, $mdEditDialog, $q, $scope, $timeout, $window, $http, $location, userService, thingService, locationService) {
+            ]).controller('thingsController', function($mdDialog, $mdEditDialog, $q, $scope, $timeout, $window, $http, $location, userService, thingService, locationService, comparatorService) {
                 'use strict';
+
+                $scope.showThingCompare = function(thingID, comparatorID) {
+
+                    comparatorService.getComparator(comparatorID).then(function(comparatorResponse) {
+                        thingService.getCompareThings(thingID, comparatorID, locationService.getQueryParams()).then(function(response) {
+                            if(response.data[1]) {
+                                $mdDialog.show({
+                                    templateUrl: 'thingCompareDialog.html',
+                                    controller: 'ThingCompareDialogCtrl',
+                                    locals: {
+                                        comparator: comparatorResponse.data,
+                                        comparisonPair: response.data
+                                    }
+                                })
+                            }
+                        });
+                     });
+                };
 
                 $scope.selected = [];
 
@@ -730,6 +756,64 @@
                 };
             });
 
+            app.controller('ThingCompareDialogCtrl', function($scope, $http, $mdDialog, comparator, comparisonPair) {
+
+                $scope.comparisonPair = comparisonPair;
+                $scope.comparator = comparator;
+
+                $scope.vote = function(comparator, winnerThing, loserThing) {
+                    var vote = {};
+                    vote.comparator = comparator;
+                    vote.winnerThing = winnerThing;
+                    vote.loserThing = loserThing;
+                    vote.customSet = null;
+                    $http({
+                        method: 'POST',
+                        url: 'api/vote',
+                        data: vote,
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    }).then(function mySuccess(response) {
+                        $scope.cancel();
+                    }, function myError(response) {
+                        $scope.cancel();
+                    })
+                }
+
+                $scope.cancel = function() {
+                    $mdDialog.hide();
+                };
+            });
+
+            app.controller('AddComparatorDialogCtrl', function($scope, $http, $mdDialog, descriptorTypeService) {
+
+                $scope.addComparatorFormData = {};
+                $scope.addComparatorFormData.isNullable = false;
+                $scope.addComparatorFormData.isUnique = false;
+
+                $scope.submitAddComparatorForm = function() {
+                    $http({
+                        method: 'POST',
+                        url: 'api/comparator',
+                        data: $scope.addComparatorFormData,
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    }).then(function mySuccess(response) {
+                        $scope.cancel();
+                    }, function myError(response) {
+                        $scope.addComparatorForm.comparatorNameInput.$error = {
+                            failed: true
+                        };
+                    })
+                }
+
+                $scope.cancel = function() {
+                    $mdDialog.hide();
+                };
+            });
+
             app.controller('ThingDialogCtrl', function($scope, $http, $mdDialog, thingService, descriptorTypeService, comparatorService, thing, loggedIn) {
 
                 $scope.thing = thing;
@@ -860,15 +944,15 @@
 
             app.service('thingService', ['$http', function ($http) {
 
-                this.getThing = function (thingId) {
+                this.getThing = function(thingId) {
                     return $http.get("api/thing?thingID=" + thingId);
                 };
 
-                this.getAbstractThingAndParentAndChildren = function (thingId) {
+                this.getAbstractThingAndParentAndChildren = function(thingId) {
                     return $http.get("api/thing/abstractThingAndParentAndChildren?thingID=" + thingId);
                 };
 
-                this.getThingFromListById = function (thingList, thingId) {
+                this.getThingFromListById = function(thingList, thingId) {
                     for (i = 0; i < thingList.length; i++) {
                         if (thingList[i].thingID == thingId) {
                             return thingList[i];
@@ -876,6 +960,20 @@
                     }
                     return null;
                 };
+
+                this.getCompareThings = function(thingID, comparatorID, searchParams) {
+                    if (comparatorID == null)
+                        comparatorID = 1;
+                    if (thingID == null && searchParams === "") {
+                        return $http.get("api/thing/comparison?comparedComparatorID=" + comparatorID);
+                    } else if (thingID == null) {
+                        return $http.get("api/thing/comparison" + searchParams + "&comparedComparatorID=" + comparatorID);
+                    } else if (searchParams === "") {
+                        return $http.get("api/thing/comparison?comparedComparatorID=" + comparatorID + "&comparedThingID=" + thingID);
+                    } else {
+                        return $http.get("api/thing/comparison" + searchParams +"&comparedThingID=" + thingID + "&comparedComparatorID=" + comparatorID);
+                    }
+                }
             }]).service('descriptorTypeService', ['$http', function ($http) {
 
                 this.getDescriptorType = function (descriptorTypeId) {
@@ -891,8 +989,8 @@
                 };
             }]).service('comparatorService', ['$http', function ($http) {
 
-                this.getComparator = function (comparatorId) {
-                    return $http.get("api/comparator?comparatorId=" + comparatorId);
+                this.getComparator = function (comparatorID) {
+                    return $http.get("api/comparator?comparatorID=" + comparatorID);
                 };
                 this.getComparators = function () {
                     return $http.get("api/comparators");
@@ -941,9 +1039,6 @@
         <div layout="row">
             <a href="/angularjs.html#!/comparators" ng-click="close()">comparators</a>
         </div>
-        <p hide show-gt-md>This sidenav is locked open on your device. To go back to the default behavior,
-            narrow your display.
-        </p>
     </md-content>
 </md-sidenav>
 <div layout="column" tabindex="-1" role="main" flex class="layout-column flex">
