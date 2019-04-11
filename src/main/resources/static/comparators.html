@@ -1,12 +1,6 @@
 <body layout="column">
 <md-content layout="column" flex>
 
-    <div ng-if="user.loggedIn">
-        <md-button ng-click="showAddComparators($event)">
-            <md-icon md-svg-src="img/icons/plus.svg"></md-icon> Add a new comparator
-        </md-button>
-    </div>
-
         <md-card>
             <div layout="row" layout-wrap class="checkboxes">
                 <md-checkbox ng-model="options.rowSelection">Row Selection</md-checkbox>
@@ -25,6 +19,11 @@
             <md-toolbar class="md-table-toolbar md-default" ng-hide="options.rowSelection && selected.length">
                 <div class="md-toolbar-tools">
                     <span>Comparators</span>
+                    <span ng-if="user.loggedIn">
+                        <md-button class="md-icon-button" ng-click="showAddComparators($event)">
+                            <md-icon>add</md-icon>
+                        </md-button>
+                    </span>
                     <div flex></div>
                     <md-button class="md-icon-button" ng-click="loadComparators()">
                         <md-icon>refresh</md-icon>

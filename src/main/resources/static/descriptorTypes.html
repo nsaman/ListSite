@@ -1,12 +1,6 @@
 <body layout="column">
 <md-content layout="column" flex>
 
-    <div ng-if="user.loggedIn">
-        <md-button ng-click="showAddDescriptorTypes($event)">
-            <md-icon md-svg-src="img/icons/plus.svg"></md-icon> Add a new descriptor type
-        </md-button>
-    </div>
-
         <md-card>
             <div layout="row" layout-wrap class="checkboxes">
                 <md-checkbox ng-model="options.rowSelection">Row Selection</md-checkbox>
@@ -25,6 +19,11 @@
             <md-toolbar class="md-table-toolbar md-default" ng-hide="options.rowSelection && selected.length">
                 <div class="md-toolbar-tools">
                     <span>Descriptor Types</span>
+                    <span ng-if="user.loggedIn">
+                        <md-button class="md-icon-button" ng-click="showAddDescriptorTypes($event)">
+                            <md-icon>add</md-icon>
+                        </md-button>
+                    </span>
                     <div flex></div>
                     <md-button class="md-icon-button" ng-click="loadDescriptorTypes()">
                         <md-icon>refresh</md-icon>

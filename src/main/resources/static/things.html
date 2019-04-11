@@ -1,11 +1,7 @@
 <body layout="column">
 <md-content layout="column" flex>
 
-    <div ng-if="user.loggedIn">
-        <md-button ng-click="showAddThing($event)">
-            <md-icon md-svg-src="img/icons/plus.svg"></md-icon> Add a new thing
-        </md-button>
-    </div>
+
 
     <!--<md-virtual-repeat-container fix-head>-->
         <!--<md-table-container>-->
@@ -53,6 +49,11 @@
                 <div class="md-toolbar-tools">
                     <span ng-if="parentThing.title" ng-click="showThing(parentThing.thingID)">{{parentThing.title}}</span>
                     <span ng-if="!parentThing.title">Things</span>
+                    <span ng-if="user.loggedIn">
+                        <md-button class="md-icon-button" ng-click="showAddThing($event)">
+                            <md-icon>add</md-icon>
+                        </md-button>
+                    </span>
                     <div flex></div>
                     <md-button ng-if="user.loggedIn && things.comparesHeaders.length<=1" ng-click="showThingCompare(null, things.comparesHeaders.length==1?things.comparesHeaders[0].comparatorID:1); $event.stopPropagation();" class="md-icon-button">
                         <md-icon>swap_vert</md-icon>
