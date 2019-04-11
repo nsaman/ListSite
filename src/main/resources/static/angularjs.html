@@ -1041,8 +1041,8 @@
         <div class="md-toolbar-tools">
             <h1>Sidenav Left</h1>
             <span flex></span>
-            <md-button class="md-icon-button" ng-click="close()">
-                <md-icon md-svg-src="img/icons/ic_close_24px.svg" aria-label="Close dialog"></md-icon>
+            <md-button class="md-icon-button" ng-click="close()" class="md-icon-button">
+                <md-icon aria-label="Close dialog">close</md-icon>
             </md-button>
         </div>
     </md-toolbar>
@@ -1064,8 +1064,8 @@
 <div layout="column" tabindex="-1" role="main" flex class="layout-column flex">
     <md-toolbar md-scroll-shrink ng-if="true">
         <div class="md-toolbar-tools">
-            <md-button ng-click="toggleLeft()" class="md-primary">
-                <md-icon md-svg-src="img/icons/ic_close_24px.svg" aria-label="Close dialog"></md-icon>
+            <md-button ng-click="toggleLeft()" class="md-icon-button">
+                <md-icon aria-label="side menu open">menu</md-icon>
             </md-button>
             <h3>
                 <span>title goes here</span>
