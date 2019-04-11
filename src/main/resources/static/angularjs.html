@@ -82,10 +82,20 @@
                     $scope.parentThing = response.data;
                 });
 
-                $scope.things = [];
+                  $scope.query = {
+                    order: 'thing.title',
+                    limit: 5,
+                    page: 1
+                  };
+
+                $scope.things = {};
                 $scope.loadThings = function() {
                     $http.get("api/things" + locationService.getQueryParams()).then(function(response) {
                         $scope.things = response.data;
+
+                        if($scope.things.comparesHeaders.length > 0) {
+                            $scope.query.order="-comparesMap['" + $scope.things.comparesHeaders[0].title + "'].score";
+                        }
                     });
                 }
                 $scope.loadThings();
@@ -140,12 +150,6 @@
     boundaryLinks: false,
     limitSelect: true,
     pageSelect: true
-  };
-
-  $scope.query = {
-    order: 'name',
-    limit: 5,
-    page: 1
   };
 
   $scope.editComment = function (event, dessert) {
