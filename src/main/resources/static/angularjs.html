@@ -65,7 +65,11 @@
                                         comparator: comparatorResponse.data,
                                         comparisonPair: response.data
                                     }
-                                })
+                                }).finally(function() {
+                                    $http.get("api/things" + locationService.getQueryParams()).then(function(response) {
+                                        $scope.things = response.data;
+                                    });
+                                });
                             }
                         });
                      });
@@ -760,10 +764,12 @@
                 };
             });
 
-            app.controller('ThingCompareDialogCtrl', function($scope, $http, $mdDialog, comparator, comparisonPair) {
+            app.controller('ThingCompareDialogCtrl', function($scope, $http, $mdDialog, thingService, locationService, comparator, comparisonPair) {
 
                 $scope.comparisonPair = comparisonPair;
                 $scope.comparator = comparator;
+                $scope.more = {};
+                $scope.more.checked = false;
 
                 $scope.vote = function(comparator, winnerThing, loserThing) {
                     var vote = {};
@@ -779,7 +785,17 @@
                             'Content-Type': 'application/json'
                         }
                     }).then(function mySuccess(response) {
-                        $scope.cancel();
+                        if ($scope.more.checked) {
+                            thingService.getCompareThings(null, comparator.comparatorID, locationService.getQueryParams()).then(function(response) {
+                                if(response.data[1]) {
+                                    $scope.comparisonPair= response.data
+                                } else {
+                                    $scope.cancel();
+                                }
+                            });
+                        } else {
+                            $scope.cancel();
+                        }
                     }, function myError(response) {
                         $scope.cancel();
                     })
