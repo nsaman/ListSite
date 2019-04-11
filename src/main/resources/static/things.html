@@ -1,105 +1,76 @@
 <body layout="column">
 <md-content layout="column" flex>
 
+    <md-card>
+        <div layout="row" layout-wrap class="checkboxes">
+            <md-checkbox ng-model="options.rowSelection">Row Selection</md-checkbox>
+            <md-checkbox ng-model="options.multiSelect">Multiple Selection</md-checkbox>
+            <md-checkbox ng-model="options.autoSelect">Auto Selection</md-checkbox>
+            <md-checkbox ng-model="options.decapitate">Decapitate</md-checkbox>
+            <md-checkbox ng-model="options.largeEditDialog">Lard Edit Dialogs</md-checkbox>
+            <md-checkbox ng-model="options.boundaryLinks">Pagination Boundary Links</md-checkbox>
+            <md-checkbox ng-model="options.limitSelect" ng-click="toggleLimitOptions()">Pagination Limit Select</md-checkbox>
+            <md-checkbox ng-model="options.pageSelect">Pagination Page Select</md-checkbox>
+        </div>
+    </md-card>
 
+    <md-card>
 
-    <!--<md-virtual-repeat-container fix-head>-->
-        <!--<md-table-container>-->
-            <!--<table md-table md-row-select ng-model="selected" md-progress="promise">-->
-                <!--<thead md-head md-order="query.order" >-->
-                <!--<tr md-row>-->
-                    <!--<th ng-repeat="comparator in things.comparesHeaders" md-column md-numeric md-order-by="calories.value" md-desc><span>{{comparator.title}}</span></th>-->
-                    <!--<th md-column md-order-by="Title"><span>Title</span></th>-->
-                    <!--<th ng-repeat="descriptor in things.descriptorHeaders" md-column md-numeric md-order-by="calories.value" md-desc><span>{{descriptor.title}}</span></th>-->
-                    <!--<th md-column md-order-by="comment">-->
-                        <!--<md-icon>comments</md-icon>-->
-                        <!--<span>Comments</span>-->
-                    <!--</th>-->
-                <!--</tr>-->
-                <!--</thead>-->
-                <!--<tbody md-body>-->
-                <!--<tr md-row md-select="dessert" md-auto-select md-virtual-repeat="thingRow in things.thingsRowViewList | filter: filter.search | orderBy: query.order ">-->
-                    <!--<td ng-repeat="comparator in things.comparesHeaders" md-column md-numeric md-order-by="calories.value" md-cell>{{thingRow.comparesMap[comparator.title].score}}</td>-->
-                    <!--<td md-cell>{{thingRow.thing.title}}</td>-->
-                    <!--<td ng-repeat="descriptor in things.descriptorHeaders" md-cell>-->
-                        <!--<p ng-repeat="descriptor2 in thingRow.descriptorMap[descriptor.title]">{{descriptor2.value}}</p>-->
-                    <!--</td>-->
-                <!--</tr>-->
-                <!--</tbody>-->
-            <!--</table>-->
-        <!--</md-table-container>-->
-    <!--</md-virtual-repeat-container>-->
-
-        <md-card>
-            <div layout="row" layout-wrap class="checkboxes">
-                <md-checkbox ng-model="options.rowSelection">Row Selection</md-checkbox>
-                <md-checkbox ng-model="options.multiSelect">Multiple Selection</md-checkbox>
-                <md-checkbox ng-model="options.autoSelect">Auto Selection</md-checkbox>
-                <md-checkbox ng-model="options.decapitate">Decapitate</md-checkbox>
-                <md-checkbox ng-model="options.largeEditDialog">Lard Edit Dialogs</md-checkbox>
-                <md-checkbox ng-model="options.boundaryLinks">Pagination Boundary Links</md-checkbox>
-                <md-checkbox ng-model="options.limitSelect" ng-click="toggleLimitOptions()">Pagination Limit Select</md-checkbox>
-                <md-checkbox ng-model="options.pageSelect">Pagination Page Select</md-checkbox>
+        <md-toolbar class="md-table-toolbar md-default" ng-hide="options.rowSelection && selected.length">
+            <div class="md-toolbar-tools">
+                <span ng-if="parentThing.title" ng-click="showThing(parentThing.thingID)">{{parentThing.title}}</span>
+                <span ng-if="!parentThing.title">Things</span>
+                <span ng-if="user.loggedIn">
+                    <md-button class="md-icon-button" ng-click="showAddThing($event)">
+                        <md-icon>add</md-icon>
+                    </md-button>
+                </span>
+                <div flex></div>
+                <md-button ng-if="user.loggedIn && things.comparesHeaders.length<=1" ng-click="showThingCompare(null, things.comparesHeaders.length==1?things.comparesHeaders[0].comparatorID:1); $event.stopPropagation();" class="md-icon-button">
+                    <md-icon>swap_vert</md-icon>
+                </md-button>
+                <md-button class="md-icon-button" ng-click="loadThings()">
+                    <md-icon>refresh</md-icon>
+                </md-button>
             </div>
-        </md-card>
+        </md-toolbar>
 
-        <md-card>
+        <md-toolbar class="md-table-toolbar alternate" ng-show="options.rowSelection && selected.length">
+            <div class="md-toolbar-tools">
+                <span>{{selected.length}} {{selected.length > 1 ? 'items' : 'item'}} selected</span>
+            </div>
+        </md-toolbar>
 
-            <md-toolbar class="md-table-toolbar md-default" ng-hide="options.rowSelection && selected.length">
-                <div class="md-toolbar-tools">
-                    <span ng-if="parentThing.title" ng-click="showThing(parentThing.thingID)">{{parentThing.title}}</span>
-                    <span ng-if="!parentThing.title">Things</span>
-                    <span ng-if="user.loggedIn">
-                        <md-button class="md-icon-button" ng-click="showAddThing($event)">
-                            <md-icon>add</md-icon>
-                        </md-button>
-                    </span>
-                    <div flex></div>
-                    <md-button ng-if="user.loggedIn && things.comparesHeaders.length<=1" ng-click="showThingCompare(null, things.comparesHeaders.length==1?things.comparesHeaders[0].comparatorID:1); $event.stopPropagation();" class="md-icon-button">
-                        <md-icon>swap_vert</md-icon>
-                    </md-button>
-                    <md-button class="md-icon-button" ng-click="loadThings()">
-                        <md-icon>refresh</md-icon>
-                    </md-button>
-                </div>
-            </md-toolbar>
-
-            <md-toolbar class="md-table-toolbar alternate" ng-show="options.rowSelection && selected.length">
-                <div class="md-toolbar-tools">
-                    <span>{{selected.length}} {{selected.length > 1 ? 'items' : 'item'}} selected</span>
-                </div>
-            </md-toolbar>
-
-            <md-table-container>
-                <table md-table md-row-select="options.rowSelection" multiple="{{options.multiSelect}}" ng-model="selected" md-progress="promise">
-                    <thead ng-if="!options.decapitate" md-head md-order="query.order" md-on-reorder="logOrder">
-                        <tr md-row>
-                            <th ng-repeat="comparator in things.comparesHeaders" md-column md-numeric md-order-by="comparesMap['{{comparator.title}}'].score"><span><md-button class="md-icon-button" ng-if="user.loggedIn && things.comparesHeaders.length>1" ng-click="showThingCompare(null, comparator.comparatorID); $event.stopPropagation();"><md-icon>swap_vert</md-icon></md-button>{{comparator.title}}</span></th>
-                            <th md-column md-order-by="thing.title"><span>Title</span></th>
-                            <th ng-repeat="descriptor in things.descriptorHeaders" md-column md-numeric md-order-by="descriptorMap['{{descriptor.title}}'].value"><span>{{descriptor.title}}</span></th>
-                            <!--<th md-column md-order-by="comment">-->
-                                <!--<md-icon>comments</md-icon>-->
-                                <!--<span>Comments</span>-->
-                            <!--</th>-->
-                        </tr>
-                    </thead>
-                    <tbody md-body>
-                    <tr md-row md-select="thingRow" ng-click="showThing(thingRow.thing.thingID)" md-on-select="logItem" md-auto-select="options.autoSelect" ng-repeat="thingRow in things.thingsRowViewList | filter: filter.search | orderBy: query.order | limitTo: query.limit : (query.page -1) * query.limit">
-                        <td ng-repeat="comparator in things.comparesHeaders" md-numeric md-cell><md-button class="md-icon-button" ng-if="user.loggedIn && thingRow.comparesMap[comparator.title]" ng-click="showThingCompare(thingRow.thing.thingID, comparator.comparatorID); $event.stopPropagation();"><md-icon>swap_vert</md-icon></md-button><span flex></span>{{thingRow.comparesMap[comparator.title].score}}</td>
-                        <td md-cell>{{thingRow.thing.title}}</td>
-                        <td ng-repeat="descriptor in things.descriptorHeaders" md-cell>
-                            <p ng-repeat="descriptor2 in thingRow.descriptorMap[descriptor.title]">{{descriptor2.readableString}}</p>
-                        </td>
-                        <!--<td md-cell ng-click="editComment($event, dessert)" ng-class="{'md-placeholder': !dessert.comment}">-->
-                            <!--{{dessert.comment || 'Add a comment'}}-->
-                        <!--</td>-->
+        <md-table-container>
+            <table md-table md-row-select="options.rowSelection" multiple="{{options.multiSelect}}" ng-model="selected" md-progress="promise">
+                <thead ng-if="!options.decapitate" md-head md-order="query.order" md-on-reorder="logOrder">
+                    <tr md-row>
+                        <th ng-repeat="comparator in things.comparesHeaders" md-column md-numeric md-order-by="comparesMap['{{comparator.title}}'].score"><span><md-button class="md-icon-button" ng-if="user.loggedIn && things.comparesHeaders.length>1" ng-click="showThingCompare(null, comparator.comparatorID); $event.stopPropagation();"><md-icon>swap_vert</md-icon></md-button>{{comparator.title}}</span></th>
+                        <th md-column md-order-by="thing.title"><span>Title</span></th>
+                        <th ng-repeat="descriptor in things.descriptorHeaders" md-column md-numeric md-order-by="descriptorMap['{{descriptor.title}}'].value"><span>{{descriptor.title}}</span></th>
+                        <!--<th md-column md-order-by="comment">-->
+                            <!--<md-icon>comments</md-icon>-->
+                            <!--<span>Comments</span>-->
+                        <!--</th>-->
                     </tr>
-                    </tbody>
-                </table>
-            </md-table-container>
+                </thead>
+                <tbody md-body>
+                <tr md-row md-select="thingRow" ng-click="showThing(thingRow.thing.thingID)" md-on-select="logItem" md-auto-select="options.autoSelect" ng-repeat="thingRow in things.thingsRowViewList | filter: filter.search | orderBy: query.order | limitTo: query.limit : (query.page -1) * query.limit">
+                    <td ng-repeat="comparator in things.comparesHeaders" md-numeric md-cell><md-button class="md-icon-button" ng-if="user.loggedIn && thingRow.comparesMap[comparator.title]" ng-click="showThingCompare(thingRow.thing.thingID, comparator.comparatorID); $event.stopPropagation();"><md-icon>swap_vert</md-icon></md-button><span flex></span>{{thingRow.comparesMap[comparator.title].score}}</td>
+                    <td md-cell>{{thingRow.thing.title}}</td>
+                    <td ng-repeat="descriptor in things.descriptorHeaders" md-cell>
+                        <p ng-repeat="descriptor2 in thingRow.descriptorMap[descriptor.title]">{{descriptor2.readableString}}</p>
+                    </td>
+                    <!--<td md-cell ng-click="editComment($event, dessert)" ng-class="{'md-placeholder': !dessert.comment}">-->
+                        <!--{{dessert.comment || 'Add a comment'}}-->
+                    <!--</td>-->
+                </tr>
+                </tbody>
+            </table>
+        </md-table-container>
 
-            <md-table-pagination md-limit="query.limit" md-limit-options="limitOptions" md-page="query.page" md-total="{{things.thingsRowViewList.length}}" md-page-select="options.pageSelect" md-boundary-links="options.boundaryLinks" md-on-paginate="logPagination"></md-table-pagination>
-        </md-card>
+        <md-table-pagination md-limit="query.limit" md-limit-options="limitOptions" md-page="query.page" md-total="{{things.thingsRowViewList.length}}" md-page-select="options.pageSelect" md-boundary-links="options.boundaryLinks" md-on-paginate="logPagination"></md-table-pagination>
+    </md-card>
 </md-content>
 
 </body>
