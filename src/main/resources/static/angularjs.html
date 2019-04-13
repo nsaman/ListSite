@@ -1127,7 +1127,7 @@
             <md-button class="md-icon-button" ng-click="lockSidebar.locked=false" ng-if="lockSidebar.locked" class="md-icon-button">
                 <md-icon aria-label="Close dialog">lock_open</md-icon>
             </md-button>
-            <md-button class="md-icon-button" ng-click="close()" class="md-icon-button">
+            <md-button class="md-icon-button" ng-click="lockSidebar.locked=false; close()" class="md-icon-button">
                 <md-icon aria-label="Close dialog">close</md-icon>
             </md-button>
         </div>
