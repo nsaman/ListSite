@@ -14,8 +14,13 @@
         </div>
     </md-card>
 
-    <md-card>
+    <div layout="row">
+        <things-search-menu></things-search-menu>
+        <md-chips ng-model="searchItems" readonly="true" md-removable="true" md-on-remove="removeChip($chip)">
+        </md-chips>
+    </div>
 
+    <md-card>
         <md-toolbar class="md-table-toolbar md-default" ng-hide="options.rowSelection && selected.length">
             <div class="md-toolbar-tools">
                 <span ng-if="parentThing.title" ng-click="showThing(parentThing.thingID)">{{parentThing.title}}</span>

@@ -43,6 +43,35 @@
             .thingCompareColumn {
               flex: 50%;
             }
+
+            .things-search-menu {
+              background: white;
+              border-radius: 4px;
+              box-shadow: 0 7px 8px -4px rgba(0, 0, 0, 0.2),
+                  0 13px 19px 2px rgba(0, 0, 0, 0.14),
+                  0 5px 24px 4px rgba(0, 0, 0, 0.12);
+              width: 256px;
+            }
+
+            .things-search-menu-item {
+              align-items: center;
+              cursor: pointer;
+              display: flex;
+              height: 48px;
+              padding: 0 16px;
+              position: relative;
+              transition: background 0.15s linear;
+              width: auto;
+            }
+
+            .things-search-menu-item:hover,
+            .things-search-menu-item:focus {
+              background-color: rgb(238, 238, 238);
+            }
+
+            .things-search-menu-item.selected {
+              color: rgb(16, 108, 200);
+            }
         </style>
     <script type="text/javascript">
             var app = angular.module('basicUsageSidenavDemo', ['ngRoute', 'ngMaterial', 'ngMessages', 'md.data.table', 'fixed.table.header']).config(['$mdThemingProvider', function($mdThemingProvider) {
@@ -52,6 +81,29 @@
             }
             ]).controller('thingsController', function($mdDialog, $mdEditDialog, $q, $scope, $timeout, $window, $http, $location, userService, thingService, locationService, comparatorService) {
                 'use strict';
+
+                $scope.searchInput = {};
+                $scope.addSearchItem = function(path, value) {
+                    if ($location.absUrl().includes("?"))
+                        $window.location.href = $location.absUrl() + "&" + path + "=" + encodeURI(value);
+                    else
+                        $window.location.href = $location.absUrl() + "?" + path + "=" + encodeURI(value);
+                };
+
+                $scope.removeChip = function(chip) {
+
+                    var encodedChip=encodeURI(chip);
+
+                    //?asdf=asf&...
+                    if ($location.absUrl().includes(encodedChip + "&"))
+                        $window.location.href = $location.absUrl().replace(encodedChip + "&","");
+                    //&asdf=asf
+                    else if ($location.absUrl().includes("&" + encodedChip))
+                        $window.location.href = $location.absUrl().replace("&" + encodedChip,"");
+                    //?asdf=asf
+                    else if ($location.absUrl().includes("?" + encodedChip))
+                        $window.location.href = $location.absUrl().replace("?" + encodedChip,"");
+                };
 
                 $scope.showThingCompare = function(thingID, comparatorID) {
 
@@ -66,7 +118,7 @@
                                         comparisonPair: response.data
                                     }
                                 }).finally(function() {
-                                    $http.get("api/things" + locationService.getQueryParams()).then(function(response) {
+                                    $http.get("api/temp" + locationService.getQueryParams()).then(function(response) {
                                         $scope.things = response.data;
                                     });
                                 });
@@ -76,6 +128,14 @@
                 };
 
                 $scope.selected = [];
+
+                // todo make dates prettier
+                $scope.searchItems = [];
+                var i;
+                for(i = 0; i < locationService.getQueryParamsArray().length; i++) {
+                    $scope.searchItems.push(decodeURI(locationService.getQueryParamsArray()[i]))
+                }
+
 
                 $scope.parentThing = {};
                 $scope.parentThingID = 0;
@@ -94,7 +154,7 @@
 
                 $scope.things = {};
                 $scope.loadThings = function() {
-                    $http.get("api/things" + locationService.getQueryParams()).then(function(response) {
+                    $http.get("api/temp" + locationService.getQueryParams()).then(function(response) {
                         $scope.things = response.data;
 
                         if($scope.things.comparesHeaders.length > 0) {
@@ -116,7 +176,7 @@
                             }
                         })
                         .finally(function() {
-                          $http.get("api/things" + locationService.getQueryParams()).then(function(response) {
+                          $http.get("api/temp" + locationService.getQueryParams()).then(function(response) {
                               $scope.things = response.data;
                           });
                         });
@@ -135,7 +195,7 @@
                             }
                         })
                         .finally(function() {
-                          $http.get("api/things" + locationService.getQueryParams()).then(function(response) {
+                          $http.get("api/temp" + locationService.getQueryParams()).then(function(response) {
                               $scope.things = response.data;
                           });
                           $scope.selected = [];
@@ -441,6 +501,9 @@
 
                 $scope.user = {};
                 $scope.user.loggedIn = false;
+
+                $scope.lockSidebar = {};
+                $scope.lockSidebar.locked = false;
 
                 $scope.toggleLeft = buildDelayedToggler('left');
                 $scope.toggleRight = buildToggler('right');
@@ -1023,7 +1086,15 @@
                         return "?" + url.split('?')[1];
                     return "";
                 }
-            }]).directive('thingEditForm', thingEditFormFactory);
+                this.getQueryParamsArray = function() {
+                    var url = $location.url();
+                    if (url.includes("?"))
+                        return url.split('?')[1].split('&');
+                    return [];
+                }
+            }])
+            .directive('thingEditForm', thingEditFormFactory)
+            .directive('thingsSearchMenu', thingsSearchMenuFactory);
 
             function thingEditFormFactory()
             {
@@ -1033,14 +1104,29 @@
                     templateUrl: "thingEditForm.html"
                 };
             };
+
+            function thingsSearchMenuFactory()
+            {
+                return {
+                    restrict: 'E',
+                    scope: false,
+                    templateUrl: "thingsSearchMenu.html"
+                };
+            };
         </script>
 </head>
 <body ng-app="basicUsageSidenavDemo" ng-controller="AppCtrl" layout="row" ng-cloak>
-<md-sidenav class="md-sidenav-left" md-component-id="left" md-is-locked-open="$mdMedia('gt-md')" md-whiteframe="4" flex>
+<md-sidenav class="md-sidenav-left" md-component-id="left" md-is-locked-open="lockSidebar.locked" md-whiteframe="4" flex>
     <md-toolbar class="md-theme-indigo" ng-controller="LeftCtrl">
         <div class="md-toolbar-tools">
             <h1>Sidenav Left</h1>
             <span flex></span>
+            <md-button class="md-icon-button" ng-click="lockSidebar.locked=true" ng-if="!lockSidebar.locked" class="md-icon-button">
+                <md-icon aria-label="Close dialog">lock</md-icon>
+            </md-button>
+            <md-button class="md-icon-button" ng-click="lockSidebar.locked=false" ng-if="lockSidebar.locked" class="md-icon-button">
+                <md-icon aria-label="Close dialog">lock_open</md-icon>
+            </md-button>
             <md-button class="md-icon-button" ng-click="close()" class="md-icon-button">
                 <md-icon aria-label="Close dialog">close</md-icon>
             </md-button>

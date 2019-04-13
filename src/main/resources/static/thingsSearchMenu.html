@@ -1,0 +1,67 @@
+<md-menu-bar>
+    <md-menu>
+        <md-button class="md-icon-button" ng-click="$mdMenu.open()">
+            <md-icon md-menu-origin>search</md-icon>
+        </md-button>
+        <md-menu-content>
+            <md-menu-item><md-button>Parent Thing</md-button></md-menu-item>
+            <md-menu-item>
+                <md-menu>
+                    <md-button ng-click="$mdMenu.open()">Things</md-button>
+                    <md-menu-content>
+                        <md-menu-item>
+                            <md-menu>
+                                <md-button ng-click="$mdMenu.open()">Title</md-button>
+                                <md-menu-content>
+                                    <md-menu-item>
+                                        <md-menu>
+                                            <md-button ng-click="$mdMenu.open()">Equals</md-button>
+                                            <md-menu-content>
+                                                <md-menu-item>
+                                                    <md-input-container>
+                                                        <label>Title</label>
+                                                        <input ng-model="searchInput.things.title.equals">
+                                                        <md-button class="md-icon-button" ng-click="addSearchItem('things.title',searchInput.things.title.equals)">
+                                                            <md-icon>check</md-icon>
+                                                        </md-button>
+                                                    </md-input-container>
+                                                </md-menu-item>
+                                            </md-menu-content>
+                                        </md-menu>
+                                    </md-menu-item>
+                                    <md-menu-item>
+                                        <md-menu>
+                                            <md-button ng-click="$mdMenu.open()">Contains</md-button>
+                                            <md-menu-content>
+                                                <md-menu-item>
+                                                    <md-input-container>
+                                                        <label>Title</label>
+                                                        <input ng-model="searchInput.things.title.contains">
+                                                        <md-button class="md-icon-button" ng-click="addSearchItem('things.title.contains',searchInput.things.title.contains)">
+                                                            <md-icon>check</md-icon>
+                                                        </md-button>
+                                                    </md-input-container>
+                                                </md-menu-item>
+                                            </md-menu-content>
+                                        </md-menu>
+                                    </md-menu-item>
+                                </md-menu-content>
+                            </md-menu>
+                        </md-menu-item>
+                        <md-menu-item><md-button>Parent Thing</md-button></md-menu-item>
+                        <md-menu-item><md-button>Abstract</md-button></md-menu-item>
+                        <md-menu-item><md-button>Create User</md-button></md-menu-item>
+                        <md-menu-item><md-button>Create Time</md-button></md-menu-item>
+                        <md-menu-item><md-button>Change Time</md-button></md-menu-item>
+                    </md-menu-content>
+                </md-menu>
+            </md-menu-item>
+        </md-menu-content>
+    </md-menu>
+</md-menu-bar>
+
+<!--<md-menu>-->
+    <!--<md-button ng-click="$mdMenu.open()">Things</md-button>-->
+    <!--<md-menu-content>-->
+    <!--</md-menu-content>-->
+<!--</md-menu>-->

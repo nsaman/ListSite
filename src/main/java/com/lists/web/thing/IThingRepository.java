@@ -5,6 +5,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.repository.CrudRepository;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -14,6 +15,22 @@ public interface IThingRepository extends CrudRepository<Thing, Integer>, JpaSpe
 
     List<Thing> findByParentThing(Thing parentThing);
 
+    static Specification<Thing> hasThing(Thing thing) {
+        return (rootThing, cq, cb) -> cb.equal(rootThing, thing);
+    }
+
+    static Specification<Thing> hasTitle(String title) {
+        return (thing, cq, cb) -> cb.equal(thing.get("title"), title);
+    }
+
+    static Specification<Thing> titleContains(String title) {
+        return (thing, cq, cb) -> cb.like(thing.get("title"), "%" + title + "%");
+    }
+
+    static Specification<Thing> isAbstract(Boolean isAbstract) {
+        return (thing, cq, cb) -> cb.equal(thing.get("isAbstract"), isAbstract);
+    }
+
     static Specification<Thing> hasComparator(Comparator comparator) {
         return (thing, cq, cb) -> cb.equal(thing.join("compares").join("comparator"), comparator);
     }
@@ -22,7 +39,35 @@ public interface IThingRepository extends CrudRepository<Thing, Integer>, JpaSpe
         return (thing, cq, cb) -> cb.equal(thing.join("parentThing"), parentThing);
     }
 
-    static Specification<Thing> hasThing(Thing thing) {
-        return (rootThing, cq, cb) -> cb.equal(rootThing, thing);
+    static Specification<Thing> hasParentThingByID(Integer parentThingID) {
+        return (thing, cq, cb) -> cb.equal(thing.join("parentThing").get("thingID"), parentThingID);
+    }
+
+    static Specification<Thing> hasCreateUserID(String createUserID) {
+        return (thing, cq, cb) -> cb.equal(thing.get("createUserID"), createUserID);
+    }
+
+    static Specification<Thing> hasCreateTimestamp(Date date) {
+        return (thing, cq, cb) -> cb.equal(thing.get("createTimestamp"), date);
+    }
+
+    static Specification<Thing> hasCreateTimestampGreaterThan(Date date) {
+        return (thing, cq, cb) -> cb.greaterThan(thing.get("createTimestamp"), date);
+    }
+
+    static Specification<Thing> hasCreateTimestampLessThan(Date date) {
+        return (thing, cq, cb) -> cb.lessThan(thing.get("createTimestamp"), date);
+    }
+
+    static Specification<Thing> hasChangeTimestamp(Date date) {
+        return (thing, cq, cb) -> cb.equal(thing.get("changeTimestamp"), date);
+    }
+
+    static Specification<Thing> hasChangeTimestampGreaterThan(Date date) {
+        return (thing, cq, cb) -> cb.greaterThan(thing.get("changeTimestamp"), date);
+    }
+
+    static Specification<Thing> hasChangeTimestampLessThan(Date date) {
+        return (thing, cq, cb) -> cb.lessThan(thing.get("changeTimestamp"), date);
     }
 }

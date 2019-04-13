@@ -1,5 +1,6 @@
 package com.lists.web.thing;
 
+import com.lists.web.WelcomeController;
 import com.lists.web.comparator.Comparator;
 import com.lists.web.comparator.IComparatorRepository;
 import com.lists.web.compares.Compares;
@@ -9,14 +10,19 @@ import com.lists.web.descriptor.DescriptorRepositoryHelper;
 import com.lists.web.descriptorType.DescriptorType;
 import com.lists.web.descriptorType.IDescriptorTypeRepository;
 import com.sun.deploy.util.StringUtils;
+import com.sun.org.apache.xpath.internal.operations.Bool;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.domain.Specifications;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
 import javax.validation.Valid;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -36,6 +42,93 @@ public class ThingApiController {
     private IDescriptorTypeRepository descriptorTypeRepository;
     @Autowired
     private DescriptorRepositoryHelper descriptorRepositoryHelper;
+
+    private final Logger LOGGER = LoggerFactory.getLogger(ThingApiController.class);
+
+    @RequestMapping(path="/api/temp", produces = "application/json")
+    public ThingsTableView getTemp(@RequestParam MultiValueMap<String,String> queryParams,
+                                   @RequestParam(value="comparatorID", defaultValue="1") Set<Comparator> comparators,
+                                   @RequestParam(value="descriptorTypeSearchedIDs", defaultValue="") Set<DescriptorType> descriptorTypeSearchedIDs,
+                                   @RequestParam(value="descriptorTypeRetrievedIDs", defaultValue="") Set<DescriptorType> descriptorTypeRetrievedIDs) {
+
+        // todo handle complex query param logic (order of operations, OR, NOT)
+
+        List<Specification<Thing>> searchItems = new ArrayList<>();
+
+        queryParams.forEach((key,valueList)-> {
+            for(String value : valueList) {
+                String tempKey = key;
+                try {
+                    if(tempKey.startsWith("things.")) {
+                        tempKey = tempKey.replaceFirst("things\\.","");
+                        if(tempKey.matches("^title$"))
+                            searchItems.add(IThingRepository.hasTitle(value));
+                        if(tempKey.startsWith("title.")) {
+                            tempKey = tempKey.replaceFirst("title\\.","");
+                            if(tempKey.matches("^contains$")) {
+                                searchItems.add(IThingRepository.titleContains(value));
+                            }
+                        }
+                        if(tempKey.matches("^parentThingID$"))
+                            searchItems.add(IThingRepository.hasParentThingByID(Integer.parseInt(value)));
+                        if(tempKey.matches("^isAbstract$"))
+                            searchItems.add(IThingRepository.isAbstract(Boolean.parseBoolean(value)));
+                        if(tempKey.matches("^createUserID$"))
+                            searchItems.add(IThingRepository.hasCreateUserID(value));
+                        if(tempKey.matches("^createTimestamp$"))
+                            searchItems.add(IThingRepository.hasCreateTimestamp(new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").parse(value)));
+                        if(tempKey.startsWith("createTimestamp.")) {
+                            tempKey = tempKey.replaceFirst("createTimestamp\\.","");
+                            if(tempKey.matches("^greaterThan$")) {
+                                searchItems.add(IThingRepository.hasCreateTimestampGreaterThan(new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").parse(value)));
+                            }
+                            if(tempKey.matches("^lessThan$")) {
+                                searchItems.add(IThingRepository.hasCreateTimestampLessThan(new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").parse(value)));
+                            }
+                        }
+                        if(tempKey.matches("^changeTimestamp$"))
+                            searchItems.add(IThingRepository.hasChangeTimestamp(new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").parse(value)));
+                        if(tempKey.startsWith("changeTimestamp.")) {
+                            tempKey = tempKey.replaceFirst("changeTimestamp\\.","");
+                            if(tempKey.matches("^greaterThan$")) {
+                                searchItems.add(IThingRepository.hasChangeTimestampGreaterThan(new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").parse(value)));
+                            }
+                            if(tempKey.matches("^lessThan$")) {
+                                searchItems.add(IThingRepository.hasChangeTimestampLessThan(new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").parse(value)));
+                            }
+                        }
+                    }
+                } catch (Exception e) {
+                    LOGGER.error("Error creating search criteria for key=" + key + " value=" + value);
+                }
+            }
+        });
+
+//        if(comparators.contains(null))
+//            comparators.remove(null);
+//        if(descriptorTypeSearchedIDs.contains(null))
+//            descriptorTypeSearchedIDs.remove(null);
+//        if(descriptorTypeRetrievedIDs.contains(null))
+//            descriptorTypeRetrievedIDs.remove(null);
+
+//        if(parentThing!=null)
+//            searchItems.add(IThingRepository.hasParentThing(parentThing));
+//        comparators.forEach(x -> searchItems.add(IThingRepository.hasComparator(x)));
+
+
+        Iterable<Thing> thingList;
+
+        if(!searchItems.isEmpty()) {
+            Specifications<Thing> searchSpecifications = Specifications.where(searchItems.get(0));
+            for (int i = 1; i < searchItems.size(); i++)
+                searchSpecifications = searchSpecifications.and(searchItems.get(i));
+            thingList = thingRepository.findAll(searchSpecifications);
+        } else {
+            thingList = thingRepository.findAll();
+        }
+
+        return thingsToThingsTableView(thingList, comparators, descriptorTypeRetrievedIDs);
+    }
 
     @RequestMapping(path="/api/things", produces = "application/json")
     public ThingsTableView getThingsByParentAndComparator(@RequestParam(value="thingID", required=false) Thing parentThing,
