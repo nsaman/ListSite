@@ -164,6 +164,13 @@
                 }
                 $scope.loadThings();
 
+                $scope.parentThings = [];
+                $scope.loadParentThings = function() {
+                    $http.get("api/temp").then(function(response) {
+                        $scope.parentThings = response.data.thingsRowViewList;
+                    });
+                }
+
                 $scope.showAddThing = function() {
 
                     thingService.getAbstractThingAndParentAndChildren($scope.parentThing!=""?$scope.parentThing.thingID:1).then(function(response) {

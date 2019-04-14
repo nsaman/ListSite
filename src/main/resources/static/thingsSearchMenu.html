@@ -4,7 +4,6 @@
             <md-icon md-menu-origin>search</md-icon>
         </md-button>
         <md-menu-content>
-            <md-menu-item><md-button>Parent Thing</md-button></md-menu-item>
             <md-menu-item>
                 <md-menu>
                     <md-button ng-click="$mdMenu.open()">Things</md-button>
@@ -48,7 +47,21 @@
                                 </md-menu-content>
                             </md-menu>
                         </md-menu-item>
-                        <md-menu-item><md-button>Parent Thing</md-button></md-menu-item>
+                        <md-menu-item>
+                            <md-menu>
+                                <md-button ng-click="loadParentThings(); $mdMenu.open()">Parent Thing</md-button>
+                                <md-menu-content>
+                                    <md-menu-item>
+                                        <md-input-container>
+                                            <label>Parent</label>
+                                            <md-select name="type" ng-model="searchInput.things.parentThingID" ng-change="addSearchItem('things.parentThingId',searchInput.things.parentThingId)">
+                                                <md-option ng-repeat="menuParentThing in parentThings" value="{{menuParentThing.thingID}}">{{menuParentThing.thing.title}}</md-option>
+                                            </md-select>
+                                        </md-input-container>
+                                    </md-menu-item>
+                                </md-menu-content>
+                            </md-menu>
+                        </md-menu-item>
                         <md-menu-item><md-button>Abstract</md-button></md-menu-item>
                         <md-menu-item><md-button>Create User</md-button></md-menu-item>
                         <md-menu-item><md-button>Create Time</md-button></md-menu-item>
