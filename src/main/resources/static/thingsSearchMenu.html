@@ -126,8 +126,6 @@
                                 </md-menu-content>
                             </md-menu>
                         </md-menu-item>
-
-
                         <md-menu-item>
                             <md-menu>
                                 <md-button ng-click="$mdMenu.open()">Change Time</md-button>
@@ -166,6 +164,55 @@
                                                     <md-input-container>
                                                         <label>Change Timestamp</label>
                                                         <md-datepicker ng-model="searchInput.things.changeTimestamp.lessThan" md-is-open="isLTChangeDateOpen" ng-change="addSearchItem('things.changeTimestamp.lessThan',searchInput.things.changeTimestamp.lessThan | date:'yyyy-MM-dd hh:mm:ss')"></md-datepicker>
+                                                    </md-input-container>
+                                                </md-menu-item>
+                                            </md-menu-content>
+                                        </md-menu>
+                                    </md-menu-item>
+                                </md-menu-content>
+                            </md-menu>
+                        </md-menu-item>
+                    </md-menu-content>
+                </md-menu>
+            </md-menu-item>
+            <md-menu-item>
+                <md-menu>
+                    <md-button ng-click="$mdMenu.open()">Compares</md-button>
+                    <md-menu-content>
+                        <md-menu-item ng-repeat="comparator in comparators">
+                            <md-menu>
+                                <md-button ng-click="$mdMenu.open()">{{comparator.title}}</md-button>
+                                <md-menu-content>
+                                    <md-menu-item>
+                                        <md-button ng-click="addSearchItem('compares.' + comparator.comparatorID + '.show',true)">Show</md-button>
+                                    </md-menu-item>
+                                    <md-menu-item>
+                                        <md-menu>
+                                            <md-button ng-click="$mdMenu.open()">Score greater than</md-button>
+                                            <md-menu-content>
+                                                <md-menu-item>
+                                                    <md-input-container>
+                                                        <label>Score greater than</label>
+                                                        <input ng-model="searchInput.compares.score.greaterThan">
+                                                        <md-button class="md-icon-button" ng-click="addSearchItem('compares.' + comparator.comparatorID + '.greaterThan',searchInput.compares.score.greaterThan)">
+                                                            <md-icon>check</md-icon>
+                                                        </md-button>
+                                                    </md-input-container>
+                                                </md-menu-item>
+                                            </md-menu-content>
+                                        </md-menu>
+                                    </md-menu-item>
+                                    <md-menu-item>
+                                        <md-menu>
+                                            <md-button ng-click="$mdMenu.open()">Score less than</md-button>
+                                            <md-menu-content>
+                                                <md-menu-item>
+                                                    <md-input-container>
+                                                        <label>Score less than</label>
+                                                        <input ng-model="searchInput.compares.score.lessThan">
+                                                        <md-button class="md-icon-button" ng-click="addSearchItem('compares.' + comparator.comparatorID + '.lessThan',searchInput.compares.score.lessThan)">
+                                                            <md-icon>check</md-icon>
+                                                        </md-button>
                                                     </md-input-container>
                                                 </md-menu-item>
                                             </md-menu-content>

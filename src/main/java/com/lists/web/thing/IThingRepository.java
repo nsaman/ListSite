@@ -1,10 +1,13 @@
 package com.lists.web.thing;
 
 import com.lists.web.comparator.Comparator;
+import com.lists.web.compares.Compares;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.repository.CrudRepository;
 
+import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Subquery;
 import java.util.Date;
 import java.util.List;
 
@@ -29,10 +32,6 @@ public interface IThingRepository extends CrudRepository<Thing, Integer>, JpaSpe
 
     static Specification<Thing> isAbstract(Boolean isAbstract) {
         return (thing, cq, cb) -> cb.equal(thing.get("isAbstract"), isAbstract);
-    }
-
-    static Specification<Thing> hasComparator(Comparator comparator) {
-        return (thing, cq, cb) -> cb.equal(thing.join("compares").join("comparator"), comparator);
     }
 
     static Specification<Thing> hasParentThing(Thing parentThing) {
@@ -69,5 +68,39 @@ public interface IThingRepository extends CrudRepository<Thing, Integer>, JpaSpe
 
     static Specification<Thing> hasChangeTimestampLessThan(Date date) {
         return (thing, cq, cb) -> cb.lessThan(thing.get("changeTimestamp"), date);
+    }
+
+    static Specification<Thing> hasComparator(Comparator comparator) {
+        return (thing, cq, cb) -> cb.and(cb.equal(thing.join("compares").join("comparator"), comparator));
+    }
+
+    static Specification<Thing> notHasComparator(Comparator comparator) {
+        return (thing, cq, cb) -> cb.and(cb.equal(thing.join("compares").join("comparator"), comparator).not());
+    }
+
+    static Specification<Thing> comparesValueGreaterThan(Comparator comparator, Double value) {
+        return (thing, cq, cb) -> {
+            Subquery<Compares> subquery = cq.subquery(Compares.class);
+            Root<Compares> subqueryRoot = subquery.from(Compares.class);
+
+            subquery.select(subqueryRoot).where(cb.and(cb.equal(subqueryRoot.join("comparator"), comparator),
+                cb.greaterThan(subqueryRoot.get("score"), value),
+                cb.equal(subqueryRoot.get("thing"),thing)));
+
+            return cb.exists(subquery);
+        };
+    }
+
+    static Specification<Thing> comparesValueLessThan(Comparator comparator, Double value) {
+        return (thing, cq, cb) -> {
+            Subquery<Compares> subquery = cq.subquery(Compares.class);
+            Root<Compares> subqueryRoot = subquery.from(Compares.class);
+
+            subquery.select(subqueryRoot).where(cb.and(cb.equal(subqueryRoot.join("comparator"), comparator),
+                    cb.lessThan(subqueryRoot.get("score"), value),
+                    cb.equal(subqueryRoot.get("thing"),thing)));
+
+            return cb.exists(subquery);
+        };
     }
 }

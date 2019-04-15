@@ -45,13 +45,13 @@ public class ThingApiController {
 
     @RequestMapping(path="/api/temp", produces = "application/json")
     public ThingsTableView getTemp(@RequestParam MultiValueMap<String,String> queryParams,
-                                   @RequestParam(value="comparatorID", defaultValue="1") Set<Comparator> comparators,
                                    @RequestParam(value="descriptorTypeSearchedIDs", defaultValue="") Set<DescriptorType> descriptorTypeSearchedIDs,
                                    @RequestParam(value="descriptorTypeRetrievedIDs", defaultValue="") Set<DescriptorType> descriptorTypeRetrievedIDs) {
 
         // todo handle complex query param logic (order of operations, OR, NOT)
 
         List<Specification<Thing>> searchItems = new ArrayList<>();
+        Set<Comparator> comparatorsToShow = new HashSet<>();
 
         queryParams.forEach((key,valueList)-> {
             for(String value : valueList) {
@@ -96,6 +96,35 @@ public class ThingApiController {
                             }
                         }
                     }
+
+                    else if(tempKey.startsWith("compares.")) {
+                        tempKey = tempKey.replaceFirst("compares\\.","");
+
+                        // compares id
+                        if(tempKey.matches("^\\d+\\..*")) {
+                            int comparatorID = Integer.parseInt(tempKey.split("\\.")[0]);
+                            Comparator comparator = comparatorRepository.findOne(comparatorID);
+
+                            tempKey = tempKey.replaceFirst("^\\d+\\.","");
+
+                            if(tempKey.matches("^show$")) {
+                                if (Boolean.parseBoolean(value)) {
+                                    searchItems.add(IThingRepository.hasComparator(comparator));
+                                    comparatorsToShow.add(comparator);
+                                }
+                                else
+                                    searchItems.add(IThingRepository.notHasComparator(comparator));
+                            }
+                            if(tempKey.matches("^greaterThan$")) {
+                                searchItems.add(IThingRepository.comparesValueGreaterThan(comparator,Double.parseDouble(value)));
+                                comparatorsToShow.add(comparator);
+                            }
+                            if(tempKey.matches("^lessThan$")) {
+                                searchItems.add(IThingRepository.comparesValueLessThan(comparator,Double.parseDouble(value)));
+                                comparatorsToShow.add(comparator);
+                            }
+                        }
+                    }
                 } catch (Exception e) {
                     LOGGER.error("Error creating search criteria for key=" + key + " value=" + value);
                 }
@@ -125,7 +154,7 @@ public class ThingApiController {
             thingList = thingRepository.findAll();
         }
 
-        return thingsToThingsTableView(thingList, comparators, descriptorTypeRetrievedIDs);
+        return thingsToThingsTableView(thingList, comparatorsToShow, descriptorTypeRetrievedIDs);
     }
 
     @RequestMapping(path="/api/things", produces = "application/json")

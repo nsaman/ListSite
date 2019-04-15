@@ -166,7 +166,7 @@
 
                 $scope.parentThings = [];
                 $scope.loadParentThings = function() {
-                    $http.get("api/temp").then(function(response) {
+                    $http.get("api/temp?things.isAbstract=true").then(function(response) {
                         $scope.parentThings = response.data.thingsRowViewList;
                     });
                 }
@@ -177,6 +177,14 @@
                         $scope.users = response.data;
                     });
                 }
+
+                $scope.comparators = [];
+                $scope.loadComparators = function() {
+                    $http.get("api/comparators").then(function(response) {
+                        $scope.comparators = response.data;
+                    });
+                }
+                $scope.loadComparators();
 
                 $scope.isEqualCreateDateOpen = false;
                 $scope.isGTCreateDateOpen = false;
