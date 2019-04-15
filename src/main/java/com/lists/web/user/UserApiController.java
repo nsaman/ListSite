@@ -40,4 +40,9 @@ public class UserApiController {
             throw new RuntimeException("Could not log in the user=" + newUserRequest.getUsername() + " after creation", e);
         }
     }
+
+    @RequestMapping(path="/api/users")
+    public Iterable<UserStub> getUsers() {
+        return userStubRepository.findAll();
+    }
 }

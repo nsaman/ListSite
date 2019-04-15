@@ -51,30 +51,132 @@
                             <md-menu>
                                 <md-button ng-click="loadParentThings(); $mdMenu.open()">Parent Thing</md-button>
                                 <md-menu-content>
-                                    <md-menu-item>
-                                        <md-input-container>
-                                            <label>Parent</label>
-                                            <md-select name="type" ng-model="searchInput.things.parentThingID" ng-change="addSearchItem('things.parentThingId',searchInput.things.parentThingId)">
-                                                <md-option ng-repeat="menuParentThing in parentThings" value="{{menuParentThing.thingID}}">{{menuParentThing.thing.title}}</md-option>
-                                            </md-select>
-                                        </md-input-container>
+                                    <md-menu-item ng-repeat="menuParentThing in parentThings">
+                                        <md-button ng-click="addSearchItem('things.parentThingID',menuParentThing.thing.thingID)">{{menuParentThing.thing.title}}</md-button>
                                     </md-menu-item>
                                 </md-menu-content>
                             </md-menu>
                         </md-menu-item>
-                        <md-menu-item><md-button>Abstract</md-button></md-menu-item>
-                        <md-menu-item><md-button>Create User</md-button></md-menu-item>
-                        <md-menu-item><md-button>Create Time</md-button></md-menu-item>
-                        <md-menu-item><md-button>Change Time</md-button></md-menu-item>
+                        <md-menu-item>
+                            <md-menu>
+                                <md-button ng-click="$mdMenu.open()">Abstract</md-button>
+                                <md-menu-content>
+                                    <md-menu-item>
+                                        <md-button ng-click="addSearchItem('things.isAbstract','true')">true</md-button>
+                                    </md-menu-item>
+                                    <md-menu-item>
+                                        <md-button ng-click="addSearchItem('things.isAbstract','false')">false</md-button>
+                                    </md-menu-item>
+                                </md-menu-content>
+                            </md-menu>
+                        </md-menu-item>
+                        <md-menu-item>
+                            <md-menu>
+                                <md-button ng-click="loadUsers(); $mdMenu.open()">Create User</md-button>
+                                <md-menu-content>
+                                    <md-menu-item ng-repeat="user in users">
+                                        <md-button ng-click="addSearchItem('things.createUserID',user.username)">{{user.username}}</md-button>
+                                    </md-menu-item>
+                                </md-menu-content>
+                            </md-menu>
+                        </md-menu-item>
+                        <md-menu-item>
+                            <md-menu>
+                                <md-button ng-click="$mdMenu.open()">Create Time</md-button>
+                                <md-menu-content>
+                                    <md-menu-item>
+                                        <md-menu>
+                                            <md-button ng-click="$mdMenu.open(); isEqualCreateDateOpen=true">Equals</md-button>
+                                            <md-menu-content>
+                                                <md-menu-item>
+                                                    <md-input-container>
+                                                        <label>Create Timestamp</label>
+                                                        <md-datepicker ng-model="searchInput.things.createTimestamp.equals" md-is-open="isEqualCreateDateOpen" ng-change="addSearchItem('things.createTimestamp',searchInput.things.createTimestamp.equals | date:'yyyy-MM-dd hh:mm:ss')"></md-datepicker>
+                                                    </md-input-container>
+                                                </md-menu-item>
+                                            </md-menu-content>
+                                        </md-menu>
+                                    </md-menu-item>
+                                    <md-menu-item>
+                                        <md-menu>
+                                            <md-button ng-click="$mdMenu.open(); isGTCreateDateOpen=true">Greater than</md-button>
+                                            <md-menu-content>
+                                                <md-menu-item>
+                                                    <md-input-container>
+                                                        <label>Create Timestamp</label>
+                                                        <md-datepicker ng-model="searchInput.things.createTimestamp.greaterThan" md-is-open="isGTCreateDateOpen" ng-change="addSearchItem('things.createTimestamp.greaterThan',searchInput.things.createTimestamp.greaterThan | date:'yyyy-MM-dd hh:mm:ss')"></md-datepicker>
+                                                    </md-input-container>
+                                                </md-menu-item>
+                                            </md-menu-content>
+                                        </md-menu>
+                                    </md-menu-item>
+                                    <md-menu-item>
+                                        <md-menu>
+                                            <md-button ng-click="$mdMenu.open(); isLTCreateDateOpen=true">Less than</md-button>
+                                            <md-menu-content>
+                                                <md-menu-item>
+                                                    <md-input-container>
+                                                        <label>Create Timestamp</label>
+                                                        <md-datepicker ng-model="searchInput.things.createTimestamp.lessThan" md-is-open="isLTCreateDateOpen" ng-change="addSearchItem('things.createTimestamp.lessThan',searchInput.things.createTimestamp.lessThan | date:'yyyy-MM-dd hh:mm:ss')"></md-datepicker>
+                                                    </md-input-container>
+                                                </md-menu-item>
+                                            </md-menu-content>
+                                        </md-menu>
+                                    </md-menu-item>
+                                </md-menu-content>
+                            </md-menu>
+                        </md-menu-item>
+
+
+                        <md-menu-item>
+                            <md-menu>
+                                <md-button ng-click="$mdMenu.open()">Change Time</md-button>
+                                <md-menu-content>
+                                    <md-menu-item>
+                                        <md-menu>
+                                            <md-button ng-click="$mdMenu.open(); isEqualChangeDateOpen=true">Equals</md-button>
+                                            <md-menu-content>
+                                                <md-menu-item>
+                                                    <md-input-container>
+                                                        <label>Change Timestamp</label>
+                                                        <md-datepicker ng-model="searchInput.things.changeTimestamp.equals" md-is-open="isEqualChangeDateOpen" ng-change="addSearchItem('things.changeTimestamp',searchInput.things.changeTimestamp.equals | date:'yyyy-MM-dd hh:mm:ss')"></md-datepicker>
+                                                    </md-input-container>
+                                                </md-menu-item>
+                                            </md-menu-content>
+                                        </md-menu>
+                                    </md-menu-item>
+                                    <md-menu-item>
+                                        <md-menu>
+                                            <md-button ng-click="$mdMenu.open(); isGTChangeDateOpen=true">Greater than</md-button>
+                                            <md-menu-content>
+                                                <md-menu-item>
+                                                    <md-input-container>
+                                                        <label>Change Timestamp</label>
+                                                        <md-datepicker ng-model="searchInput.things.changeTimestamp.greaterThan" md-is-open="isGTChangeDateOpen" ng-change="addSearchItem('things.changeTimestamp.greaterThan',searchInput.things.changeTimestamp.greaterThan | date:'yyyy-MM-dd hh:mm:ss')"></md-datepicker>
+                                                    </md-input-container>
+                                                </md-menu-item>
+                                            </md-menu-content>
+                                        </md-menu>
+                                    </md-menu-item>
+                                    <md-menu-item>
+                                        <md-menu>
+                                            <md-button ng-click="$mdMenu.open(); isLTChangeDateOpen=true">Less than</md-button>
+                                            <md-menu-content>
+                                                <md-menu-item>
+                                                    <md-input-container>
+                                                        <label>Change Timestamp</label>
+                                                        <md-datepicker ng-model="searchInput.things.changeTimestamp.lessThan" md-is-open="isLTChangeDateOpen" ng-change="addSearchItem('things.changeTimestamp.lessThan',searchInput.things.changeTimestamp.lessThan | date:'yyyy-MM-dd hh:mm:ss')"></md-datepicker>
+                                                    </md-input-container>
+                                                </md-menu-item>
+                                            </md-menu-content>
+                                        </md-menu>
+                                    </md-menu-item>
+                                </md-menu-content>
+                            </md-menu>
+                        </md-menu-item>
                     </md-menu-content>
                 </md-menu>
             </md-menu-item>
         </md-menu-content>
     </md-menu>
 </md-menu-bar>
-
-<!--<md-menu>-->
-    <!--<md-button ng-click="$mdMenu.open()">Things</md-button>-->
-    <!--<md-menu-content>-->
-    <!--</md-menu-content>-->
-<!--</md-menu>-->

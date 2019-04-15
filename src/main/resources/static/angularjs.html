@@ -171,6 +171,17 @@
                     });
                 }
 
+                $scope.users = [];
+                $scope.loadUsers = function() {
+                    $http.get("api/users").then(function(response) {
+                        $scope.users = response.data;
+                    });
+                }
+
+                $scope.isEqualCreateDateOpen = false;
+                $scope.isGTCreateDateOpen = false;
+                $scope.isLTCreateDateOpen = false;
+
                 $scope.showAddThing = function() {
 
                     thingService.getAbstractThingAndParentAndChildren($scope.parentThing!=""?$scope.parentThing.thingID:1).then(function(response) {

@@ -1,6 +1,5 @@
 package com.lists.web.thing;
 
-import com.lists.web.WelcomeController;
 import com.lists.web.comparator.Comparator;
 import com.lists.web.comparator.IComparatorRepository;
 import com.lists.web.compares.Compares;
@@ -10,7 +9,6 @@ import com.lists.web.descriptor.DescriptorRepositoryHelper;
 import com.lists.web.descriptorType.DescriptorType;
 import com.lists.web.descriptorType.IDescriptorTypeRepository;
 import com.sun.deploy.util.StringUtils;
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
