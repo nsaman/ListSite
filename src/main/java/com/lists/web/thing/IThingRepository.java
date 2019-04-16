@@ -2,10 +2,7 @@ package com.lists.web.thing;
 
 import com.lists.web.comparator.Comparator;
 import com.lists.web.compares.Compares;
-import com.lists.web.descriptor.DateDescriptor;
-import com.lists.web.descriptor.DoubleDescriptor;
-import com.lists.web.descriptor.IntegerDescriptor;
-import com.lists.web.descriptor.LocationDescriptor;
+import com.lists.web.descriptor.*;
 import com.lists.web.descriptorType.DescriptorType;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
@@ -323,6 +320,119 @@ public interface IThingRepository extends CrudRepository<Thing, Integer>, JpaSpe
                     cb.lessThan(subqueryRoot.get("latitude"), locationPair[0]+distance),
                     cb.greaterThan(subqueryRoot.get("longitude"), locationPair[1]-distance),
                     cb.lessThan(subqueryRoot.get("longitude"), locationPair[1]+distance)));
+
+            return cb.exists(subquery);
+        };
+    }
+
+    static Specification<Thing> hasReferenceThingDescriptor(DescriptorType descriptorType) {
+        return (thing, cq, cb) -> cb.and(cb.equal(thing.join("referenceThingDescriptors").join("descriptorType"), descriptorType));
+    }
+
+    static Specification<Thing> notHasReferenceThingDescriptor(DescriptorType descriptorType) {
+        return (thing, cq, cb) -> {
+            Subquery<ReferenceThingDescriptor> subquery = cq.subquery(ReferenceThingDescriptor.class);
+            Root<ReferenceThingDescriptor> subqueryRoot = subquery.from(ReferenceThingDescriptor.class);
+
+            subquery.select(subqueryRoot).where(cb.equal(subqueryRoot.join("descriptorType"), descriptorType),
+                    cb.equal(subqueryRoot.get("describedThing"), thing));
+
+            return cb.not(cb.exists(subquery));
+        };
+    }
+
+    static Specification<Thing> referenceThingDescriptorValueEquals(DescriptorType descriptorType, Integer referenceThingID) {
+        return (thing, cq, cb) -> {
+            Subquery<ReferenceThingDescriptor> subquery = cq.subquery(ReferenceThingDescriptor.class);
+            Root<ReferenceThingDescriptor> subqueryRoot = subquery.from(ReferenceThingDescriptor.class);
+
+            subquery.select(subqueryRoot).where(cb.and(cb.equal(subqueryRoot.join("descriptorType"), descriptorType),
+                    cb.equal(subqueryRoot.get("referenceThing").get("thingID"), referenceThingID),
+                    cb.equal(subqueryRoot.get("describedThing"), thing)));
+
+            return cb.exists(subquery);
+        };
+    }
+
+    static Specification<Thing> hasResourceDescriptor(DescriptorType descriptorType) {
+        return (thing, cq, cb) -> cb.and(cb.equal(thing.join("resourceDescriptors").join("descriptorType"), descriptorType));
+    }
+
+    static Specification<Thing> notHasResourceDescriptor(DescriptorType descriptorType) {
+        return (thing, cq, cb) -> {
+            Subquery<ResourceDescriptor> subquery = cq.subquery(ResourceDescriptor.class);
+            Root<ResourceDescriptor> subqueryRoot = subquery.from(ResourceDescriptor.class);
+
+            subquery.select(subqueryRoot).where(cb.equal(subqueryRoot.join("descriptorType"), descriptorType),
+                    cb.equal(subqueryRoot.get("describedThing"), thing));
+
+            return cb.not(cb.exists(subquery));
+        };
+    }
+
+    static Specification<Thing> resourceDescriptorValueEquals(DescriptorType descriptorType, String value) {
+        return (thing, cq, cb) -> {
+            Subquery<ResourceDescriptor> subquery = cq.subquery(ResourceDescriptor.class);
+            Root<ResourceDescriptor> subqueryRoot = subquery.from(ResourceDescriptor.class);
+
+            subquery.select(subqueryRoot).where(cb.and(cb.equal(subqueryRoot.join("descriptorType"), descriptorType),
+                    cb.equal(subqueryRoot.get("value"), value),
+                    cb.equal(subqueryRoot.get("describedThing"), thing)));
+
+            return cb.exists(subquery);
+        };
+    }
+
+    static Specification<Thing> resourceDescriptorValueContains(DescriptorType descriptorType, String value) {
+        return (thing, cq, cb) -> {
+            Subquery<ResourceDescriptor> subquery = cq.subquery(ResourceDescriptor.class);
+            Root<ResourceDescriptor> subqueryRoot = subquery.from(ResourceDescriptor.class);
+
+            subquery.select(subqueryRoot).where(cb.and(cb.equal(subqueryRoot.join("descriptorType"), descriptorType),
+                    cb.like(subqueryRoot.get("value"), "%" + value + "%"),
+                    cb.equal(subqueryRoot.get("describedThing"), thing)));
+
+            return cb.exists(subquery);
+        };
+    }
+
+    static Specification<Thing> hasStringDescriptor(DescriptorType descriptorType) {
+        return (thing, cq, cb) -> cb.and(cb.equal(thing.join("stringDescriptors").join("descriptorType"), descriptorType));
+    }
+
+    static Specification<Thing> notHasStringDescriptor(DescriptorType descriptorType) {
+        return (thing, cq, cb) -> {
+            Subquery<StringDescriptor> subquery = cq.subquery(StringDescriptor.class);
+            Root<StringDescriptor> subqueryRoot = subquery.from(StringDescriptor.class);
+
+            subquery.select(subqueryRoot).where(cb.equal(subqueryRoot.join("descriptorType"), descriptorType),
+                    cb.equal(subqueryRoot.get("describedThing"), thing));
+
+            return cb.not(cb.exists(subquery));
+        };
+    }
+
+    static Specification<Thing> stringDescriptorValueEquals(DescriptorType descriptorType, String value) {
+        return (thing, cq, cb) -> {
+            Subquery<StringDescriptor> subquery = cq.subquery(StringDescriptor.class);
+            Root<StringDescriptor> subqueryRoot = subquery.from(StringDescriptor.class);
+
+            subquery.select(subqueryRoot).where(cb.and(cb.equal(subqueryRoot.join("descriptorType"), descriptorType),
+                    cb.equal(subqueryRoot.get("value"), value),
+                    cb.equal(subqueryRoot.get("describedThing"), thing)));
+
+            return cb.exists(subquery);
+        };
+    }
+
+    static Specification<Thing> stringDescriptorValueContains(DescriptorType descriptorType, String value) {
+        return (thing, cq, cb) -> {
+            Subquery<StringDescriptor> subquery = cq.subquery(StringDescriptor.class);
+            Root<StringDescriptor> subqueryRoot = subquery.from(StringDescriptor.class);
+
+            subquery.select(subqueryRoot).where(cb.and(cb.equal(subqueryRoot.join("descriptorType"), descriptorType),
+                    cb.like(subqueryRoot.get("value"), "%" + value + "%"),
+                    cb.equal(subqueryRoot.get("describedThing"), thing)));
 
             return cb.exists(subquery);
         };
