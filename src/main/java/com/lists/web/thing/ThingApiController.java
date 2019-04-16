@@ -4,8 +4,10 @@ import com.lists.web.comparator.Comparator;
 import com.lists.web.comparator.IComparatorRepository;
 import com.lists.web.compares.Compares;
 import com.lists.web.compares.IComparesRepository;
+import com.lists.web.descriptor.DateDescriptor;
 import com.lists.web.descriptor.Descriptor;
 import com.lists.web.descriptor.DescriptorRepositoryHelper;
+import com.lists.web.descriptor.LocationDescriptor;
 import com.lists.web.descriptorType.DescriptorType;
 import com.lists.web.descriptorType.IDescriptorTypeRepository;
 import com.sun.deploy.util.StringUtils;
@@ -52,6 +54,7 @@ public class ThingApiController {
 
         List<Specification<Thing>> searchItems = new ArrayList<>();
         Set<Comparator> comparatorsToShow = new HashSet<>();
+        Set<DescriptorType> descriptorTypesToShow = new HashSet<>();
 
         queryParams.forEach((key,valueList)-> {
             for(String value : valueList) {
@@ -125,6 +128,160 @@ public class ThingApiController {
                             }
                         }
                     }
+
+                    else if(tempKey.startsWith("descriptors.")) {
+                        tempKey = tempKey.replaceFirst("descriptors\\.","");
+
+                        if(tempKey.startsWith("date.")) {
+                            tempKey = tempKey.replaceFirst("date\\.", "");
+
+                            // descriptor id
+                            if(tempKey.matches("^\\d+.*")) {
+                                int descriptorID = Integer.parseInt(tempKey.split("\\.")[0]);
+                                DescriptorType descriptorType = descriptorTypeRepository.findOne(descriptorID);
+
+                                if(tempKey.matches("^\\d+$")) {
+                                    searchItems.add(IThingRepository.dateDescriptorValueEquals(descriptorType, new SimpleDateFormat(DateDescriptor.DATE_FORMAT).parse(value)));
+                                    descriptorTypesToShow.add(descriptorType);
+                                }
+
+                                if(tempKey.matches("^\\d+\\..*")) {
+
+                                    tempKey = tempKey.replaceFirst("^\\d+\\.","");
+
+                                    if(tempKey.matches("^show$")) {
+                                        if (Boolean.parseBoolean(value)) {
+                                            searchItems.add(IThingRepository.hasDateDescriptor(descriptorType));
+                                            descriptorTypesToShow.add(descriptorType);
+                                        }
+                                        else
+                                            searchItems.add(IThingRepository.notHasDateDescriptor(descriptorType));
+                                    }
+                                    if(tempKey.matches("^greaterThan$")) {
+                                        searchItems.add(IThingRepository.dateDescriptorValueGreaterThan(descriptorType, new SimpleDateFormat(DateDescriptor.DATE_FORMAT).parse(value)));
+                                        descriptorTypesToShow.add(descriptorType);
+                                    }
+                                    if(tempKey.matches("^lessThan$")) {
+                                        searchItems.add(IThingRepository.dateDescriptorValueLessThan(descriptorType, new SimpleDateFormat(DateDescriptor.DATE_FORMAT).parse(value)));
+                                        descriptorTypesToShow.add(descriptorType);
+                                    }
+                                }
+                            }
+                        }
+                        else if(tempKey.startsWith("double.")) {
+                            tempKey = tempKey.replaceFirst("double\\.", "");
+
+                            // descriptor id
+                            if(tempKey.matches("^\\d+.*")) {
+                                int descriptorID = Integer.parseInt(tempKey.split("\\.")[0]);
+                                DescriptorType descriptorType = descriptorTypeRepository.findOne(descriptorID);
+
+                                if(tempKey.matches("^\\d+$")) {
+                                    searchItems.add(IThingRepository.doubleDescriptorValueEquals(descriptorType, Double.parseDouble(value)));
+                                    descriptorTypesToShow.add(descriptorType);
+                                }
+
+                                if(tempKey.matches("^\\d+\\..*")) {
+
+                                    tempKey = tempKey.replaceFirst("^\\d+\\.","");
+
+                                    if(tempKey.matches("^show$")) {
+                                        if (Boolean.parseBoolean(value)) {
+                                            searchItems.add(IThingRepository.hasDoubleDescriptor(descriptorType));
+                                            descriptorTypesToShow.add(descriptorType);
+                                        }
+                                        else
+                                            searchItems.add(IThingRepository.notHasDoubleDescriptor(descriptorType));
+                                    }
+                                    if(tempKey.matches("^greaterThan$")) {
+                                        searchItems.add(IThingRepository.doubleDescriptorValueGreaterThan(descriptorType, Double.parseDouble(value)));
+                                        descriptorTypesToShow.add(descriptorType);
+                                    }
+                                    if(tempKey.matches("^lessThan$")) {
+                                        searchItems.add(IThingRepository.doubleDescriptorValueLessThan(descriptorType, Double.parseDouble(value)));
+                                        descriptorTypesToShow.add(descriptorType);
+                                    }
+                                }
+                            }
+                        }
+                        else if(tempKey.startsWith("integer.")) {
+                            tempKey = tempKey.replaceFirst("integer\\.", "");
+
+                            // descriptor id
+                            if(tempKey.matches("^\\d+.*")) {
+                                int descriptorID = Integer.parseInt(tempKey.split("\\.")[0]);
+                                DescriptorType descriptorType = descriptorTypeRepository.findOne(descriptorID);
+
+                                if(tempKey.matches("^\\d+$")) {
+                                    searchItems.add(IThingRepository.integerDescriptorValueEquals(descriptorType, Integer.parseInt(value)));
+                                    descriptorTypesToShow.add(descriptorType);
+                                }
+
+                                if(tempKey.matches("^\\d+\\..*")) {
+
+                                    tempKey = tempKey.replaceFirst("^\\d+\\.","");
+
+                                    if(tempKey.matches("^show$")) {
+                                        if (Boolean.parseBoolean(value)) {
+                                            searchItems.add(IThingRepository.hasIntegerDescriptor(descriptorType));
+                                            descriptorTypesToShow.add(descriptorType);
+                                        }
+                                        else
+                                            searchItems.add(IThingRepository.notHasIntegerDescriptor(descriptorType));
+                                    }
+                                    if(tempKey.matches("^greaterThan$")) {
+                                        searchItems.add(IThingRepository.integerDescriptorValueGreaterThan(descriptorType, Integer.parseInt(value)));
+                                        descriptorTypesToShow.add(descriptorType);
+                                    }
+                                    if(tempKey.matches("^lessThan$")) {
+                                        searchItems.add(IThingRepository.integerDescriptorValueLessThan(descriptorType, Integer.parseInt(value)));
+                                        descriptorTypesToShow.add(descriptorType);
+                                    }
+                                }
+                            }
+                        }
+                        else if(tempKey.startsWith("location.")) {
+                            tempKey = tempKey.replaceFirst("location\\.", "");
+
+                            // descriptor id
+                            if(tempKey.matches("^\\d+.*")) {
+                                int descriptorID = Integer.parseInt(tempKey.split("\\.")[0]);
+                                DescriptorType descriptorType = descriptorTypeRepository.findOne(descriptorID);
+
+                                if(tempKey.matches("^\\d+$")) {
+                                    Double[] locationPair = LocationDescriptor.formatLocationPair(value);
+                                    searchItems.add(IThingRepository.locationDescriptorValueEquals(descriptorType, locationPair));
+                                    descriptorTypesToShow.add(descriptorType);
+                                }
+
+                                if(tempKey.matches("^\\d+\\..*")) {
+
+                                    tempKey = tempKey.replaceFirst("^\\d+\\.","");
+
+                                    if(tempKey.matches("^show$")) {
+                                        if (Boolean.parseBoolean(value)) {
+                                            searchItems.add(IThingRepository.hasLocationDescriptor(descriptorType));
+                                            descriptorTypesToShow.add(descriptorType);
+                                        }
+                                        else
+                                            searchItems.add(IThingRepository.notHasLocationDescriptor(descriptorType));
+                                    }
+                                    if(tempKey.matches("^within$")) {
+                                        String[] split = value.split(",");
+
+                                        Double[] locationPair = new Double[2];
+                                        locationPair[0] = Double.parseDouble(split[0]);
+                                        locationPair[1] = Double.parseDouble(split[1]);
+
+                                        Double distance = Double.parseDouble(split[2]);
+
+                                        searchItems.add(IThingRepository.locationDescriptorWithin(descriptorType, locationPair, distance));
+                                        descriptorTypesToShow.add(descriptorType);
+                                    }
+                                }
+                            }
+                        }
+                    }
                 } catch (Exception e) {
                     LOGGER.error("Error creating search criteria for key=" + key + " value=" + value);
                 }
@@ -154,7 +311,7 @@ public class ThingApiController {
             thingList = thingRepository.findAll();
         }
 
-        return thingsToThingsTableView(thingList, comparatorsToShow, descriptorTypeRetrievedIDs);
+        return thingsToThingsTableView(thingList, comparatorsToShow, descriptorTypesToShow);
     }
 
     @RequestMapping(path="/api/things", produces = "application/json")

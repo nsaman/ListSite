@@ -112,11 +112,9 @@ public class DescriptorRepositoryHelper {
         else if (descriptor instanceof IntegerDescriptor)
             ((IntegerDescriptor)descriptor).setValue(Integer.parseInt(value));
         else if (descriptor instanceof LocationDescriptor){
-            String[] split = value.split(",");
-            if(split.length != 2)
-                throw new IllegalArgumentException("Malformed lattitude,longitude=" + value);
-            ((LocationDescriptor)descriptor).setLatitude(Double.parseDouble(split[0]));
-            ((LocationDescriptor)descriptor).setLongitude(Double.parseDouble(split[1]));
+            Double[] locationPair = LocationDescriptor.formatLocationPair(value);
+            ((LocationDescriptor)descriptor).setLatitude(locationPair[0]);
+            ((LocationDescriptor)descriptor).setLongitude(locationPair[1]);
         }
         else if (descriptor instanceof ReferenceThingDescriptor)
             ((ReferenceThingDescriptor)descriptor).setReferenceThing(thingRepository.findOne(Integer.parseInt(value)));

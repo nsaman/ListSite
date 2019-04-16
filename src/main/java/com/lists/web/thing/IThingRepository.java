@@ -2,6 +2,11 @@ package com.lists.web.thing;
 
 import com.lists.web.comparator.Comparator;
 import com.lists.web.compares.Compares;
+import com.lists.web.descriptor.DateDescriptor;
+import com.lists.web.descriptor.DoubleDescriptor;
+import com.lists.web.descriptor.IntegerDescriptor;
+import com.lists.web.descriptor.LocationDescriptor;
+import com.lists.web.descriptorType.DescriptorType;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.repository.CrudRepository;
@@ -75,7 +80,15 @@ public interface IThingRepository extends CrudRepository<Thing, Integer>, JpaSpe
     }
 
     static Specification<Thing> notHasComparator(Comparator comparator) {
-        return (thing, cq, cb) -> cb.and(cb.equal(thing.join("compares").join("comparator"), comparator).not());
+        return (thing, cq, cb) -> {
+            Subquery<Compares> subquery = cq.subquery(Compares.class);
+            Root<Compares> subqueryRoot = subquery.from(Compares.class);
+
+            subquery.select(subqueryRoot).where(cb.equal(subqueryRoot.join("comparator"), comparator),
+                    cb.equal(subqueryRoot.get("thing"), thing));
+
+            return cb.not(cb.exists(subquery));
+        };
     }
 
     static Specification<Thing> comparesValueGreaterThan(Comparator comparator, Double value) {
@@ -84,8 +97,8 @@ public interface IThingRepository extends CrudRepository<Thing, Integer>, JpaSpe
             Root<Compares> subqueryRoot = subquery.from(Compares.class);
 
             subquery.select(subqueryRoot).where(cb.and(cb.equal(subqueryRoot.join("comparator"), comparator),
-                cb.greaterThan(subqueryRoot.get("score"), value),
-                cb.equal(subqueryRoot.get("thing"),thing)));
+                    cb.greaterThan(subqueryRoot.get("score"), value),
+                    cb.equal(subqueryRoot.get("thing"), thing)));
 
             return cb.exists(subquery);
         };
@@ -98,7 +111,218 @@ public interface IThingRepository extends CrudRepository<Thing, Integer>, JpaSpe
 
             subquery.select(subqueryRoot).where(cb.and(cb.equal(subqueryRoot.join("comparator"), comparator),
                     cb.lessThan(subqueryRoot.get("score"), value),
-                    cb.equal(subqueryRoot.get("thing"),thing)));
+                    cb.equal(subqueryRoot.get("thing"), thing)));
+
+            return cb.exists(subquery);
+        };
+    }
+
+    static Specification<Thing> hasDateDescriptor(DescriptorType descriptorType) {
+        return (thing, cq, cb) -> cb.and(cb.equal(thing.join("dateDescriptors").join("descriptorType"), descriptorType));
+    }
+
+    static Specification<Thing> notHasDateDescriptor(DescriptorType descriptorType) {
+        return (thing, cq, cb) -> {
+            Subquery<DateDescriptor> subquery = cq.subquery(DateDescriptor.class);
+            Root<DateDescriptor> subqueryRoot = subquery.from(DateDescriptor.class);
+
+            subquery.select(subqueryRoot).where(cb.equal(subqueryRoot.join("descriptorType"), descriptorType),
+                    cb.equal(subqueryRoot.get("describedThing"), thing));
+
+            return cb.not(cb.exists(subquery));
+        };
+    }
+
+    static Specification<Thing> dateDescriptorValueEquals(DescriptorType descriptorType, Date value) {
+        return (thing, cq, cb) -> {
+            Subquery<DateDescriptor> subquery = cq.subquery(DateDescriptor.class);
+            Root<DateDescriptor> subqueryRoot = subquery.from(DateDescriptor.class);
+
+            subquery.select(subqueryRoot).where(cb.and(cb.equal(subqueryRoot.join("descriptorType"), descriptorType),
+                    cb.equal(subqueryRoot.get("value"), value),
+                    cb.equal(subqueryRoot.get("describedThing"), thing)));
+
+            return cb.exists(subquery);
+        };
+    }
+
+    static Specification<Thing> dateDescriptorValueGreaterThan(DescriptorType descriptorType, Date value) {
+        return (thing, cq, cb) -> {
+            Subquery<DateDescriptor> subquery = cq.subquery(DateDescriptor.class);
+            Root<DateDescriptor> subqueryRoot = subquery.from(DateDescriptor.class);
+
+            subquery.select(subqueryRoot).where(cb.and(cb.equal(subqueryRoot.join("descriptorType"), descriptorType),
+                    cb.greaterThan(subqueryRoot.get("value"), value),
+                    cb.equal(subqueryRoot.get("describedThing"), thing)));
+
+            return cb.exists(subquery);
+        };
+    }
+
+    static Specification<Thing> dateDescriptorValueLessThan(DescriptorType descriptorType, Date value) {
+        return (thing, cq, cb) -> {
+            Subquery<DateDescriptor> subquery = cq.subquery(DateDescriptor.class);
+            Root<DateDescriptor> subqueryRoot = subquery.from(DateDescriptor.class);
+
+            subquery.select(subqueryRoot).where(cb.and(cb.equal(subqueryRoot.join("descriptorType"), descriptorType),
+                    cb.lessThan(subqueryRoot.get("value"), value),
+                    cb.equal(subqueryRoot.get("describedThing"), thing)));
+
+            return cb.exists(subquery);
+        };
+    }
+
+    static Specification<Thing> hasDoubleDescriptor(DescriptorType descriptorType) {
+        return (thing, cq, cb) -> cb.and(cb.equal(thing.join("doubleDescriptors").join("descriptorType"), descriptorType));
+    }
+
+    static Specification<Thing> notHasDoubleDescriptor(DescriptorType descriptorType) {
+        return (thing, cq, cb) -> {
+            Subquery<DoubleDescriptor> subquery = cq.subquery(DoubleDescriptor.class);
+            Root<DoubleDescriptor> subqueryRoot = subquery.from(DoubleDescriptor.class);
+
+            subquery.select(subqueryRoot).where(cb.equal(subqueryRoot.join("descriptorType"), descriptorType),
+                    cb.equal(subqueryRoot.get("describedThing"), thing));
+
+            return cb.not(cb.exists(subquery));
+        };
+    }
+
+    static Specification<Thing> doubleDescriptorValueEquals(DescriptorType descriptorType, Double value) {
+        return (thing, cq, cb) -> {
+            Subquery<DoubleDescriptor> subquery = cq.subquery(DoubleDescriptor.class);
+            Root<DoubleDescriptor> subqueryRoot = subquery.from(DoubleDescriptor.class);
+
+            subquery.select(subqueryRoot).where(cb.and(cb.equal(subqueryRoot.join("descriptorType"), descriptorType),
+                    cb.equal(subqueryRoot.get("value"), value),
+                    cb.equal(subqueryRoot.get("describedThing"), thing)));
+
+            return cb.exists(subquery);
+        };
+    }
+
+    static Specification<Thing> doubleDescriptorValueGreaterThan(DescriptorType descriptorType, Double value) {
+        return (thing, cq, cb) -> {
+            Subquery<DoubleDescriptor> subquery = cq.subquery(DoubleDescriptor.class);
+            Root<DoubleDescriptor> subqueryRoot = subquery.from(DoubleDescriptor.class);
+
+            subquery.select(subqueryRoot).where(cb.and(cb.equal(subqueryRoot.join("descriptorType"), descriptorType),
+                    cb.greaterThan(subqueryRoot.get("value"), value),
+                    cb.equal(subqueryRoot.get("describedThing"), thing)));
+
+            return cb.exists(subquery);
+        };
+    }
+
+    static Specification<Thing> doubleDescriptorValueLessThan(DescriptorType descriptorType, Double value) {
+        return (thing, cq, cb) -> {
+            Subquery<DoubleDescriptor> subquery = cq.subquery(DoubleDescriptor.class);
+            Root<DoubleDescriptor> subqueryRoot = subquery.from(DoubleDescriptor.class);
+
+            subquery.select(subqueryRoot).where(cb.and(cb.equal(subqueryRoot.join("descriptorType"), descriptorType),
+                    cb.lessThan(subqueryRoot.get("value"), value),
+                    cb.equal(subqueryRoot.get("describedThing"), thing)));
+
+            return cb.exists(subquery);
+        };
+    }
+
+    static Specification<Thing> hasIntegerDescriptor(DescriptorType descriptorType) {
+        return (thing, cq, cb) -> cb.and(cb.equal(thing.join("integerDescriptors").join("descriptorType"), descriptorType));
+    }
+
+    static Specification<Thing> notHasIntegerDescriptor(DescriptorType descriptorType) {
+        return (thing, cq, cb) -> {
+            Subquery<IntegerDescriptor> subquery = cq.subquery(IntegerDescriptor.class);
+            Root<IntegerDescriptor> subqueryRoot = subquery.from(IntegerDescriptor.class);
+
+            subquery.select(subqueryRoot).where(cb.equal(subqueryRoot.join("descriptorType"), descriptorType),
+                    cb.equal(subqueryRoot.get("describedThing"), thing));
+
+            return cb.not(cb.exists(subquery));
+        };
+    }
+
+    static Specification<Thing> integerDescriptorValueEquals(DescriptorType descriptorType, Integer value) {
+        return (thing, cq, cb) -> {
+            Subquery<IntegerDescriptor> subquery = cq.subquery(IntegerDescriptor.class);
+            Root<IntegerDescriptor> subqueryRoot = subquery.from(IntegerDescriptor.class);
+
+            subquery.select(subqueryRoot).where(cb.and(cb.equal(subqueryRoot.join("descriptorType"), descriptorType),
+                    cb.equal(subqueryRoot.get("value"), value),
+                    cb.equal(subqueryRoot.get("describedThing"), thing)));
+
+            return cb.exists(subquery);
+        };
+    }
+
+    static Specification<Thing> integerDescriptorValueGreaterThan(DescriptorType descriptorType, Integer value) {
+        return (thing, cq, cb) -> {
+            Subquery<IntegerDescriptor> subquery = cq.subquery(IntegerDescriptor.class);
+            Root<IntegerDescriptor> subqueryRoot = subquery.from(IntegerDescriptor.class);
+
+            subquery.select(subqueryRoot).where(cb.and(cb.equal(subqueryRoot.join("descriptorType"), descriptorType),
+                    cb.greaterThan(subqueryRoot.get("value"), value),
+                    cb.equal(subqueryRoot.get("describedThing"), thing)));
+
+            return cb.exists(subquery);
+        };
+    }
+
+    static Specification<Thing> integerDescriptorValueLessThan(DescriptorType descriptorType, Integer value) {
+        return (thing, cq, cb) -> {
+            Subquery<IntegerDescriptor> subquery = cq.subquery(IntegerDescriptor.class);
+            Root<IntegerDescriptor> subqueryRoot = subquery.from(IntegerDescriptor.class);
+
+            subquery.select(subqueryRoot).where(cb.and(cb.equal(subqueryRoot.join("descriptorType"), descriptorType),
+                    cb.lessThan(subqueryRoot.get("value"), value),
+                    cb.equal(subqueryRoot.get("describedThing"), thing)));
+
+            return cb.exists(subquery);
+        };
+    }
+
+    static Specification<Thing> hasLocationDescriptor(DescriptorType descriptorType) {
+        return (thing, cq, cb) -> cb.and(cb.equal(thing.join("locationDescriptors").join("descriptorType"), descriptorType));
+    }
+
+    static Specification<Thing> notHasLocationDescriptor(DescriptorType descriptorType) {
+        return (thing, cq, cb) -> {
+            Subquery<LocationDescriptor> subquery = cq.subquery(LocationDescriptor.class);
+            Root<LocationDescriptor> subqueryRoot = subquery.from(LocationDescriptor.class);
+
+            subquery.select(subqueryRoot).where(cb.equal(subqueryRoot.join("descriptorType"), descriptorType),
+                    cb.equal(subqueryRoot.get("describedThing"), thing));
+
+            return cb.not(cb.exists(subquery));
+        };
+    }
+
+    static Specification<Thing> locationDescriptorValueEquals(DescriptorType descriptorType, Double[] locationPair) {
+        return (thing, cq, cb) -> {
+            Subquery<LocationDescriptor> subquery = cq.subquery(LocationDescriptor.class);
+            Root<LocationDescriptor> subqueryRoot = subquery.from(LocationDescriptor.class);
+
+            subquery.select(subqueryRoot).where(cb.and(cb.equal(subqueryRoot.join("descriptorType"), descriptorType),
+                    cb.equal(subqueryRoot.get("latitude"), locationPair[0]),
+                    cb.equal(subqueryRoot.get("longitude"), locationPair[1]),
+                    cb.equal(subqueryRoot.get("describedThing"), thing)));
+
+            return cb.exists(subquery);
+        };
+    }
+
+    static Specification<Thing> locationDescriptorWithin(DescriptorType descriptorType, Double[] locationPair, Double distance) {
+        return (thing, cq, cb) -> {
+            Subquery<LocationDescriptor> subquery = cq.subquery(LocationDescriptor.class);
+            Root<LocationDescriptor> subqueryRoot = subquery.from(LocationDescriptor.class);
+
+            subquery.select(subqueryRoot).where(cb.and(cb.equal(subqueryRoot.join("descriptorType"), descriptorType),
+                    cb.equal(subqueryRoot.get("describedThing"), thing),
+                    cb.greaterThan(subqueryRoot.get("latitude"), locationPair[0]-distance),
+                    cb.lessThan(subqueryRoot.get("latitude"), locationPair[0]+distance),
+                    cb.greaterThan(subqueryRoot.get("longitude"), locationPair[1]-distance),
+                    cb.lessThan(subqueryRoot.get("longitude"), locationPair[1]+distance)));
 
             return cb.exists(subquery);
         };
