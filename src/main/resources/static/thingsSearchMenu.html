@@ -224,6 +224,283 @@
                     </md-menu-content>
                 </md-menu>
             </md-menu-item>
+            <md-menu-item>
+                <md-menu>
+                    <md-button ng-click="$mdMenu.open()">Descriptors</md-button>
+                    <md-menu-content>
+                        <md-menu-item ng-repeat="descriptorType in descriptorTypes">
+                            <md-menu>
+                                <md-button ng-click="$mdMenu.open()">{{descriptorType.title}}</md-button>
+                                <md-menu-content>
+                                    <md-menu-item>
+                                        <md-button ng-click="addSearchItem('descriptors.' + descriptorType.descriptorTypeID + '.show',true)">Show</md-button>
+                                    </md-menu-item>
+                                    <!-- date -->
+                                    <md-menu-item ng-if="descriptorType.valueType=='date'">
+                                        <md-menu>
+                                            <md-button ng-click="$mdMenu.open()">Equals</md-button>
+                                            <md-menu-content>
+                                                <md-menu-item>
+                                                    <md-input-container>
+                                                        <label>{{descriptorType.title}}</label>
+                                                        <md-datepicker ng-model="searchInput.descriptors.date.equals" ng-change="addSearchItem('descriptors.{{descriptorType.descriptorTypeID}}',searchInput.descriptors.date.equals | date:'yyyy-MM-dd')"></md-datepicker>
+                                                    </md-input-container>
+                                                </md-menu-item>
+                                            </md-menu-content>
+                                        </md-menu>
+                                    </md-menu-item>
+                                    <md-menu-item ng-if="descriptorType.valueType=='date'">
+                                        <md-menu>
+                                            <md-button ng-click="$mdMenu.open()">Newer than</md-button>
+                                            <md-menu-content>
+                                                <md-menu-item>
+                                                    <md-input-container>
+                                                        <label>{{descriptorType.title}}</label>
+                                                        <md-datepicker ng-model="searchInput.descriptors.date.greaterThan" ng-change="addSearchItem('descriptors.{{descriptorType.descriptorTypeID}}.greaterThan',searchInput.descriptors.date.greaterThan | date:'yyyy-MM-dd')"></md-datepicker>
+                                                    </md-input-container>
+                                                </md-menu-item>
+                                            </md-menu-content>
+                                        </md-menu>
+                                    </md-menu-item>
+                                    <md-menu-item ng-if="descriptorType.valueType=='date'">
+                                        <md-menu>
+                                            <md-button ng-click="$mdMenu.open()">Older than</md-button>
+                                            <md-menu-content>
+                                                <md-menu-item>
+                                                    <md-input-container>
+                                                        <label>{{descriptorType.title}}</label>
+                                                        <md-datepicker ng-model="searchInput.descriptors.date.lessThan" ng-change="addSearchItem('descriptors.{{descriptorType.descriptorTypeID}}.lessThan',searchInput.descriptors.date.lessThan | date:'yyyy-MM-dd')"></md-datepicker>
+                                                    </md-input-container>
+                                                </md-menu-item>
+                                            </md-menu-content>
+                                        </md-menu>
+                                    </md-menu-item>
+                                    <!-- double -->
+                                    <md-menu-item ng-if="descriptorType.valueType=='double'">
+                                        <md-menu>
+                                            <md-button ng-click="$mdMenu.open()">Equals</md-button>
+                                            <md-menu-content>
+                                                <md-menu-item>
+                                                    <md-input-container>
+                                                        <label>Equals</label>
+                                                        <input ng-model="searchInput.descriptors.double.equals">
+                                                        <md-button class="md-icon-button" ng-click="addSearchItem('descriptors.' + descriptorType.descriptorTypeID,searchInput.descriptors.double.equals)">
+                                                            <md-icon>check</md-icon>
+                                                        </md-button>
+                                                    </md-input-container>
+                                                </md-menu-item>
+                                            </md-menu-content>
+                                        </md-menu>
+                                    </md-menu-item>
+                                    <md-menu-item ng-if="descriptorType.valueType=='double'">
+                                        <md-menu>
+                                            <md-button ng-click="$mdMenu.open()">Greater than</md-button>
+                                            <md-menu-content>
+                                                <md-menu-item>
+                                                    <md-input-container>
+                                                        <label>Greater than</label>
+                                                        <input ng-model="searchInput.descriptors.double.greaterThan">
+                                                        <md-button class="md-icon-button" ng-click="addSearchItem('descriptors.' + descriptorType.descriptorTypeID + '.greaterThan',searchInput.descriptors.double.greaterThan)">
+                                                            <md-icon>check</md-icon>
+                                                        </md-button>
+                                                    </md-input-container>
+                                                </md-menu-item>
+                                            </md-menu-content>
+                                        </md-menu>
+                                    </md-menu-item>
+                                    <md-menu-item ng-if="descriptorType.valueType=='double'">
+                                        <md-menu>
+                                            <md-button ng-click="$mdMenu.open()">Less than</md-button>
+                                            <md-menu-content>
+                                                <md-menu-item>
+                                                    <md-input-container>
+                                                        <label>Score less than</label>
+                                                        <input ng-model="searchInput.descriptors.double.lessThan">
+                                                        <md-button class="md-icon-button" ng-click="addSearchItem('descriptors.' + descriptorType.descriptorTypeID + '.lessThan',searchInput.descriptors.double.lessThan)">
+                                                            <md-icon>check</md-icon>
+                                                        </md-button>
+                                                    </md-input-container>
+                                                </md-menu-item>
+                                            </md-menu-content>
+                                        </md-menu>
+                                    </md-menu-item>
+                                    <!-- integer -->
+                                    <md-menu-item ng-if="descriptorType.valueType=='integer'">
+                                        <md-menu>
+                                            <md-button ng-click="$mdMenu.open()">Equals</md-button>
+                                            <md-menu-content>
+                                                <md-menu-item>
+                                                    <md-input-container>
+                                                        <label>Equals</label>
+                                                        <input ng-model="searchInput.descriptors.integer.equals">
+                                                        <md-button class="md-icon-button" ng-click="addSearchItem('descriptors.' + descriptorType.descriptorTypeID,searchInput.descriptors.integer.equals)">
+                                                            <md-icon>check</md-icon>
+                                                        </md-button>
+                                                    </md-input-container>
+                                                </md-menu-item>
+                                            </md-menu-content>
+                                        </md-menu>
+                                    </md-menu-item>
+                                    <md-menu-item ng-if="descriptorType.valueType=='integer'">
+                                        <md-menu>
+                                            <md-button ng-click="$mdMenu.open()">Greater than</md-button>
+                                            <md-menu-content>
+                                                <md-menu-item>
+                                                    <md-input-container>
+                                                        <label>Greater than</label>
+                                                        <input ng-model="searchInput.descriptors.integer.greaterThan">
+                                                        <md-button class="md-icon-button" ng-click="addSearchItem('descriptors.' + descriptorType.descriptorTypeID + '.greaterThan',searchInput.descriptors.integer.greaterThan)">
+                                                            <md-icon>check</md-icon>
+                                                        </md-button>
+                                                    </md-input-container>
+                                                </md-menu-item>
+                                            </md-menu-content>
+                                        </md-menu>
+                                    </md-menu-item>
+                                    <md-menu-item ng-if="descriptorType.valueType=='integer'">
+                                        <md-menu>
+                                            <md-button ng-click="$mdMenu.open()">Less than</md-button>
+                                            <md-menu-content>
+                                                <md-menu-item>
+                                                    <md-input-container>
+                                                        <label>Score less than</label>
+                                                        <input ng-model="searchInput.descriptors.integer.lessThan">
+                                                        <md-button class="md-icon-button" ng-click="addSearchItem('descriptors.' + descriptorType.descriptorTypeID + '.lessThan',searchInput.descriptors.integer.lessThan)">
+                                                            <md-icon>check</md-icon>
+                                                        </md-button>
+                                                    </md-input-container>
+                                                </md-menu-item>
+                                            </md-menu-content>
+                                        </md-menu>
+                                    </md-menu-item>
+                                    <!-- location -->
+                                    <md-menu-item ng-if="descriptorType.valueType=='location'">
+                                        <md-menu>
+                                            <md-button ng-click="$mdMenu.open()">Equals</md-button>
+                                            <md-menu-content>
+                                                <md-menu-item>
+                                                    <md-input-container>
+                                                        <label>latitude</label>
+                                                        <input ng-model="searchInput.descriptors.location.equals.latitude">
+                                                    </md-input-container>
+                                                    <md-input-container>
+                                                        <label>longitude</label>
+                                                        <input ng-model="searchInput.descriptors.location.equals.longitude">
+                                                        <md-button class="md-icon-button" ng-click="addSearchItem('descriptors.' + descriptorType.descriptorTypeID,searchInput.descriptors.location.equals.latitude + ',' + searchInput.descriptors.location.equals.longitude)">
+                                                            <md-icon>check</md-icon>
+                                                        </md-button>
+                                                    </md-input-container>
+                                                </md-menu-item>
+                                            </md-menu-content>
+                                        </md-menu>
+                                    </md-menu-item>
+                                    <md-menu-item ng-if="descriptorType.valueType=='location'">
+                                        <md-menu>
+                                            <md-button ng-click="$mdMenu.open()">Within</md-button>
+                                            <md-menu-content>
+                                                <md-menu-item>
+                                                    <md-input-container>
+                                                        <label>latitude</label>
+                                                        <input ng-model="searchInput.descriptors.location.within.latitude">
+                                                    </md-input-container>
+                                                    <md-input-container>
+                                                        <label>longitude</label>
+                                                        <input ng-model="searchInput.descriptors.location.within.longitude">
+                                                    </md-input-container>
+                                                    <md-input-container>
+                                                        <label>Degrees</label>
+                                                        <input ng-model="searchInput.descriptors.location.within.distance">
+                                                        <md-button class="md-icon-button" ng-click="addSearchItem('descriptors.' + descriptorType.descriptorTypeID + '.within',searchInput.descriptors.location.within.latitude + ',' + searchInput.descriptors.location.within.longitude + ',' + searchInput.descriptors.location.within.distance)">
+                                                            <md-icon>check</md-icon>
+                                                        </md-button>
+                                                    </md-input-container>
+                                                </md-menu-item>
+                                            </md-menu-content>
+                                        </md-menu>
+                                    </md-menu-item>
+                                    <!-- referenceThing -->
+                                    <md-menu-item ng-if="descriptorType.valueType=='referenceThing'">
+                                        <md-menu>
+                                            <md-button ng-click="loadParentThings(); $mdMenu.open()">Parent Thing</md-button>
+                                            <md-menu-content>
+                                                <md-menu-item ng-repeat="referenceThing in referenceThings">
+                                                    <md-button ng-click="addSearchItem('descriptors.' + descriptorType.descriptorTypeID,referenceThing.thing.thingID)">{{referenceThing.thing.title}}</md-button>
+                                                </md-menu-item>
+                                            </md-menu-content>
+                                        </md-menu>
+                                    </md-menu-item>
+                                    <!-- resource -->
+                                    <md-menu-item ng-if="descriptorType.valueType=='resource'">
+                                        <md-menu>
+                                            <md-button ng-click="$mdMenu.open()">Equals</md-button>
+                                            <md-menu-content>
+                                                <md-menu-item>
+                                                    <md-input-container>
+                                                        <label>Equals</label>
+                                                        <input ng-model="searchInput.descriptors.resource.equals">
+                                                        <md-button class="md-icon-button" ng-click="addSearchItem('descriptors.' + descriptorType.descriptorTypeID,searchInput.descriptors.resource.equals)">
+                                                            <md-icon>check</md-icon>
+                                                        </md-button>
+                                                    </md-input-container>
+                                                </md-menu-item>
+                                            </md-menu-content>
+                                        </md-menu>
+                                    </md-menu-item>
+                                    <md-menu-item ng-if="descriptorType.valueType=='resource'">
+                                        <md-menu>
+                                            <md-button ng-click="$mdMenu.open()">Contains</md-button>
+                                            <md-menu-content>
+                                                <md-menu-item>
+                                                    <md-input-container>
+                                                        <label>Contains</label>
+                                                        <input ng-model="searchInput.descriptors.resource.contains">
+                                                        <md-button class="md-icon-button" ng-click="addSearchItem('descriptors.' + descriptorType.descriptorTypeID + '.contains',searchInput.descriptors.resource.contains)">
+                                                            <md-icon>check</md-icon>
+                                                        </md-button>
+                                                    </md-input-container>
+                                                </md-menu-item>
+                                            </md-menu-content>
+                                        </md-menu>
+                                    </md-menu-item>
+                                    <!-- string -->
+                                    <md-menu-item ng-if="descriptorType.valueType=='string'">
+                                        <md-menu>
+                                            <md-button ng-click="$mdMenu.open()">Equals</md-button>
+                                            <md-menu-content>
+                                                <md-menu-item>
+                                                    <md-input-container>
+                                                        <label>Equals</label>
+                                                        <input ng-model="searchInput.descriptors.string.equals">
+                                                        <md-button class="md-icon-button" ng-click="addSearchItem('descriptors.' + descriptorType.descriptorTypeID,searchInput.descriptors.string.equals)">
+                                                            <md-icon>check</md-icon>
+                                                        </md-button>
+                                                    </md-input-container>
+                                                </md-menu-item>
+                                            </md-menu-content>
+                                        </md-menu>
+                                    </md-menu-item>
+                                    <md-menu-item ng-if="descriptorType.valueType=='string'">
+                                        <md-menu>
+                                            <md-button ng-click="$mdMenu.open()">Contains</md-button>
+                                            <md-menu-content>
+                                                <md-menu-item>
+                                                    <md-input-container>
+                                                        <label>Contains</label>
+                                                        <input ng-model="searchInput.descriptors.string.contains">
+                                                        <md-button class="md-icon-button" ng-click="addSearchItem('descriptors.' + descriptorType.descriptorTypeID + '.contains',searchInput.descriptors.string.contains)">
+                                                            <md-icon>check</md-icon>
+                                                        </md-button>
+                                                    </md-input-container>
+                                                </md-menu-item>
+                                            </md-menu-content>
+                                        </md-menu>
+                                    </md-menu-item>
+                                </md-menu-content>
+                            </md-menu>
+                        </md-menu-item>
+                    </md-menu-content>
+                </md-menu>
+            </md-menu-item>
         </md-menu-content>
     </md-menu>
 </md-menu-bar>
