@@ -179,6 +179,9 @@
                 <md-menu>
                     <md-button ng-click="$mdMenu.open()">Compares</md-button>
                     <md-menu-content>
+                        <md-menu-item>
+                            <md-button ng-click="addSearchItem('compares.showAll','true')">Show All</md-button>
+                        </md-menu-item>
                         <md-menu-item ng-repeat="comparator in comparators">
                             <md-menu>
                                 <md-button ng-click="$mdMenu.open()">{{comparator.title}}</md-button>
@@ -228,6 +231,9 @@
                 <md-menu>
                     <md-button ng-click="$mdMenu.open()">Descriptors</md-button>
                     <md-menu-content>
+                        <md-menu-item>
+                            <md-button ng-click="addSearchItem('descriptors.showAll','true')">Show All</md-button>
+                        </md-menu-item>
                         <md-menu-item ng-repeat="descriptorType in descriptorTypes">
                             <md-menu>
                                 <md-button ng-click="$mdMenu.open()">{{descriptorType.title}}</md-button>

@@ -49,8 +49,6 @@ public class ThingApiController {
     @RequestMapping(path = "/api/things", produces = "application/json")
     public ThingsTableView getThingsByParentAndComparator(@RequestParam MultiValueMap<String, String> queryParams) {
 
-        // todo handle complex query param logic (order of operations, OR, NOT)
-
         Set<Comparator> comparatorsToShow = new HashSet<>();
         Set<DescriptorType> descriptorTypesToShow = new HashSet<>();
 
@@ -65,6 +63,24 @@ public class ThingApiController {
             thingList = thingRepository.findAll(searchSpecifications);
         } else {
             thingList = thingRepository.findAll();
+        }
+
+        if(queryParams.containsKey("compares.showAll") && queryParams.getFirst("compares.showAll").equals(Boolean.TRUE.toString())) {
+            comparatorsToShow = new HashSet<>();
+
+            for(Thing thing : thingList) {
+                for(Compares compares : thing.getCompares())
+                    comparatorsToShow.add(compares.getComparator());
+            }
+        }
+
+        if(queryParams.containsKey("descriptors.showAll") && queryParams.getFirst("descriptors.showAll").equals(Boolean.TRUE.toString())) {
+            descriptorTypesToShow = new HashSet<>();
+
+            for(Thing thing : thingList) {
+                for(Descriptor descriptor : thing.getDescriptors())
+                    descriptorTypesToShow.add(descriptor.getDescriptorType());
+            }
         }
 
         return thingsToThingsTableView(thingList, comparatorsToShow, descriptorTypesToShow);
@@ -303,6 +319,8 @@ public class ThingApiController {
     }
 
     private List<Specification<Thing>> getSearchSpecificationsByMap(MultiValueMap<String, String> queryParams, Set<Comparator> comparatorsToShow, Set<DescriptorType> descriptorTypesToShow) {
+
+        // todo handle complex query param logic (order of operations, OR, NOT)
 
         List<Specification<Thing>> searchItems = new ArrayList<>();
 
