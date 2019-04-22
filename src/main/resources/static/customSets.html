@@ -18,14 +18,14 @@
 
             <md-toolbar class="md-table-toolbar md-default" ng-hide="options.rowSelection && selected.length">
                 <div class="md-toolbar-tools">
-                    <span>Comparators</span>
+                    <span>CustomSets</span>
                     <span ng-if="user.loggedIn">
-                        <md-button class="md-icon-button" ng-click="showAddComparator($event)">
+                        <md-button class="md-icon-button" ng-click="showAddCustomSet($event)">
                             <md-icon>add</md-icon>
                         </md-button>
                     </span>
                     <div flex></div>
-                    <md-button class="md-icon-button" ng-click="loadComparators()">
+                    <md-button class="md-icon-button" ng-click="loadCustomSets()">
                         <md-icon>refresh</md-icon>
                     </md-button>
                 </div>
@@ -41,20 +41,20 @@
                 <table md-table md-row-select="options.rowSelection" multiple="{{options.multiSelect}}" ng-model="selected" md-progress="promise">
                     <thead ng-if="!options.decapitate" md-head md-order="query.order" md-on-reorder="logOrder">
                         <tr md-row>
-                            <th md-column md-order-by="comparatorID"><span>ID</span></th>
+                            <th md-column md-order-by="customSetID"><span>ID</span></th>
                             <th md-column md-order-by="title"><span>Title</span></th>
                         </tr>
                     </thead>
                     <tbody md-body>
-                        <tr md-row md-select="comparator" md-on-select="logItem" md-auto-select="options.autoSelect" ng-repeat="comparator in comparators | filter: filter.search | orderBy: query.order | limitTo: query.limit : (query.page -1) * query.limit">
-                            <td md-cell>{{comparator.comparatorID}}</td>
-                            <td md-cell>{{comparator.title}}</td>
+                        <tr md-row md-select="customSet" md-on-select="logItem" md-auto-select="options.autoSelect" ng-repeat="customSet in customSets | filter: filter.search | orderBy: query.order | limitTo: query.limit : (query.page -1) * query.limit">
+                            <td md-cell>{{customSet.customSetID}}</td>
+                            <td md-cell>{{customSet.title}}</td>
                         </tr>
                     </tbody>
                 </table>
             </md-table-container>
 
-            <md-table-pagination md-limit="query.limit" md-limit-options="limitOptions" md-page="query.page" md-total="{{comparators.length}}" md-page-select="options.pageSelect" md-boundary-links="options.boundaryLinks" md-on-paginate="logPagination"></md-table-pagination>
+            <md-table-pagination md-limit="query.limit" md-limit-options="limitOptions" md-page="query.page" md-total="{{customSets.length}}" md-page-select="options.pageSelect" md-boundary-links="options.boundaryLinks" md-on-paginate="logPagination"></md-table-pagination>
         </md-card>
 </md-content>
 

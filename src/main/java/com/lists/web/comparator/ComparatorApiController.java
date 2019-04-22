@@ -30,7 +30,7 @@ public class ComparatorApiController {
     @Transactional
     @PreAuthorize("hasRole('ROLE_VIEWER')")
     @RequestMapping(path="/api/comparator", method = RequestMethod.POST, consumes={"application/json"})
-    public void createThing(@Valid @RequestBody Comparator comparator) {
+    public void createComparator(@Valid @RequestBody Comparator comparator) {
 
         if(StringUtils.isBlank(comparator.getTitle())) {
             throw new IllegalArgumentException("Empty title found");

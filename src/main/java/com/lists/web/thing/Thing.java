@@ -4,6 +4,7 @@ package com.lists.web.thing;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.lists.web.AuditedEntity;
+import com.lists.web.CustomSetThing.CustomSetThing;
 import com.lists.web.compares.Compares;
 import com.lists.web.descriptor.*;
 import org.hibernate.annotations.Fetch;
@@ -36,6 +37,12 @@ public class Thing extends AuditedEntity {
     @ManyToOne
     @JoinColumn(name = "parentThingID", foreignKey = @ForeignKey(name = "FK_thing_1"))
     private Thing parentThing;
+
+    @JsonIgnore
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @Fetch(value = FetchMode.SUBSELECT)
+    @JoinColumn(name = "thingID")
+    private Set<CustomSetThing> customSetThings = new HashSet<>();
 
     @JsonManagedReference(value="thingCompares")
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)

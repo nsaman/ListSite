@@ -124,7 +124,7 @@ ON DELETE CASCADE
 
 create table customSet
 (
-customSetID int,
+customSetID int NOT NULL AUTO_INCREMENT,
 title char(100) NOT NULL UNIQUE,
 createUserID char(25),
 changeUserID char(25),

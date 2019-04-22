@@ -579,6 +579,8 @@ public class ThingApiController {
                                 }
                             }
                         }
+                    } else if ("customSet".equals(key)) {
+                        searchItems.add(IThingRepository.inCustomSetByID(Integer.parseInt(value)));
                     }
                 } catch (Exception e) {
                     LOGGER.error("Error creating search criteria for key=" + key + " value=" + value);

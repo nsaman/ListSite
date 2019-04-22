@@ -1,7 +1,7 @@
-<md-dialog aria-label="Add Comparator Dialog">
+<md-dialog aria-label="Add Custom Set Dialog">
     <md-toolbar>
         <div class="md-toolbar-tools">
-            <h2>Add a comparator</h2>
+            <h2>Add a custom set</h2>
             <span flex></span>
             <md-button ng-click="cancel()" class="md-icon-button">
                 <md-icon aria-label="Close dialog">close</md-icon>
@@ -9,15 +9,15 @@
         </div>
     </md-toolbar>
     <md-content layout-gt-sm="column" layout-padding>
-        <form name="addComparatorForm">
+        <form name="addCustomSetForm">
 
             <div layout-gt-xs="row">
                 <md-input-container>
                     <label>Title</label>
-                    <input ng-model="addComparatorFormData.title" name="comparatorNameInput">
-                    <div ng-messages="addComparatorFormData.comparatorNameInput.$error" role="alert">
+                    <input ng-model="addCustomSetFormData.title" name="customSetNameInput">
+                    <div ng-messages="addCustomSetFormData.customSetNameInput.$error" role="alert">
                         <p ng-message="failed">
-                            Bad Comparator Name!
+                            Bad Custom Set Name!
                         </p>
                     </div>
                 </md-input-container>
@@ -31,7 +31,7 @@
             <md-button ng-click="cancel()" >
                 Cancel
             </md-button>
-            <md-button ng-click="submitAddComparatorForm()" style="margin-right:20px;" >
+            <md-button ng-click="submitAddCustomSetForm()" style="margin-right:20px;" >
                 Submit
             </md-button>
         </md-dialog-actions>

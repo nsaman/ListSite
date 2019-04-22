@@ -84,6 +84,12 @@
 
                 $scope.searchInput = {};
                 $scope.addSearchItem = function(path, value) {
+                    addSearchItem(path, value, false);
+                };
+                $scope.addSearchItem = function(path, value, replace) {
+                    if(replace)
+                        $scope.removeChipFromURL(path + "=" + value);
+
                     if ($location.absUrl().includes("?"))
                         $window.location.href = $location.absUrl() + "&" + path + "=" + encodeURI(value);
                     else
@@ -91,19 +97,35 @@
                 };
 
                 $scope.removeChip = function(chip) {
+                    $window.location.href = $scope.removeChipFromURL(chip);
+                };
+
+                $scope.getChipByKey = function(key) {
+                    if ($location.search()[key])
+                        return key + "=" + $location.search()[key];
+
+                    return null;
+                }
+
+                $scope.removeChipFromURL = function(chip) {
+
+                    if(chip == null)
+                        return $location.absUrl();
 
                     var encodedChip=encodeURI(chip);
 
                     //?asdf=asf&...
                     if ($location.absUrl().includes(encodedChip + "&"))
-                        $window.location.href = $location.absUrl().replace(encodedChip + "&","");
+                        return $location.absUrl().replace(encodedChip + "&","");
                     //&asdf=asf
                     else if ($location.absUrl().includes("&" + encodedChip))
-                        $window.location.href = $location.absUrl().replace("&" + encodedChip,"");
+                        return $location.absUrl().replace("&" + encodedChip,"");
                     //?asdf=asf
                     else if ($location.absUrl().includes("?" + encodedChip))
-                        $window.location.href = $location.absUrl().replace("?" + encodedChip,"");
-                };
+                        return $location.absUrl().replace("?" + encodedChip,"");
+
+                    return $location.absUrl();
+                }
 
                 $scope.showThingCompare = function(thingID, comparatorID) {
 
@@ -201,6 +223,24 @@
                     });
                 }
                 $scope.loadReferenceThings();
+
+                $scope.customSets = null;
+                $scope.customSetSelected = 0;
+                $scope.loadCustomSets = function() {
+                    $http.get("/api/customSets").then(function(response) {
+                        $scope.customSets = response.data;
+                        if ($location.search()['customSet'] && $scope.customSets != null) {
+                            var i;
+                            for (i = 0; i < $scope.customSets.length; i++) {
+                                if($scope.customSets[i].customSetID == $location.search()['customSet']) {
+                                    $scope.customSetSelected = $scope.customSets[i].customSetID;
+                                    break;
+                                }
+                            }
+                        }
+                    });
+                }
+                $scope.loadCustomSets();
 
                 $scope.isEqualCreateDateOpen = false;
                 $scope.isGTCreateDateOpen = false;
@@ -445,7 +485,7 @@
                 }
                 $scope.loadComparators();
 
-                $scope.showAddComparators = function() {
+                $scope.showAddComparator = function() {
 
                     $mdDialog.show({
                         templateUrl: 'addComparatorDialog.html',
@@ -454,6 +494,113 @@
                     .finally(function() {
                         $http.get("api/comparators").then(function(response) {
                             $scope.comparators = response.data;
+                        });
+                    });
+                };
+
+  $scope.limitOptions = [5, 10, 15];
+
+  $scope.options = {
+    rowSelection: true,
+    multiSelect: true,
+    autoSelect: true,
+    decapitate: false,
+    largeEditDialog: false,
+    boundaryLinks: false,
+    limitSelect: true,
+    pageSelect: true
+  };
+
+  $scope.query = {
+    order: 'name',
+    limit: 5,
+    page: 1
+  };
+
+  $scope.editComment = function (event, dessert) {
+    event.stopPropagation(); // in case autoselect is enabled
+
+    var editDialog = {
+      modelValue: dessert.comment,
+      placeholder: 'Add a comment',
+      save: function (input) {
+        if(input.$modelValue === 'Donald Trump') {
+          input.$invalid = true;
+          return $q.reject();
+        }
+        if(input.$modelValue === 'Bernie Sanders') {
+          return dessert.comment = 'FEEL THE BERN!'
+        }
+        dessert.comment = input.$modelValue;
+      },
+      targetEvent: event,
+      title: 'Add a comment',
+      validators: {
+        'md-maxlength': 30
+      }
+    };
+
+    var promise;
+
+    if($scope.options.largeEditDialog) {
+      promise = $mdEditDialog.large(editDialog);
+    } else {
+      promise = $mdEditDialog.small(editDialog);
+    }
+
+    promise.then(function (ctrl) {
+      var input = ctrl.getInput();
+
+      input.$viewChangeListeners.push(function () {
+        input.$setValidity('test', input.$modelValue !== 'test');
+      });
+    });
+  };
+
+  $scope.toggleLimitOptions = function () {
+    $scope.limitOptions = $scope.limitOptions ? undefined : [5, 25, 50];
+  };
+
+  $scope.loadStuff = function () {
+    $scope.promise = $timeout(function () {
+      // loading
+    }, 2000);
+  }
+
+  $scope.logItem = function (item) {
+    console.log(item.title, 'was selected');
+  };
+
+  $scope.logOrder = function (order) {
+    console.log('order: ', order);
+  };
+
+  $scope.logPagination = function (page, limit) {
+    console.log('page: ', page);
+    console.log('limit: ', limit);
+  }
+            }).controller('customSetsController', function($mdDialog, $mdEditDialog, $q, $scope, $timeout, $window, $http, $location, userService, locationService) {
+                'use strict';
+
+                $scope.selected = [];
+
+                $scope.customSets = [];
+                $scope.loadCustomSets = function() {
+                    $http.get("api/customSets").then(function(response) {
+                        $scope.customSets = response.data;
+                    });
+                }
+                $scope.loadCustomSets();
+
+                $scope.showAddCustomSet = function() {
+
+                    $mdDialog.show({
+                        templateUrl: 'addCustomSetDialog.html',
+                        controller: 'AddCustomSetDialogCtrl'
+                    })
+                    .finally(function() {
+                        $http.get("api/customSets").then(function(response) {
+                            $scope.customSets = response.data;
                         });
                     });
                 };
@@ -626,6 +773,9 @@
                 }).when("/comparators", {
                     templateUrl: "comparators.html",
                     controller: "comparatorsController"
+                }).when("/customSets", {
+                    templateUrl: "customSets.html",
+                    controller: "customSetsController"
                 }).otherwise({
                     templateUrl: "home.html"
                 });
@@ -841,11 +991,9 @@
                 };
             });
 
-            app.controller('AddComparatorDialogCtrl', function($scope, $http, $mdDialog, descriptorTypeService) {
+            app.controller('AddComparatorDialogCtrl', function($scope, $http, $mdDialog) {
 
                 $scope.addComparatorFormData = {};
-                $scope.addComparatorFormData.isNullable = false;
-                $scope.addComparatorFormData.isUnique = false;
 
                 $scope.submitAddComparatorForm = function() {
                     $http({
@@ -859,6 +1007,32 @@
                         $scope.cancel();
                     }, function myError(response) {
                         $scope.addComparatorForm.comparatorNameInput.$error = {
+                            failed: true
+                        };
+                    })
+                }
+
+                $scope.cancel = function() {
+                    $mdDialog.hide();
+                };
+            });
+
+            app.controller('AddCustomSetDialogCtrl', function($scope, $http, $mdDialog) {
+
+                $scope.addCustomSetFormData = {};
+
+                $scope.submitAddCustomSetForm = function() {
+                    $http({
+                        method: 'POST',
+                        url: 'api/customSet',
+                        data: $scope.addCustomSetFormData,
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    }).then(function mySuccess(response) {
+                        $scope.cancel();
+                    }, function myError(response) {
+                        $scope.addCustomSetForm.customSetNameInput.$error = {
                             failed: true
                         };
                     })
@@ -1179,13 +1353,16 @@
             <a href="/angularjs.html#!/" ng-click="close()">home</a>
         </div>
         <div layout="row">
-            <a href="/angularjs.html#!/things?thingID=1&comparatorID=1&descriptorTypeSearchedIDs=1,2,3&descriptorTypeRetrievedIDs=1,2,3" ng-click="close()">things</a>
+            <a href="/angularjs.html#!/things" ng-click="close()">things</a>
         </div>
         <div layout="row">
-            <a href="/angularjs.html#!/descriptorTypes" ng-click="close()">descriptorTypes</a>
+            <a href="/angularjs.html#!/descriptorTypes" ng-click="close()">descriptor types</a>
         </div>
         <div layout="row">
             <a href="/angularjs.html#!/comparators" ng-click="close()">comparators</a>
+        </div>
+        <div layout="row">
+            <a href="/angularjs.html#!/customSets" ng-click="close()">custom Sets</a>
         </div>
     </md-content>
 </md-sidenav>

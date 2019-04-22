@@ -437,4 +437,8 @@ public interface IThingRepository extends CrudRepository<Thing, Integer>, JpaSpe
             return cb.exists(subquery);
         };
     }
+
+    static Specification<Thing> inCustomSetByID(Integer customSetID) {
+        return (thing, cq, cb) -> cb.and(cb.equal(thing.join("customSetThings").join("customSet").get("customSetID"), customSetID));
+    }
 }
