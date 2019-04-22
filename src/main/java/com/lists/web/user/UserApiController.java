@@ -1,7 +1,10 @@
 package com.lists.web.user;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.AuthorityUtils;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.JdbcUserDetailsManager;
@@ -12,6 +15,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Created by nick on 4/5/2019.
@@ -41,8 +46,22 @@ public class UserApiController {
         }
     }
 
+    @RequestMapping(path="/api/user/attributes", method = RequestMethod.GET)
+    public UserStub getUserAttributes() {
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if ((authentication instanceof AnonymousAuthenticationToken)) {
+            return null;
+        }
+        return userStubRepository.findOne(authentication.getName());
+    }
+
     @RequestMapping(path="/api/users")
-    public Iterable<UserStub> getUsers() {
-        return userStubRepository.findAll();
+    public Set<ScrubbedUser> getUsers() {
+        Set<ScrubbedUser> scrubbedUsers = new HashSet<>();
+
+        userStubRepository.findAll().forEach( userStub -> scrubbedUsers.add(new ScrubbedUser(userStub.getUsername())));
+
+        return scrubbedUsers;
     }
 }

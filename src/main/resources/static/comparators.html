@@ -19,7 +19,7 @@
             <md-toolbar class="md-table-toolbar md-default" ng-hide="options.rowSelection && selected.length">
                 <div class="md-toolbar-tools">
                     <span>Comparators</span>
-                    <span ng-if="user.loggedIn">
+                    <span ng-if="userService.userAttributes.loggedIn">
                         <md-button class="md-icon-button" ng-click="showAddComparator($event)">
                             <md-icon>add</md-icon>
                         </md-button>

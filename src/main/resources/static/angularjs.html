@@ -6,6 +6,7 @@
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.6/angular-aria.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.6/angular-messages.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.6/angular-route.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.6/angular-cookies.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/angular_material/1.1.12/angular-material.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-http-auth/1.5.0/http-auth-interceptor.min.js"></script>
     <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/angular_material/1.0.0/angular-material.min.css">
@@ -74,13 +75,15 @@
             }
         </style>
     <script type="text/javascript">
-            var app = angular.module('basicUsageSidenavDemo', ['ngRoute', 'ngMaterial', 'ngMessages', 'md.data.table', 'fixed.table.header']).config(['$mdThemingProvider', function($mdThemingProvider) {
+            var app = angular.module('basicUsageSidenavDemo', ['ngRoute', 'ngMaterial', 'ngMessages', 'ngCookies', 'md.data.table', 'fixed.table.header']).config(['$mdThemingProvider', function($mdThemingProvider) {
                 'use strict';
 
                 $mdThemingProvider.theme('default').primaryPalette('blue');
             }
             ]).controller('thingsController', function($mdDialog, $mdEditDialog, $q, $scope, $timeout, $window, $http, $location, userService, thingService, locationService, comparatorService) {
                 'use strict';
+
+                $scope.userService = userService;
 
                 $scope.searchInput = {};
                 $scope.addSearchItem = function(path, value) {
@@ -225,7 +228,8 @@
                 $scope.loadReferenceThings();
 
                 $scope.customSets = null;
-                $scope.customSetSelected = 0;
+                $scope.customSetSelected = {};
+                $scope.customSetSelected.customSetID = 0;
                 $scope.loadCustomSets = function() {
                     $http.get("/api/customSets").then(function(response) {
                         $scope.customSets = response.data;
@@ -233,7 +237,7 @@
                             var i;
                             for (i = 0; i < $scope.customSets.length; i++) {
                                 if($scope.customSets[i].customSetID == $location.search()['customSet']) {
-                                    $scope.customSetSelected = $scope.customSets[i].customSetID;
+                                    $scope.customSetSelected = $scope.customSets[i];
                                     break;
                                 }
                             }
@@ -272,8 +276,7 @@
                             templateUrl: 'thingDialog.html',
                             controller: 'ThingDialogCtrl',
                             locals: {
-                                thing: response.data,
-                                loggedIn: $scope.user.loggedIn
+                                thing: response.data
                             }
                         })
                         .finally(function() {
@@ -284,6 +287,25 @@
                         });
                     });
                 };
+
+                $scope.addCustomSetThing = function(referenceThing) {
+                    var customSetThing = {};
+                    customSetThing.thingID = referenceThing.thing.thingID;
+                    customSetThing.customSetID = $scope.customSetSelected.customSetID;
+
+                    $http({
+                        method: 'POST',
+                        url: '/api/customSet/thing',
+                        data: customSetThing,
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    }).then(function (response) {
+                        $http.get("/api/things" + locationService.getQueryParams()).then(function(response) {
+                            $scope.things = response.data;
+                        });
+                    })
+                }
 
   $scope.limitOptions = [5, 10, 15];
 
@@ -362,6 +384,8 @@
   }
             }).controller('descriptorTypesController', function($mdDialog, $mdEditDialog, $q, $scope, $timeout, $window, $http, $location, userService, descriptorTypeService, locationService) {
                 'use strict';
+
+                $scope.userService = userService;
 
                 $scope.selected = [];
 
@@ -475,6 +499,8 @@
             }).controller('comparatorsController', function($mdDialog, $mdEditDialog, $q, $scope, $timeout, $window, $http, $location, userService, comparatorService, locationService) {
                 'use strict';
 
+                $scope.userService = userService;
+
                 $scope.selected = [];
 
                 $scope.comparators = [];
@@ -582,6 +608,8 @@
             }).controller('customSetsController', function($mdDialog, $mdEditDialog, $q, $scope, $timeout, $window, $http, $location, userService, locationService) {
                 'use strict';
 
+                $scope.userService = userService;
+
                 $scope.selected = [];
 
                 $scope.customSets = [];
@@ -688,8 +716,9 @@
   }
             }).controller('AppCtrl', function($scope, $mdDialog, $timeout, $mdSidenav, $log, $http, userService, $location, thingService) {
 
-                $scope.user = {};
-                $scope.user.loggedIn = false;
+                userService.setUserAttributes();
+
+                $scope.userService = userService;
 
                 $scope.lockSidebar = {};
                 $scope.lockSidebar.locked = false;
@@ -704,10 +733,7 @@
                 $scope.openLogin = function() {
                     $mdDialog.show({
                         templateUrl: 'loginDialog.html',
-                        controller: 'LoginDialogCtrl',
-                        locals: {
-                            user: $scope.user
-                        }
+                        controller: 'LoginDialogCtrl'
                     });
                 }
                 ;
@@ -727,8 +753,7 @@
                             timer = undefined;
                             func.apply(context, args);
                         }, wait || 10);
-                    }
-                    ;
+                    };
                 }
 
                 /**
@@ -750,8 +775,7 @@
                         $mdSidenav(navID).toggle().then(function() {
                             $log.debug("toggle " + navID + " is done");
                         });
-                    }
-                    ;
+                    };
                 }
             }).controller('LeftCtrl', function($scope, $timeout, $mdSidenav, $log) {
                 $scope.close = function() {
@@ -760,8 +784,7 @@
                         $log.debug("close LEFT is done");
                     });
 
-                }
-                ;
+                };
             });
             app.config(function($routeProvider) {
                 $routeProvider.when("/things", {
@@ -779,13 +802,42 @@
                 }).otherwise({
                     templateUrl: "home.html"
                 });
-            }).service('userService', function() {
-                this.userAttributes = {
+            }).service('userService', function($http, $cookies) {
+                var self = this;
+                self.userAttributes = {
                     "loggedIn": false
+                }
+
+                self.setUserAttributes = function() {
+                    return new Promise((resolve, reject)=>{
+                        $http.get("/api/user/attributes").then(function(response) {
+                            if (response.data != null) {
+                                self.userAttributes = response.data;
+                                self.userAttributes.loggedIn = true;
+                                resolve();
+                            } else {
+                                self.userAttributes = {};
+                                self.userAttributes.loggedIn = false;
+                                reject();
+                            }
+                        });
+                    });
+                }
+
+                self.logOut = function() {
+                    $http.post("/logout").then(function(response) {
+                        self.userAttributes = {};
+                        self.userAttributes.loggedIn = false;
+                    },function(response) {
+                        // todo clear the JSESSIONID cookie to prevent users from failing to log out
+                        $cookies.put("JSESSIONID", "");
+                        self.userAttributes = {};
+                        self.userAttributes.loggedIn = false;
+                    });
                 }
             });
 
-            app.controller('LoginDialogCtrl', function($scope, $http, $mdDialog, user) {
+            app.controller('LoginDialogCtrl', function($scope, $http, $mdDialog, userService) {
                 $scope.loginForm = {}
 
                 $scope.submitLoginForm = function() {
@@ -797,8 +849,9 @@
                             'Content-Type': 'application/x-www-form-urlencoded'
                         }
                     }).then(function mySuccess(response) {
-                        user.loggedIn = true;
-                        $scope.cancel();
+                        userService.setUserAttributes().then(function(response) {
+                            $scope.cancel();
+                        });
                     }, function myError(response) {
                         $scope.loginForm.usernameInput.$error = {
                             failed: true
@@ -809,12 +862,9 @@
                 $scope.signUp = function() {
                     $mdDialog.show({
                         templateUrl: 'signUpDialog.html',
-                        controller: 'SignUpDialogCtrl',
-                        locals: {
-                            user: user
-                        }
+                        controller: 'SignUpDialogCtrl'
                     }).finally(function() {
-                        if(user.loggedIn == true) {
+                        if(userService.userAttributes.loggedIn == true) {
                             $scope.cancel();
                         }
                     });;
@@ -827,7 +877,8 @@
 
             });
 
-            app.controller('SignUpDialogCtrl', function($scope, $http, $mdDialog, user) {
+            app.controller('SignUpDialogCtrl', function($scope, $http, $mdDialog, userService) {
+                $scope.userService = userService;
                 $scope.signUpForm = {};
                 $scope.signUpFormData = {};
 
@@ -841,8 +892,9 @@
                                 'Content-Type': 'application/json'
                             }
                         }).then(function mySuccess(response) {
-                            user.loggedIn = true;
-                            $scope.cancel();
+                            userService.setUserAttributes().then(function(response) {
+                                $scope.cancel();
+                            });
                         }, function myError(response) {
                             $scope.loginForm.usernameInput.$error = {
                                 failed: true
@@ -1113,10 +1165,9 @@
                 };
             });
 
-            app.controller('ThingDialogCtrl', function($scope, $http, $mdDialog, thingService, descriptorTypeService, comparatorService, thing, loggedIn) {
+            app.controller('ThingDialogCtrl', function($scope, $http, $mdDialog, thingService, descriptorTypeService, comparatorService, thing) {
 
                 $scope.thing = thing;
-                $scope.loggedIn = loggedIn;
                 $scope.action = {};
                 $scope.editing = false;
 
@@ -1376,8 +1427,9 @@
                 <span>title goes here</span>
             </h3>
             <span flex></span>
-            <md-button class="md-primary md-raised" ng-click="openLogin($event)">Login
-            </md-button>
+            <span ng-if="userService.userAttributes.loggedIn">{{userService.userAttributes.username}}</span>
+            <md-button ng-if="userService.userAttributes.loggedIn" ng-click="userService.logOut()">logout</md-button>
+            <md-button class="md-primary md-raised" ng-click="openLogin($event)" ng-if="!userService.userAttributes.loggedIn">Login</md-button>
         </div>
     </md-toolbar>
     <md-content md-scroll-y flex layout-padding>

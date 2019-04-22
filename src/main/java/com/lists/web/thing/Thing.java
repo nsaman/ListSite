@@ -39,6 +39,7 @@ public class Thing extends AuditedEntity {
     private Thing parentThing;
 
     @JsonIgnore
+    @JsonManagedReference(value="thingCustomSetThings")
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @Fetch(value = FetchMode.SUBSELECT)
     @JoinColumn(name = "thingID")
@@ -65,6 +66,7 @@ public class Thing extends AuditedEntity {
     }
 
     @JsonIgnore
+    @JsonManagedReference(value="thingCustomSetThings")
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @Fetch(value = FetchMode.SUBSELECT)
     @JoinColumn(name = "describedThingID")

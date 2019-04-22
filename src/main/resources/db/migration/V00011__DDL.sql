@@ -25,14 +25,14 @@ drop table customSetThing;
 
 create table customSetThing
 (
-customSetThing int NOT NULL AUTO_INCREMENT,
+customSetThingID int NOT NULL AUTO_INCREMENT,
 customSetID int,
 thingID int,
 createUserID char(25),
 changeUserID char(25),
 createTimestamp DATETIME NOT NULL,
 changeTimestamp DATETIME,
-PRIMARY KEY (customSetThing),
+PRIMARY KEY (customSetThingID),
 CONSTRAINT FK_customSetThing_1
 FOREIGN KEY (customSetID)
 REFERENCES customSet(customSetID)

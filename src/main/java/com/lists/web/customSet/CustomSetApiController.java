@@ -1,8 +1,14 @@
 package com.lists.web.customSet;
 
+import com.lists.web.CustomSetThing.CustomSetThing;
+import com.lists.web.CustomSetThing.CustomSetThingRequest;
+import com.lists.web.CustomSetThing.ICustomSetThingRepository;
+import com.lists.web.thing.IThingRepository;
+import com.lists.web.thing.Thing;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
@@ -16,6 +22,10 @@ import javax.validation.Valid;
 public class CustomSetApiController {
     @Autowired
     private ICustomSetRepository customSetRepository;
+    @Autowired
+    private ICustomSetThingRepository customSetThingRepository;
+    @Autowired
+    private IThingRepository thingRepository;
 
     @RequestMapping(path = "/api/customSets", produces = "application/json")
     public Iterable<CustomSet> getCustomSetView() {
@@ -39,5 +49,31 @@ public class CustomSetApiController {
         }
 
         customSetRepository.save(customSet);
+    }
+
+    @Transactional
+    @PreAuthorize("hasRole('ROLE_VIEWER')")
+    @RequestMapping(path="/api/customSet/thing", method = RequestMethod.POST, consumes={"application/json"})
+    public void createCustomSetThing(@Valid @RequestBody CustomSetThingRequest customSetThingRequest) {
+
+        String loggedInUser = SecurityContextHolder.getContext().getAuthentication().getName();
+        CustomSet customSet = customSetRepository.findOne(customSetThingRequest.getCustomSetID());
+
+        if(!loggedInUser.equals(customSet.getCreateUserID()))
+            throw new IllegalArgumentException("CustomSetThing with CustomSetID=" + customSet.getCustomSetID()
+                    + " and createUser " + customSet.getCreateUserID() + " cannot be created from non-authorized-user=" + loggedInUser);
+
+        Thing thing = thingRepository.findOne(customSetThingRequest.getThingID());
+
+        if(customSetThingRepository.findByThingAndCustomSet(thing, customSet).size() > 0)
+            throw new IllegalArgumentException("CustomSetThing with thingID=" + thing.getThingID()
+                    + " and customSetID=" + customSet.getCustomSetID() + " already exists!");
+
+        CustomSetThing customSetThing = new CustomSetThing();
+
+        customSetThing.setThing(thing);
+        customSetThing.setCustomSet(customSet);
+
+        customSetThingRepository.save(customSetThing);
     }
 }

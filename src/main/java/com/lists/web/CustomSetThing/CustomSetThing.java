@@ -18,12 +18,12 @@ public class CustomSetThing extends AuditedEntity {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer customSetThingID;
 
-    @JsonBackReference
+    @JsonBackReference(value="customSetCustomSetThings")
     @ManyToOne
     @JoinColumn(name="customSetID",foreignKey=@ForeignKey(name="FK_customSetThing_1"))
     private CustomSet customSet;
 
-    @JsonBackReference
+    @JsonBackReference(value="thingCustomSetThings")
     @ManyToOne
     @JoinColumn(name="thingID",foreignKey=@ForeignKey(name="FK_customSetThing_2"))
     private Thing thing;

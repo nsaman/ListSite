@@ -18,8 +18,8 @@
 
             <md-toolbar class="md-table-toolbar md-default" ng-hide="options.rowSelection && selected.length">
                 <div class="md-toolbar-tools">
-                    <span>CustomSets</span>
-                    <span ng-if="user.loggedIn">
+                    <span>Custom Sets</span>
+                    <span ng-if="userService.userAttributes.loggedIn">
                         <md-button class="md-icon-button" ng-click="showAddCustomSet($event)">
                             <md-icon>add</md-icon>
                         </md-button>
