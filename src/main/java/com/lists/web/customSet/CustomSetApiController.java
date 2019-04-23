@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
 import javax.validation.Valid;
+import java.util.Iterator;
+import java.util.Set;
 
 /**
  * Created by nick on 4/21/2019.
@@ -65,15 +67,61 @@ public class CustomSetApiController {
 
         Thing thing = thingRepository.findOne(customSetThingRequest.getThingID());
 
-        if(customSetThingRepository.findByThingAndCustomSet(thing, customSet).size() > 0)
-            throw new IllegalArgumentException("CustomSetThing with thingID=" + thing.getThingID()
+        Set<CustomSetThing> existingCustomSetThings = customSetThingRepository.findByThingAndCustomSetAndLogicallyDeletedIsFalse(thing, customSet);
+
+        if((existingCustomSetThings).size() == 0) {
+            CustomSetThing customSetThing = new CustomSetThing();
+
+            customSetThing.setThing(thing);
+            customSetThing.setCustomSet(customSet);
+            customSetThing.setLogicallyDeleted(false);
+
+            customSetThingRepository.save(customSetThing);
+        }
+        else if(existingCustomSetThings.size() == 1) {
+            CustomSetThing customSetThing = existingCustomSetThings.iterator().next();
+            if (customSetThing.getLogicallyDeleted()) {
+                customSetThing.setLogicallyDeleted(false);
+                customSetThingRepository.save(customSetThing);
+            } else {
+                throw new IllegalArgumentException("CustomSetThing with thingID=" + thing.getThingID()
+                        + " and customSetID=" + customSet.getCustomSetID() + " already exists!");
+            }
+        } else {
+            throw new IllegalArgumentException("Mulitple customSetThing with thingID=" + thing.getThingID()
                     + " and customSetID=" + customSet.getCustomSetID() + " already exists!");
+        }
 
-        CustomSetThing customSetThing = new CustomSetThing();
+    }
 
-        customSetThing.setThing(thing);
-        customSetThing.setCustomSet(customSet);
+    @Transactional
+    @PreAuthorize("hasRole('ROLE_VIEWER')")
+    @RequestMapping(path="/api/customSet/thing", method = RequestMethod.DELETE, consumes={"application/json"})
+    public void deleteCustomSetThing(@Valid @RequestBody CustomSetThingRequest customSetThingRequest) {
 
-        customSetThingRepository.save(customSetThing);
+        String loggedInUser = SecurityContextHolder.getContext().getAuthentication().getName();
+        CustomSet customSet = customSetRepository.findOne(customSetThingRequest.getCustomSetID());
+
+        if(!loggedInUser.equals(customSet.getCreateUserID()))
+            throw new IllegalArgumentException("CustomSetThing with CustomSetID=" + customSet.getCustomSetID()
+                    + " and createUser " + customSet.getCreateUserID() + " cannot be created from non-authorized-user=" + loggedInUser);
+
+        Thing thing = thingRepository.findOne(customSetThingRequest.getThingID());
+
+        Set<CustomSetThing> existingCustomSetThings = customSetThingRepository.findByThingAndCustomSetAndLogicallyDeletedIsFalse(thing, customSet);
+        if(existingCustomSetThings.size() >= 1) {
+            Iterator<CustomSetThing> customSetThingIterator = existingCustomSetThings.iterator();
+            CustomSetThing customSetThing = customSetThingIterator.next();
+
+            customSetThing.setLogicallyDeleted(true);
+            customSetThingRepository.save(customSetThing);
+
+            while (customSetThingIterator.hasNext())
+                customSetThingRepository.delete(customSetThingIterator.next());
+        }
+        else
+            throw new IllegalArgumentException("CustomSetThing with thingID=" + thing.getThingID()
+                    + " and customSetID=" + customSet.getCustomSetID() + " does not exists!");
+
     }
 }

@@ -28,6 +28,8 @@ public class CustomSetThing extends AuditedEntity {
     @JoinColumn(name="thingID",foreignKey=@ForeignKey(name="FK_customSetThing_2"))
     private Thing thing;
 
+    private Boolean logicallyDeleted;
+
     public CustomSet getCustomSet() {
         return customSet;
     }
@@ -44,5 +46,19 @@ public class CustomSetThing extends AuditedEntity {
         this.thing = thing;
     }
 
+    public Integer getCustomSetThingID() {
+        return customSetThingID;
+    }
 
+    public void setCustomSetThingID(Integer customSetThingID) {
+        this.customSetThingID = customSetThingID;
+    }
+
+    public Boolean getLogicallyDeleted() {
+        return logicallyDeleted;
+    }
+
+    public void setLogicallyDeleted(Boolean logicallyDeleted) {
+        this.logicallyDeleted = logicallyDeleted;
+    }
 }

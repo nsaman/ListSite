@@ -90,13 +90,16 @@
                     addSearchItem(path, value, false);
                 };
                 $scope.addSearchItem = function(path, value, replace) {
-                    if(replace)
-                        $scope.removeChipFromURL(path + "=" + value);
 
-                    if ($location.absUrl().includes("?"))
-                        $window.location.href = $location.absUrl() + "&" + path + "=" + encodeURI(value);
+                    var url = $location.absUrl();
+
+                    if(replace)
+                        url = $scope.removeChipFromURL(path + "=" + value);
+
+                    if (url.includes("?"))
+                        $window.location.href = url + "&" + path + "=" + encodeURI(value);
                     else
-                        $window.location.href = $location.absUrl() + "?" + path + "=" + encodeURI(value);
+                        $window.location.href = url + "?" + path + "=" + encodeURI(value);
                 };
 
                 $scope.removeChip = function(chip) {
@@ -295,6 +298,25 @@
 
                     $http({
                         method: 'POST',
+                        url: '/api/customSet/thing',
+                        data: customSetThing,
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    }).then(function (response) {
+                        $http.get("/api/things" + locationService.getQueryParams()).then(function(response) {
+                            $scope.things = response.data;
+                        });
+                    })
+                }
+
+                $scope.removeCustomSetThing = function(thing) {
+                    var customSetThing = {};
+                    customSetThing.thingID = thing.thingID;
+                    customSetThing.customSetID = $scope.customSetSelected.customSetID;
+
+                    $http({
+                        method: 'DELETE',
                         url: '/api/customSet/thing',
                         data: customSetThing,
                         headers: {
@@ -911,8 +933,9 @@
 
             });
 
-            app.controller('AddThingDialogCtrl', function($scope, $http, $mdDialog, thingService, descriptorTypeService, comparatorService, parentThings, firstParentThingId) {
+            app.controller('AddThingDialogCtrl', function($scope, $http, $mdDialog, userService, thingService, descriptorTypeService, comparatorService, parentThings, firstParentThingId) {
 
+                $scope.userService = userService;
                 $scope.parentThings = parentThings;
                 $scope.thingEditFormData = {};
                 $scope.thingEditFormData.isAbstract = false;
@@ -1165,8 +1188,9 @@
                 };
             });
 
-            app.controller('ThingDialogCtrl', function($scope, $http, $mdDialog, thingService, descriptorTypeService, comparatorService, thing) {
+            app.controller('ThingDialogCtrl', function($scope, $http, $mdDialog, userService, thingService, descriptorTypeService, comparatorService, thing) {
 
+                $scope.userService = userService;
                 $scope.thing = thing;
                 $scope.action = {};
                 $scope.editing = false;

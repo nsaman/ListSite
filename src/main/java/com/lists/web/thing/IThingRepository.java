@@ -1,5 +1,6 @@
 package com.lists.web.thing;
 
+import com.lists.web.CustomSetThing.CustomSetThing;
 import com.lists.web.comparator.Comparator;
 import com.lists.web.compares.Compares;
 import com.lists.web.descriptor.*;
@@ -439,6 +440,15 @@ public interface IThingRepository extends CrudRepository<Thing, Integer>, JpaSpe
     }
 
     static Specification<Thing> inCustomSetByID(Integer customSetID) {
-        return (thing, cq, cb) -> cb.and(cb.equal(thing.join("customSetThings").join("customSet").get("customSetID"), customSetID));
+        return (thing, cq, cb) -> {
+            Subquery<CustomSetThing> subquery = cq.subquery(CustomSetThing.class);
+            Root<CustomSetThing> subqueryRoot = subquery.from(CustomSetThing.class);
+
+            subquery.select(subqueryRoot).where(cb.and(cb.equal(subqueryRoot.join("customSet").get("customSetID"), customSetID),
+                    cb.equal(subqueryRoot.get("logicallyDeleted"), false)),
+                    cb.equal(subqueryRoot.get("thing"), thing));
+
+            return cb.exists(subquery);
+        };
     }
 }

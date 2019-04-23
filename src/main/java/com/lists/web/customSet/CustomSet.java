@@ -50,4 +50,5 @@ public class CustomSet extends AuditedEntity {
     public void setCustomSetThings(Set<CustomSetThing> customSetThings) {
         this.customSetThings = customSetThings;
     }
+
 }
