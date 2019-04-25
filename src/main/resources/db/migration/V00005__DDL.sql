@@ -9,7 +9,6 @@ score float DEFAULT 1500,
 createUserID char(25),
 changeUserID char(25),
 PRIMARY KEY (comparesID),
-UNIQUE KEY(comparatorID,thingID),
 CONSTRAINT FK_compares_1
 FOREIGN KEY (comparatorID)
 REFERENCES comparator(comparatorID)

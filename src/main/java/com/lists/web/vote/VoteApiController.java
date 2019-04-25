@@ -51,8 +51,24 @@ public class VoteApiController {
         vote.setWinnerThing(voteRequest.getWinnerThing());
         voteRepository.save(vote);
 
-        Compares winnerCompares = comparesRepository.findByThingAndComparator(voteRequest.getWinnerThing(),voteRequest.getComparator());
-        Compares loserCompares = comparesRepository.findByThingAndComparator(voteRequest.getLoserThing(),voteRequest.getComparator());
+        Compares winnerCompares = comparesRepository.findByThingAndComparatorAndCustomSet(voteRequest.getWinnerThing(),voteRequest.getComparator(), voteRequest.getCustomSet());
+        if (winnerCompares == null) {
+            Compares compares = new Compares();
+            compares.setThing(voteRequest.getWinnerThing());
+            compares.setComparator(voteRequest.getComparator());
+            compares.setCustomSet(voteRequest.getCustomSet());
+            compares.setScore(Compares.DEFAULT_SCORE);
+            winnerCompares = compares;
+        }
+        Compares loserCompares = comparesRepository.findByThingAndComparatorAndCustomSet(voteRequest.getLoserThing(),voteRequest.getComparator(), voteRequest.getCustomSet());
+        if (loserCompares == null) {
+            Compares compares = new Compares();
+            compares.setThing(voteRequest.getLoserThing());
+            compares.setComparator(voteRequest.getComparator());
+            compares.setCustomSet(voteRequest.getCustomSet());
+            compares.setScore(Compares.DEFAULT_SCORE);
+            loserCompares = compares;
+        }
 
         winnerCompares.setScore(winnerCompares.getScore() + 1);
         loserCompares.setScore(loserCompares.getScore() - 1);
@@ -63,5 +79,10 @@ public class VoteApiController {
 
         comparesRepository.save(compares);
 
+
+        if(voteRequest.getCustomSet() != null) {
+            voteRequest.setCustomSet(null);
+            createVote(voteRequest, principal);
+        }
     }
 }
