@@ -1131,7 +1131,10 @@
                     vote.comparator = comparator;
                     vote.winnerThing = winnerThing;
                     vote.loserThing = loserThing;
-                    vote.customSet = customSet;
+                    if (customSet.customSetID > 0)
+                        vote.customSet = customSet;
+                    else
+                        vote.customSet = null;
                     $http({
                         method: 'POST',
                         url: 'api/vote',

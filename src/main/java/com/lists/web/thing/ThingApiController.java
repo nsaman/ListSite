@@ -4,6 +4,8 @@ import com.lists.web.comparator.Comparator;
 import com.lists.web.comparator.IComparatorRepository;
 import com.lists.web.compares.Compares;
 import com.lists.web.compares.IComparesRepository;
+import com.lists.web.customSet.CustomSet;
+import com.lists.web.customSet.ICustomSetRepository;
 import com.lists.web.descriptor.DateDescriptor;
 import com.lists.web.descriptor.Descriptor;
 import com.lists.web.descriptor.DescriptorRepositoryHelper;
@@ -39,6 +41,8 @@ public class ThingApiController {
     private IComparesRepository comparesRepository;
     @Autowired
     private IComparatorRepository comparatorRepository;
+    @Autowired
+    private ICustomSetRepository customSetRepository;
     @Autowired
     private IDescriptorTypeRepository descriptorTypeRepository;
     @Autowired
@@ -324,8 +328,15 @@ public class ThingApiController {
 
         List<Specification<Thing>> searchItems = new ArrayList<>();
 
-        queryParams.forEach((key, valueList) -> {
-            for (String value : valueList) {
+        CustomSet customSet = null;
+        try {
+            customSet = customSetRepository.findOne(Integer.parseInt(queryParams.getFirst("customSet")));
+        } catch (Exception e) {
+            LOGGER.warn("Error creating search criteria for customSet value=" + queryParams.getFirst("customSet"));
+        }
+
+        for (String key : queryParams.keySet()) {
+            for (String value : queryParams.get(key)) {
                 String tempKey = key;
                 try {
                     if (tempKey.startsWith("things.")) {
@@ -378,17 +389,17 @@ public class ThingApiController {
 
                             if (tempKey.matches("^show$")) {
                                 if (Boolean.parseBoolean(value)) {
-                                    searchItems.add(IThingRepository.hasComparator(comparator));
+                                    searchItems.add(IThingRepository.hasComparator(comparator, customSet));
                                     comparatorsToShow.add(comparator);
                                 } else
-                                    searchItems.add(IThingRepository.notHasComparator(comparator));
+                                    searchItems.add(IThingRepository.notHasComparator(comparator, customSet));
                             }
                             if (tempKey.matches("^greaterThan$")) {
-                                searchItems.add(IThingRepository.comparesValueGreaterThan(comparator, Double.parseDouble(value)));
+                                searchItems.add(IThingRepository.comparesValueGreaterThan(comparator, customSet, Double.parseDouble(value)));
                                 comparatorsToShow.add(comparator);
                             }
                             if (tempKey.matches("^lessThan$")) {
-                                searchItems.add(IThingRepository.comparesValueLessThan(comparator, Double.parseDouble(value)));
+                                searchItems.add(IThingRepository.comparesValueLessThan(comparator, customSet, Double.parseDouble(value)));
                                 comparatorsToShow.add(comparator);
                             }
                         }
@@ -583,10 +594,10 @@ public class ThingApiController {
                         searchItems.add(IThingRepository.inCustomSetByID(Integer.parseInt(value)));
                     }
                 } catch (Exception e) {
-                    LOGGER.error("Error creating search criteria for key=" + key + " value=" + value);
+                    LOGGER.warn("Error creating search criteria for key=" + key + " value=" + value);
                 }
             }
-        });
+        }
 
         return searchItems;
     }

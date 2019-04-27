@@ -3,6 +3,7 @@ package com.lists.web.thing;
 import com.lists.web.CustomSetThing.CustomSetThing;
 import com.lists.web.comparator.Comparator;
 import com.lists.web.compares.Compares;
+import com.lists.web.customSet.CustomSet;
 import com.lists.web.descriptor.*;
 import com.lists.web.descriptorType.DescriptorType;
 import org.springframework.data.jpa.domain.Specification;
@@ -73,28 +74,39 @@ public interface IThingRepository extends CrudRepository<Thing, Integer>, JpaSpe
         return (thing, cq, cb) -> cb.lessThan(thing.get("changeTimestamp"), date);
     }
 
-    static Specification<Thing> hasComparator(Comparator comparator) {
-        return (thing, cq, cb) -> cb.and(cb.equal(thing.join("compares").join("comparator"), comparator));
-    }
-
-    static Specification<Thing> notHasComparator(Comparator comparator) {
+    static Specification<Thing> hasComparator(Comparator comparator, CustomSet customSet) {
         return (thing, cq, cb) -> {
             Subquery<Compares> subquery = cq.subquery(Compares.class);
             Root<Compares> subqueryRoot = subquery.from(Compares.class);
 
             subquery.select(subqueryRoot).where(cb.equal(subqueryRoot.join("comparator"), comparator),
+                    cb.equal(subqueryRoot.join("customSet"), customSet),
+                    cb.equal(subqueryRoot.get("thing"), thing));
+
+            return cb.exists(subquery);
+        };
+    }
+
+    static Specification<Thing> notHasComparator(Comparator comparator, CustomSet customSet) {
+        return (thing, cq, cb) -> {
+            Subquery<Compares> subquery = cq.subquery(Compares.class);
+            Root<Compares> subqueryRoot = subquery.from(Compares.class);
+
+            subquery.select(subqueryRoot).where(cb.equal(subqueryRoot.join("comparator"), comparator),
+                    cb.equal(subqueryRoot.join("customSet"), customSet),
                     cb.equal(subqueryRoot.get("thing"), thing));
 
             return cb.not(cb.exists(subquery));
         };
     }
 
-    static Specification<Thing> comparesValueGreaterThan(Comparator comparator, Double value) {
+    static Specification<Thing> comparesValueGreaterThan(Comparator comparator, CustomSet customSet, Double value) {
         return (thing, cq, cb) -> {
             Subquery<Compares> subquery = cq.subquery(Compares.class);
             Root<Compares> subqueryRoot = subquery.from(Compares.class);
 
             subquery.select(subqueryRoot).where(cb.and(cb.equal(subqueryRoot.join("comparator"), comparator),
+                    cb.equal(subqueryRoot.join("customSet"), customSet),
                     cb.greaterThan(subqueryRoot.get("score"), value),
                     cb.equal(subqueryRoot.get("thing"), thing)));
 
@@ -102,12 +114,13 @@ public interface IThingRepository extends CrudRepository<Thing, Integer>, JpaSpe
         };
     }
 
-    static Specification<Thing> comparesValueLessThan(Comparator comparator, Double value) {
+    static Specification<Thing> comparesValueLessThan(Comparator comparator, CustomSet customSet, Double value) {
         return (thing, cq, cb) -> {
             Subquery<Compares> subquery = cq.subquery(Compares.class);
             Root<Compares> subqueryRoot = subquery.from(Compares.class);
 
             subquery.select(subqueryRoot).where(cb.and(cb.equal(subqueryRoot.join("comparator"), comparator),
+                    cb.equal(subqueryRoot.join("customSet"), customSet),
                     cb.lessThan(subqueryRoot.get("score"), value),
                     cb.equal(subqueryRoot.get("thing"), thing)));
 
@@ -448,7 +461,8 @@ public interface IThingRepository extends CrudRepository<Thing, Integer>, JpaSpe
                     cb.equal(subqueryRoot.get("logicallyDeleted"), false)),
                     cb.equal(subqueryRoot.get("thing"), thing));
 
-            return cb.exists(subquery);
+            return cb.and(cb.exists(subquery),
+                    cb.equal(thing.join("compares").join("customSet").get("customSetID"),customSetID));
         };
     }
 }
