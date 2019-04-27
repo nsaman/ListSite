@@ -147,7 +147,7 @@
                                         customSet: $scope.customSetSelected
                                     }
                                 }).finally(function() {
-                                    $http.get("/api/things" + locationService.getQueryParams()).then(function(response) {
+                                    $http.get("/api/thingsView" + locationService.getQueryParams()).then(function(response) {
                                         $scope.things = response.data;
                                     });
                                 });
@@ -183,7 +183,7 @@
 
                 $scope.things = {};
                 $scope.loadThings = function() {
-                    $http.get("/api/things" + locationService.getQueryParams()).then(function(response) {
+                    $http.get("/api/thingsView" + locationService.getQueryParams()).then(function(response) {
                         $scope.things = response.data;
 
                         if($scope.things.comparesHeaders.length > 0) {
@@ -196,7 +196,7 @@
                 $scope.parentThings = [];
                 $scope.loadParentThings = function() {
                     $http.get("/api/things?things.isAbstract=true").then(function(response) {
-                        $scope.parentThings = response.data.thingsRowViewList;
+                        $scope.parentThings = response.data;
                     });
                 }
 
@@ -226,7 +226,7 @@
                 $scope.referenceThings = [];
                 $scope.loadReferenceThings = function() {
                     $http.get("/api/things").then(function(response) {
-                        $scope.referenceThings = response.data.thingsRowViewList;
+                        $scope.referenceThings = response.data;
                     });
                 }
                 $scope.loadReferenceThings();
@@ -266,7 +266,7 @@
                             }
                         })
                         .finally(function() {
-                          $http.get("/api/things" + locationService.getQueryParams()).then(function(response) {
+                          $http.get("/api/thingsView" + locationService.getQueryParams()).then(function(response) {
                               $scope.things = response.data;
                           });
                         });
@@ -284,7 +284,7 @@
                             }
                         })
                         .finally(function() {
-                          $http.get("/api/things" + locationService.getQueryParams()).then(function(response) {
+                          $http.get("/api/thingsView" + locationService.getQueryParams()).then(function(response) {
                               $scope.things = response.data;
                           });
                           $scope.selected = [];
@@ -305,7 +305,7 @@
                             'Content-Type': 'application/json'
                         }
                     }).then(function (response) {
-                        $http.get("/api/things" + locationService.getQueryParams()).then(function(response) {
+                        $http.get("/api/thingsView" + locationService.getQueryParams()).then(function(response) {
                             $scope.things = response.data;
                         });
                     })
@@ -324,7 +324,7 @@
                             'Content-Type': 'application/json'
                         }
                     }).then(function (response) {
-                        $http.get("/api/things" + locationService.getQueryParams()).then(function(response) {
+                        $http.get("/api/thingsView" + locationService.getQueryParams()).then(function(response) {
                             $scope.things = response.data;
                         });
                     })

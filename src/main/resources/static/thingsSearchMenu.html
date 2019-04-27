@@ -52,7 +52,7 @@
                                 <md-button ng-click="loadParentThings(); $mdMenu.open()">Parent Thing</md-button>
                                 <md-menu-content>
                                     <md-menu-item ng-repeat="menuParentThing in parentThings">
-                                        <md-button ng-click="addSearchItem('things.parentThingID',menuParentThing.thing.thingID)">{{menuParentThing.thing.title}}</md-button>
+                                        <md-button ng-click="addSearchItem('things.parentThingID',menuParentThing.thingID)">{{menuParentThing.title}}</md-button>
                                     </md-menu-item>
                                 </md-menu-content>
                             </md-menu>
@@ -427,10 +427,10 @@
                                     <!-- referenceThing -->
                                     <md-menu-item ng-if="descriptorType.valueType=='referenceThing'">
                                         <md-menu>
-                                            <md-button ng-click="loadParentThings(); $mdMenu.open()">Parent Thing</md-button>
+                                            <md-button ng-click="loadParentThings(); $mdMenu.open()">Refenced Thing</md-button>
                                             <md-menu-content>
                                                 <md-menu-item ng-repeat="referenceThing in referenceThings">
-                                                    <md-button ng-click="addSearchItem('descriptors.' + descriptorType.descriptorTypeID,referenceThing.thing.thingID)">{{referenceThing.thing.title}}</md-button>
+                                                    <md-button ng-click="addSearchItem('descriptors.' + descriptorType.descriptorTypeID,referenceThing.thingID)">{{referenceThing.title}}</md-button>
                                                 </md-menu-item>
                                             </md-menu-content>
                                         </md-menu>

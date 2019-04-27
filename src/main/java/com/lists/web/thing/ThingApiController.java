@@ -51,10 +51,13 @@ public class ThingApiController {
     private final Logger LOGGER = LoggerFactory.getLogger(ThingApiController.class);
 
     @RequestMapping(path = "/api/things", produces = "application/json")
-    public ThingsTableView getThingsByParentAndComparator(@RequestParam MultiValueMap<String, String> queryParams) {
+    public Iterable<Thing> getThings(@RequestParam MultiValueMap<String, String> queryParams) {
 
-        Set<Comparator> comparatorsToShow = new HashSet<>();
-        Set<DescriptorType> descriptorTypesToShow = new HashSet<>();
+        return getThings(queryParams, new HashSet<Comparator>(), new HashSet<DescriptorType>());
+
+    }
+
+    private Iterable<Thing> getThings(@RequestParam MultiValueMap<String, String> queryParams, Set<Comparator> comparatorsToShow, Set<DescriptorType> descriptorTypesToShow) {
 
         List<Specification<Thing>> searchItems = getSearchSpecificationsByMap(queryParams, comparatorsToShow, descriptorTypesToShow);
 
@@ -68,6 +71,17 @@ public class ThingApiController {
         } else {
             thingList = thingRepository.findAll();
         }
+
+        return thingList;
+    }
+
+    @RequestMapping(path = "/api/thingsView", produces = "application/json")
+    public ThingsTableView getThingsView(@RequestParam MultiValueMap<String, String> queryParams) {
+
+        Set<Comparator> comparatorsToShow = new HashSet<>();
+        Set<DescriptorType> descriptorTypesToShow = new HashSet<>();
+
+        Iterable<Thing> thingList = getThings(queryParams, comparatorsToShow, descriptorTypesToShow);
 
         if(queryParams.containsKey("compares.showAll") && queryParams.getFirst("compares.showAll").equals(Boolean.TRUE.toString())) {
             comparatorsToShow = new HashSet<>();
