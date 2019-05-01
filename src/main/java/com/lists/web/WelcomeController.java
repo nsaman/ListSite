@@ -12,27 +12,9 @@ import java.util.Map;
 
 @Controller
 public class WelcomeController {
-
-	private final Logger logger = LoggerFactory.getLogger(WelcomeController.class);
-
 	@RequestMapping(value = "/", method = RequestMethod.GET)
-	public String index(Map<String, Object> model) {
-
-		logger.debug("index() is executed!");
-
-		return "index";
-	}
-
-	@RequestMapping(value = "/hello/{name:.+}", method = RequestMethod.GET)
-	public ModelAndView hello(@PathVariable("name") String name) {
-
-		logger.debug("hello() is executed - $name {}", name);
-
-		ModelAndView model = new ModelAndView();
-		model.setViewName("index");
-
-		return model;
-
+	public String index() {
+		return "redirect:/angularjs.html";
 	}
 
 }
