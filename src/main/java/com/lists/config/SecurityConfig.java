@@ -53,7 +53,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/**").permitAll()
                 .and().formLogin()
                 .loginProcessingUrl("/login")
-                .and().logout()
+                .and().logout().logoutSuccessHandler((httpServletRequest, httpServletResponse, authentication) -> {
+                    httpServletResponse.setStatus(HttpServletResponse.SC_OK);
+                })
                 .and().exceptionHandling().authenticationEntryPoint(new AuthenticationEntryPoint() {
 
             @Override
