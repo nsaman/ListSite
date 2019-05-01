@@ -20,6 +20,11 @@ public class ReferenceThingDescriptor extends Descriptor {
     @JoinColumn(name="referenceThingID")
     private Thing referenceThing;
 
+    @JsonBackReference
+    @ManyToOne
+    @JoinColumn(name="descendentOfThingID")
+    private Thing descendentOfThingID;
+
     public ReferenceThingDescriptor() {
         super(DescriptorTypes.REFERENCE_THING);
     }
@@ -35,5 +40,13 @@ public class ReferenceThingDescriptor extends Descriptor {
 
     public void setReferenceThing(Thing referenceThing) {
         this.referenceThing = referenceThing;
+    }
+
+    public Thing getDescendentOfThingID() {
+        return descendentOfThingID;
+    }
+
+    public void setDescendentOfThingID(Thing descendentOfThingID) {
+        this.descendentOfThingID = descendentOfThingID;
     }
 }
