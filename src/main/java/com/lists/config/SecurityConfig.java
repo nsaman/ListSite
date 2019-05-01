@@ -51,9 +51,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
         http.authorizeRequests()
                 .antMatchers("/**").permitAll()
-                .and().formLogin().loginPage("/login.html")
+                .and().formLogin()
                 .loginProcessingUrl("/login")
-                .defaultSuccessUrl("/thing/1")
                 .and().logout()
                 .and().exceptionHandling().authenticationEntryPoint(new AuthenticationEntryPoint() {
 
