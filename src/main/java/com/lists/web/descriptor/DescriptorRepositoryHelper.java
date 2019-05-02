@@ -116,8 +116,11 @@ public class DescriptorRepositoryHelper {
             ((LocationDescriptor)descriptor).setLatitude(locationPair[0]);
             ((LocationDescriptor)descriptor).setLongitude(locationPair[1]);
         }
-        else if (descriptor instanceof ReferenceThingDescriptor)
-            ((ReferenceThingDescriptor)descriptor).setReferenceThing(thingRepository.findOne(Integer.parseInt(value)));
+        else if (descriptor instanceof ReferenceThingDescriptor) {
+            String[] values = value.split(",");
+            ((ReferenceThingDescriptor)descriptor).setReferenceThing(thingRepository.findOne(Integer.parseInt(values[0])));
+            ((ReferenceThingDescriptor)descriptor).setDescendentOfThing(thingRepository.findOne(Integer.parseInt(values[1])));
+        }
         else if (descriptor instanceof ResourceDescriptor)
             ((ResourceDescriptor)descriptor).setValue(value);
         else if (descriptor instanceof StringDescriptor)

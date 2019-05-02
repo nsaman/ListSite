@@ -974,6 +974,13 @@
                     })
                 }
 
+                $scope.abstractThings = [];
+                $scope.loadParentThings = function() {
+                    $http.get("/api/things?things.isAbstract=true").then(function(response) {
+                        $scope.abstractThings = response.data;
+                    });
+                }
+
                 $scope.newParentSelected = function() {
                     thingService.getAbstractThingAndParentAndChildren($scope.thingEditFormData.parentThingId).then(function mySuccess(response) {
                         $scope.parentThings = response.data;
@@ -1243,6 +1250,13 @@
                     if(!$scope.parentComparatorIDs.includes(childCompares.comparator.comparatorID)) {
                         $scope.thingEditFormData.childComparators.push(childCompares.comparator);
                     }
+                }
+
+                $scope.abstractThings = [];
+                $scope.loadParentThings = function() {
+                    $http.get("/api/things?things.isAbstract=true").then(function(response) {
+                        $scope.abstractThings = response.data;
+                    });
                 }
 
                 $scope.submitEditThingForm = function() {

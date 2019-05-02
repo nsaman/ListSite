@@ -6,10 +6,7 @@ import com.lists.web.compares.Compares;
 import com.lists.web.compares.IComparesRepository;
 import com.lists.web.customSet.CustomSet;
 import com.lists.web.customSet.ICustomSetRepository;
-import com.lists.web.descriptor.DateDescriptor;
-import com.lists.web.descriptor.Descriptor;
-import com.lists.web.descriptor.DescriptorRepositoryHelper;
-import com.lists.web.descriptor.LocationDescriptor;
+import com.lists.web.descriptor.*;
 import com.lists.web.descriptorType.DescriptorType;
 import com.lists.web.descriptorType.DescriptorTypes;
 import com.lists.web.descriptorType.IDescriptorTypeRepository;
@@ -83,20 +80,20 @@ public class ThingApiController {
 
         Iterable<Thing> thingList = getThings(queryParams, comparatorsToShow, descriptorTypesToShow);
 
-        if(queryParams.containsKey("compares.showAll") && queryParams.getFirst("compares.showAll").equals(Boolean.TRUE.toString())) {
+        if (queryParams.containsKey("compares.showAll") && queryParams.getFirst("compares.showAll").equals(Boolean.TRUE.toString())) {
             comparatorsToShow = new HashSet<>();
 
-            for(Thing thing : thingList) {
-                for(Compares compares : thing.getCompares())
+            for (Thing thing : thingList) {
+                for (Compares compares : thing.getCompares())
                     comparatorsToShow.add(compares.getComparator());
             }
         }
 
-        if(queryParams.containsKey("descriptors.showAll") && queryParams.getFirst("descriptors.showAll").equals(Boolean.TRUE.toString())) {
+        if (queryParams.containsKey("descriptors.showAll") && queryParams.getFirst("descriptors.showAll").equals(Boolean.TRUE.toString())) {
             descriptorTypesToShow = new HashSet<>();
 
-            for(Thing thing : thingList) {
-                for(Descriptor descriptor : thing.getDescriptors())
+            for (Thing thing : thingList) {
+                for (Descriptor descriptor : thing.getDescriptors())
                     descriptorTypesToShow.add(descriptor.getDescriptorType());
             }
         }
@@ -110,8 +107,8 @@ public class ThingApiController {
                                         @RequestParam(value = "comparedThingID", required = false) Thing comparedThing,
                                         @RequestParam(value = "comparedComparatorID", defaultValue = "1") Comparator comparator) {
 
-        queryParams.forEach((key,value) -> {
-            if(key.startsWith("comparators.") && (!key.matches("comparators\\.+" + comparator.getComparatorID()) || !key.matches("comparators\\.+" + comparator.getComparatorID() + "\\.")))
+        queryParams.forEach((key, value) -> {
+            if (key.startsWith("comparators.") && (!key.matches("comparators\\.+" + comparator.getComparatorID()) || !key.matches("comparators\\.+" + comparator.getComparatorID() + "\\.")))
                 queryParams.remove(key);
         });
 
@@ -183,13 +180,41 @@ public class ThingApiController {
     @RequestMapping(path = "/api/thing", method = RequestMethod.POST, consumes = {"application/json"})
     public void createThing(@Valid @RequestBody NewThingRequest newThingRequest) {
 
-
         Thing parentThing = thingRepository.findOne(newThingRequest.getParentThingId());
 
         List<Descriptor> undefinedDescriptorList = new ArrayList<>();
         for (Descriptor parentDescriptor : parentThing.getDescriptors()) {
             if (!parentDescriptor.getDescriptorType().getIsNullable() && !newThingRequest.getDescriptors().containsKey(parentDescriptor.getDescriptorType().getDescriptorTypeID())) {
                 undefinedDescriptorList.add(parentDescriptor);
+            } else if (DescriptorTypes.REFERENCE_THING.getTypeName().equals(parentDescriptor.getDescriptorType().getValueType()) && ((ReferenceThingDescriptor) parentDescriptor).getDescendentOfThing() != null) {
+                Thing ancestorThing = ((ReferenceThingDescriptor) parentDescriptor).getDescendentOfThing();
+
+                String referenceValue = newThingRequest.getDescriptors().get(parentDescriptor.getDescriptorType().getDescriptorTypeID());
+                try {
+                    String[] values = referenceValue.split(",");
+
+                    Thing currentThing = thingRepository.findOne(Integer.parseInt(values[0]));
+                    if (values.length == 1) {
+                        referenceValue += "," + ancestorThing.getThingID();
+                        newThingRequest.getDescriptors().put(parentDescriptor.getDescriptorType().getDescriptorTypeID(),referenceValue);
+                    } else if (values.length > 1 && Integer.parseInt(values[1]) != ancestorThing.getThingID()) {
+                        throw new IllegalStateException("Ancestor not equal to parent for referenceValue=" + referenceValue + " ancestorThingID=" + ancestorThing.getThingID());
+                    }
+
+                    boolean ancestorFlag = false;
+                    do {
+                        if (currentThing == ancestorThing) {
+                            ancestorFlag = true;
+                            break;
+                        } else
+                            currentThing = currentThing.getParentThing();
+                    } while (currentThing != null);
+
+                    if (!ancestorFlag)
+                        throw new IllegalStateException("Ancestor not found for referredThingID=" + Integer.parseInt(values[0]) + " ancestorThingID=" + ancestorThing.getThingID());
+                } catch (NumberFormatException e) {
+                    throw new IllegalStateException("Error parsing reference descriptorValue=" + referenceValue, e);
+                }
             }
         }
         if (!undefinedDescriptorList.isEmpty())
@@ -216,6 +241,20 @@ public class ThingApiController {
                 } catch (Exception e) {
                     throw new IllegalStateException("Error parsing and setting descriptor value for descriptorType=" + descriptorType.getTitle()
                             + " value=" + newThingRequest.getDescriptors().get(descriptorTypeId), e);
+                }
+            } else if (descriptor instanceof ReferenceThingDescriptor) {
+                ReferenceThingDescriptor referenceThingDescriptor = ((ReferenceThingDescriptor)descriptor);
+                for (Descriptor parentDescriptor : parentThing.getDescriptors()) {
+                    if (parentDescriptor.getDescriptorType() == descriptorType)
+                        referenceThingDescriptor.setDescendentOfThing(((ReferenceThingDescriptor)parentDescriptor).getDescendentOfThing());
+                }
+                if (referenceThingDescriptor.getDescendentOfThing() == null) {
+                    try {
+                        referenceThingDescriptor.setDescendentOfThing(thingRepository.findOne(Integer.parseInt(newThingRequest.getDescriptors().get(descriptorTypeId).split(",")[1])));
+                    } catch (Exception e) {
+                        throw new IllegalStateException("Error parsing and setting descriptor value for descriptorType=" + descriptorType.getTitle()
+                                + " value=" + newThingRequest.getDescriptors().get(descriptorTypeId), e);
+                    }
                 }
             }
             descriptors.add(descriptor);
@@ -270,6 +309,35 @@ public class ThingApiController {
             for (Descriptor parentDescriptor : thing.getParentThing().getDescriptors()) {
                 if (!parentDescriptor.getDescriptorType().getIsNullable() && !updateThingRequest.getDescriptors().containsKey(parentDescriptor.getDescriptorType().getDescriptorTypeID())) {
                     undefinedDescriptorList.add(parentDescriptor);
+                } else if (DescriptorTypes.REFERENCE_THING.getTypeName().equals(parentDescriptor.getDescriptorType().getValueType()) && ((ReferenceThingDescriptor) parentDescriptor).getDescendentOfThing() != null) {
+                    Thing ancestorThing = ((ReferenceThingDescriptor) parentDescriptor).getDescendentOfThing();
+
+                    String referenceValue = updateThingRequest.getDescriptors().get(parentDescriptor.getDescriptorType().getDescriptorTypeID());
+                    try {
+                        String[] values = referenceValue.split(",");
+
+                        Thing currentThing = thingRepository.findOne(Integer.parseInt(values[0]));
+                        if (values.length == 1) {
+                            referenceValue += "," + ancestorThing.getThingID();
+                            updateThingRequest.getDescriptors().put(parentDescriptor.getDescriptorType().getDescriptorTypeID(),referenceValue);
+                        } else if (values.length > 1 && Integer.parseInt(values[1]) != ancestorThing.getThingID()) {
+                            throw new IllegalStateException("Ancestor not equal to parent for referenceValue=" + referenceValue + " ancestorThingID=" + ancestorThing.getThingID());
+                        }
+
+                        boolean ancestorFlag = false;
+                        do {
+                            if (currentThing == ancestorThing) {
+                                ancestorFlag = true;
+                                break;
+                            } else
+                                currentThing = currentThing.getParentThing();
+                        } while (currentThing != null);
+
+                        if (!ancestorFlag)
+                            throw new IllegalStateException("Ancestor not found for referredThingID=" + Integer.parseInt(values[0]) + " ancestorThingID=" + ancestorThing.getThingID());
+                    } catch (NumberFormatException e) {
+                        throw new IllegalStateException("Error parsing reference descriptorValue=" + referenceValue, e);
+                    }
                 }
             }
         }
@@ -293,7 +361,7 @@ public class ThingApiController {
             Descriptor descriptor = null;
             DescriptorType descriptorType = descriptorTypeRepository.findOne(descriptorTypeId);
             if (descriptorTypeIdMap.containsKey(descriptorTypeId)) {
-                descriptor = descriptorRepositoryHelper.findOne(descriptorType, descriptorTypeId);
+                descriptor = descriptorRepositoryHelper.findOne(descriptorType, descriptorTypeIdMap.get(descriptorTypeId).getDescriptorID());
             } else {
                 descriptor = descriptorType.createEmptyChild();
                 descriptor.setDescribedThing(thing);
@@ -304,6 +372,20 @@ public class ThingApiController {
                 } catch (Exception e) {
                     throw new IllegalStateException("Error parsing and setting descriptor value for descriptorType=" + descriptorType.getTitle()
                             + " value=" + updateThingRequest.getDescriptors().get(descriptorTypeId), e);
+                }
+            } else if (descriptor instanceof ReferenceThingDescriptor) {
+                ReferenceThingDescriptor referenceThingDescriptor = ((ReferenceThingDescriptor)descriptor);
+                for (Descriptor parentDescriptor : thing.getParentThing().getDescriptors()) {
+                    if (parentDescriptor.getDescriptorType() == descriptorType)
+                        referenceThingDescriptor.setDescendentOfThing(((ReferenceThingDescriptor)parentDescriptor).getDescendentOfThing());
+                }
+                if (referenceThingDescriptor.getDescendentOfThing() == null) {
+                    try {
+                        referenceThingDescriptor.setDescendentOfThing(thingRepository.findOne(Integer.parseInt(updateThingRequest.getDescriptors().get(descriptorTypeId).split(",")[1])));
+                    } catch (Exception e) {
+                        throw new IllegalStateException("Error parsing and setting descriptor value for descriptorType=" + descriptorType.getTitle()
+                                + " value=" + updateThingRequest.getDescriptors().get(descriptorTypeId), e);
+                    }
                 }
             }
             descriptors.add(descriptor);
@@ -332,6 +414,7 @@ public class ThingApiController {
         }
         comparesRepository.save(comparesList);
     }
+
     private List<Specification<Thing>> getSearchSpecificationsByMap(MultiValueMap<String, String> queryParams) {
         return getSearchSpecificationsByMap(queryParams, new HashSet<Comparator>(), new HashSet<DescriptorType>());
     }

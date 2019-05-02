@@ -23,7 +23,7 @@ public class ReferenceThingDescriptor extends Descriptor {
     @JsonBackReference
     @ManyToOne
     @JoinColumn(name="descendentOfThingID")
-    private Thing descendentOfThingID;
+    private Thing descendentOfThing;
 
     public ReferenceThingDescriptor() {
         super(DescriptorTypes.REFERENCE_THING);
@@ -42,11 +42,11 @@ public class ReferenceThingDescriptor extends Descriptor {
         this.referenceThing = referenceThing;
     }
 
-    public Thing getDescendentOfThingID() {
-        return descendentOfThingID;
+    public Thing getDescendentOfThing() {
+        return descendentOfThing;
     }
 
-    public void setDescendentOfThingID(Thing descendentOfThingID) {
-        this.descendentOfThingID = descendentOfThingID;
+    public void setDescendentOfThing(Thing descendentOfThing) {
+        this.descendentOfThing = descendentOfThing;
     }
 }

@@ -26,9 +26,19 @@
         </md-input-container>
     </div>
     <div layout-gt-xs="row" ng-repeat="descriptor in descriptors">
-        <md-input-container>
+        <md-input-container ng-if="descriptor.type!='REFERENCE_THING'">
             <label>{{descriptor.descriptorType.title}}{{descriptor.descriptorType.isNullable ? '' : '*'}}</label>
             <input ng-disabled="thingEditFormData.isAbstract" ng-model="thingEditFormData.descriptors[descriptor.descriptorType.descriptorTypeID]">
+        </md-input-container>
+        <md-input-container ng-if="descriptor.type=='REFERENCE_THING'">
+            <label>{{descriptor.descriptorType.title}} - {{thingEditFormData.isAbstract ? 'referenceThingID' : 'referenceThingID'}}</label>
+            <input ng-disabled="thingEditFormData.isAbstract" ng-model="thingEditFormData.descriptors[descriptor.descriptorType.descriptorTypeID].value">
+        </md-input-container>
+        <md-input-container ng-if="descriptor.type=='REFERENCE_THING'">
+            <label>DescendentOf</label>
+            <md-select name="type" ng-model="thingEditFormData.descriptors[descriptor.descriptorType.descriptorTypeID].descendentOf" ng-disabled="!thingEditFormData.isAbstract">
+                <md-option ng-repeat="abstractThing in abstractThings">{{abstractThing.title}}</md-option>
+            </md-select>
         </md-input-container>
     </div>
     <div layout-gt-xs="row" ng-if="showNewDescriptor">
