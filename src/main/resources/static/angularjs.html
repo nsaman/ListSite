@@ -75,7 +75,7 @@
             }
         </style>
     <script type="text/javascript">
-            var app = angular.module('basicUsageSidenavDemo', ['ngRoute', 'ngMaterial', 'ngMessages', 'ngCookies', 'md.data.table', 'fixed.table.header']).config(['$mdThemingProvider', function($mdThemingProvider) {
+            var app = angular.module('basicUsageSidenavDemo', ['ngRoute', 'ngMaterial', 'ngMessages', 'ngCookies', 'md.data.table', 'fixed.table.header', 'http-auth-interceptor']).config(['$mdThemingProvider', function($mdThemingProvider) {
                 'use strict';
 
                 $mdThemingProvider.theme('default').primaryPalette('blue');
@@ -737,7 +737,7 @@
     console.log('page: ', page);
     console.log('limit: ', limit);
   }
-            }).controller('AppCtrl', function($scope, $mdDialog, $timeout, $mdSidenav, $log, $http, userService, $location, thingService) {
+            }).controller('AppCtrl', function($scope, $mdDialog, $timeout, $mdSidenav, $log, $http, userService, $location, thingService, authService) {
 
                 userService.setUserAttributes();
 
@@ -750,8 +750,22 @@
                 $scope.toggleRight = buildToggler('right');
                 $scope.isOpenRight = function() {
                     return $mdSidenav('right').isOpen();
-                }
-                ;
+                };
+
+                $scope.$on('event:auth-loginRequired', function(event, data){
+                    userService.userAttributes.loggedIn = false;
+
+                    $mdDialog.show({
+                        templateUrl: 'loginDialog.html',
+                        controller: 'LoginDialogCtrl'
+                    }).finally(function() {
+                        if(userService.userAttributes.loggedIn == true) {
+                            authService.loginConfirmed();
+                        } else {
+                            authService.loginCancelled();
+                        }
+                    });;
+                  });
 
                 $scope.openLogin = function() {
                     $mdDialog.show({
