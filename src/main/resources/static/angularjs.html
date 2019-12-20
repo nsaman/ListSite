@@ -862,7 +862,7 @@
                 }
 
                 self.logOut = function() {
-                    $http.post("/logout").then(function(response) {
+                    $http.post("/api/logout").then(function(response) {
                         self.userAttributes = {};
                         self.userAttributes.loggedIn = false;
                     },function(response) {
@@ -880,7 +880,7 @@
                 $scope.submitLoginForm = function() {
                     $http({
                         method: 'POST',
-                        url: 'login',
+                        url: '/api/login',
                         data: 'username=' + encodeURIComponent($scope.loginForm.username) + '&password=' + encodeURIComponent($scope.loginForm.password) + '&submit=submit',
                         headers: {
                             'Content-Type': 'application/x-www-form-urlencoded'
@@ -904,7 +904,7 @@
                         if(userService.userAttributes.loggedIn == true) {
                             $scope.cancel();
                         }
-                    });;
+                    });
                 }
                 ;
 

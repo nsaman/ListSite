@@ -51,6 +51,7 @@ public class UserApiController {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if ((authentication instanceof AnonymousAuthenticationToken)) {
+            // todo throw 401 or maybe 404
             return null;
         }
         return userStubRepository.findOne(authentication.getName());

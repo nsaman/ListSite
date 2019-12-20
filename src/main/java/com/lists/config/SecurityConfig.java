@@ -52,10 +52,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.authorizeRequests()
                 .antMatchers("/**").permitAll()
                 .and().formLogin()
-                .loginProcessingUrl("/login")
-                .and().logout().logoutSuccessHandler((httpServletRequest, httpServletResponse, authentication) -> {
-                    httpServletResponse.setStatus(HttpServletResponse.SC_OK);
-                })
+                .loginProcessingUrl("/api/login")
+                .and().logout().logoutUrl("/api/logout")
+                .logoutSuccessHandler((httpServletRequest, httpServletResponse, authentication) -> {
+            httpServletResponse.setStatus(HttpServletResponse.SC_OK);
+        })
                 .and().exceptionHandling().authenticationEntryPoint(new AuthenticationEntryPoint() {
 
             @Override
